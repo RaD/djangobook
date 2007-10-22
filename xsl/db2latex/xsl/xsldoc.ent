@@ -1,0 +1,21 @@
+<!ENTITY DocBook "<productname>DocBook</productname>">
+<!ENTITY docbook "<productname>DocBook</productname>">
+<!ENTITY DB2LaTeX "<productname>DB2<?latex \?>LaTeX</productname>">
+<!ENTITY db2latex "<productname>DB2<?latex \?>LaTeX</productname>">
+<!ENTITY LaTeX "<productname><?latex \?>LaTeX</productname>">
+<!ENTITY latex "<productname><?latex \?>LaTeX</productname>">
+
+<!ENTITY ramon "<author><firstname>Ramon</firstname><surname>Casellas</surname></author>">
+<!ENTITY james "<author><firstname>James</firstname><surname>Devenish</surname></author>">
+
+<!ENTITY mapping "<xref linkend='latex.mapping'/>">
+<!ENTITY no_var "<para>There are no configuration variables for this template.</para>">
+<!ENTITY rev_2003_05 "<date>May 2003</date><revremark>Major review of documentation.</revremark>">
+
+<!ENTITY test_article "<member><filename>test_article.pdf</filename> from <filename>test_article/article.pdf</filename></member>">
+<!ENTITY test_blocks "<member><filename>test_blocks.pdf</filename> from <filename>test_blocks/test.pdf</filename></member>">
+<!ENTITY test_book "<member><filename>test_book.pdf</filename> from <filename>test_book/test.pdf</filename></member>">
+<!ENTITY test_ddh "<member><filename>test_ddh.pdf</filename> from <filename>test_ddh/article.pdf</filename></member>">
+<!ENTITY test_ieeebiblio "<member><filename>test_ieeebiblio.pdf</filename> from <filename>test_ieeebiblio/test.pdf</filename></member>">
+<!ENTITY test_mapping "<member><filename>test_mapping.pdf</filename> from <filename>test_mapping/test.pdf</filename></member>">
+<!ENTITY test_varioref "<member><filename>test_varioref.pdf</filename> from <filename>test_varioref/test.pdf</filename></member>">

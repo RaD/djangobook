@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!-- $Id: catalog.xml,v 1.1 2003/10/01 09:38:20 ott Exp $ -->
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <public publicId="-//JetInfo//ENTITIES Common Documentation//RU" uri="ru/entities/common.ent"/>
+</catalog>
