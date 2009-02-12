@@ -34,8 +34,8 @@ XML_SOURCES=chap01.xml chap02.xml chap03.xml chap04.xml \
 all: html
 
 html: $(HTML_NAME)
-	xsltproc --nonet -o toc.py $(DOC_TOP)/xsl/docbook-pytoc.xsl $(XML_PROF_NAME)
-	mv toc.py ../HTML/$(BASE_NAME)/
+	xsltproc --nonet -o toc.py $(BUILDFARM)/xsl/docbook-pytoc.xsl $(XML_PROF_NAME)
+	mv toc.py HTML/$(BASE_NAME)/
 
 pdf: $(PDF_NAME)
 
