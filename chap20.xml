@@ -301,9 +301,9 @@
 
   </section>
 
-  <section id="&BASEID;.using-apache">
+  <section id="&BASEID;.using-apache-mod_python">
 
-    <title id="&BASEID;.using-apache.title">
+    <title id="&BASEID;.using-apache-mod_python.title">
       Использование Django с Apache и mod_python
     </title>
 
@@ -366,9 +366,9 @@
       </note>
     </para>
 
-    <section id="&BASEID;.using-apache.base-settings">
+    <section id="&BASEID;.using-apache-mod_python.base-settings">
 
-      <title id="&BASEID;.using-apache.base-settings.title">
+      <title id="&BASEID;.using-apache-mod_python.base-settings.title">
 	Базовые настройки
       </title>
 
@@ -492,9 +492,9 @@ urlpatterns = patterns('',
 
     </section>
 
-    <section id="&BASEID;.using-apache.more-one">
+    <section id="&BASEID;.using-apache-mod_python.more-one">
 
-      <title id="&BASEID;.using-apache.more-one.title">
+      <title id="&BASEID;.using-apache-mod_python.more-one.title">
 	Несколько проектов Django на одном сервере Apache
       </title>
 
@@ -563,9 +563,9 @@ NameVirtualHost *
 
     </section>
 
-    <section id="&BASEID;.using-apache.dev-server">
+    <section id="&BASEID;.using-apache-mod_python.dev-server">
 
-      <title id="&BASEID;.using-apache.dev-server.title">
+      <title id="&BASEID;.using-apache-mod_python.dev-server.title">
 	Запуск тестового сервера под mod_python
       </title>
 
@@ -598,9 +598,9 @@ NameVirtualHost *
 
     </section>
 
-    <section id="&BASEID;.using-apache.static-content">
+    <section id="&BASEID;.using-apache-mod_python.static-content">
 
-      <title id="&BASEID;.using-apache.static-content.title">
+      <title id="&BASEID;.using-apache-mod_python.static-content.title">
 	Работа с Django и статическим контентом на одном сервере Apache 
       </title>
 
@@ -667,9 +667,9 @@ NameVirtualHost *
 
     </section>
 
-    <section id="&BASEID;.using-apache.error-handling">
+    <section id="&BASEID;.using-apache-mod_python.error-handling">
 
-      <title id="&BASEID;.using-apache.error-handling.title">
+      <title id="&BASEID;.using-apache-mod_python.error-handling.title">
 	Обработка ошибок
       </title>
 
@@ -691,9 +691,9 @@ NameVirtualHost *
 
     </section>
 
-    <section id="&BASEID;.using-apache.seg-fault">
+    <section id="&BASEID;.using-apache-mod_python.seg-fault">
 
-      <title id="&BASEID;.using-apache.seg-fault.title">
+      <title id="&BASEID;.using-apache-mod_python.seg-fault.title">
 	Устранение ошибок, приводящих к падению Apache
       </title>
 
@@ -760,7 +760,224 @@ NameVirtualHost *
 
   </section>
 
+  <section id="&BASEID;.using-apache-mod_wsgi">
 
+    <title id="&BASEID;.using-apache-mod_wsgi.title">
+      Использование Django с Apache и mod_wsgi
+    </title>
 
+    <para>
+      Источники: <ulink
+      url="http://code.google.com/p/modwsgi/wiki/QuickInstallationGuide"/>,
+      <ulink
+      url="http://ericholscher.com/blog/2008/jul/8/setting-django-and-mod_wsgi/"/>.
+    </para>
+
+    <para>
+      Есть несколько причин для перехода с <token>mod_python</token>
+      на <token>mod_wsgi</token>:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <token>mod_python</token> больше не поддерживается разработчиком;
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>mod_wsgi</token> требует меньше ресурсов для своей
+	    работы и обладает большими возможностями в настройке.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+	
+    <section id="&BASEID;.using-apache-mod_wsgi.apache-reqs">
+      
+      <title id="&BASEID;.using-apache-mod_wsgi.apache-reqs.title">
+	Поддерживаемые версии Apache
+      </title>
+
+      <para>
+	Поддерживаются следующие версии Apache &mdash; 1.3, 2.0 и 2.2.
+      </para>
+
+      <para>
+	При использовании Apache 1.3 можно динамически подгружать его
+	модули. В случае, когда модули статически слинкованы с Apache,
+	некоторые компоненты <token>mod_wsgi</token> будут работать
+	некорректно.
+      </para>
+
+      <para>
+	При использовании Apache 2.0 и 2.2 нет разницы, работаете вы с
+	<token>prefork</token> или <token>worker</token> MPM.
+      </para>
+
+      <para>
+	Чтобы иметь возможность <token>mod_wsgi</token> в режиме
+	сервиса, надо использовать Apache 2.0 и 2.2, также
+	соответствующие библиотеки Apache должны быть собраны с
+	поддержкой потоков.
+      </para>
+
+      <para>
+	На Linux, если Apache устанавливается из репозитория, следует
+	установить для него пакеты разработчика.
+      </para>
+
+      <para>
+	Для большинства дистрибутивов Linux, пакет разработчика для
+	Apache 2.x называется <token>apache2-dev</token>, сам Apache
+	находится в пакете <token>apache2</token>. Тем не менее,
+	некоторые дистрибутивы различают пакеты разработчика по типу
+	MPM, для которого они собраны. В таком случае, пакет может
+	называться как <token>apache2-worker-dev</token> или
+	<token>apache2-prefork-dev</token>. При использовании Apache
+	2.x не стоит устанавливать пакет <token>apache-dev</token>,
+	так как он относится к Apache 1.3.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.using-apache-mod_wsgi.python-reqs">
+      
+      <title id="&BASEID;.using-apache-mod_wsgi.python-reqs.title">
+	Поддерживаемые версии Python
+      </title>
+
+      <para>
+	Можно использовать Python версий 2.3-2.5. Используемая версия
+	Python должна быть собрана с поддержкой потоков.
+      </para>
+
+      <para>
+	На Linux, если Python устанавливается из репозитария, следует
+	установить для него пакеты разработчика.
+      </para>
+
+      <para>
+	Желательно, чтобы Python был доступен в виде разделяемой
+	библиотеки. Если это не ваш случай, то <token>mod_wsgi</token>
+	будет требовать больше памяти и могут возникнуть конфликты с
+	<token>mod_python</token> (если оба модуля будут загружены в
+	одно время), что может привести к падению Apache.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.using-apache-mod_wsgi.install">
+      
+      <title id="&BASEID;.using-apache-mod_wsgi.install.title">
+	Установка модуля
+      </title>
+
+      <para>
+	Пример установки модуля на Ubuntu:
+	<screen>
+	  <![CDATA[
+# wajig search mod_wsgi
+libapache2-mod-wsgi - Python WSGI adapter module for Apache
+
+# wajig install libapache2-mod-wsgi
+Чтение списков пакетов... Готово
+Построение дерева зависимостей       
+Чтение информации о состоянии... Готово
+Предлагаемые пакеты:
+  apache2-mpm-worker apache2-mpm-event
+НОВЫЕ пакеты, которые будут установлены:
+  libapache2-mod-wsgi
+Необходимо скачать 113kБ архивов.
+Получено:1 http://ru.archive.ubuntu.com intrepid/universe libapache2-mod-wsgi 2.3-1 [113kB]
+Получено 113kБ за 1s (111kБ/c)            
+...
+ * Reloading web server config apache2
+#
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.using-apache-mod_wsgi.interface">
+      
+      <title id="&BASEID;.using-apache-mod_wsgi.interface.title">
+	Интерфейс к модулю
+      </title>
+
+      <para>
+	Создайте внутри вашего проекта каталог, а в каталоге файл
+	<filename>django.wsgi</filename>. Например, в моём случае это
+	будет так:
+	<screen>
+	  <![CDATA[
+$ cd ~/development/cargo
+$ mkdir apache
+$ emacs apache/django.wsgi
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Скопируйте нижеприведённый код в файл
+	<filename>django.wsgi</filename>:
+	<screen>
+	  <![CDATA[
+import os, sys
+sys.path.append('~/development/cargo')
+os.environ['DJANGO_SETTINGS_MODULE'] = 'cargo.settings'
+import django.core.handlers.wsgi
+application = django.core.handlers.wsgi.WSGIHandler()
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Вы создали интерфейс между Django и <token>WSGI</token>. Если
+	после этого, вы начнёте получать сообщения об ошибках,
+	допустим, что недоступен ваш проект или какой-то из его
+	модулей, проверьте <token>sys.path</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.using-apache-mod_wsgi.config">
+      
+      <title id="&BASEID;.using-apache-mod_wsgi.config.title">
+	Конфигурация сервера
+      </title>
+
+      <para>
+	Откройте конфигурационный файл вашего сервер, например,
+	<filename>/etc/apache2/sites-available/cargo.caml.ru</filename>
+	и внесите в него изменения:
+	<screen>
+	  <![CDATA[
+<VirtualHost *:80>
+ServerAdmin rаd@саml.ru
+ServerName  cargo.caml.ru
+ServerAlias www.cargo.caml.ru
+DocumentRoot /var/www-cargo
+LogLevel warn
+WSGIScriptAlias / /home/rad/development/cargo/apache/django.wsgi
+WSGIDaemonProcess rad processes=2 maximum-requests=500 threads=1
+WSGIProcessGroup rad
+Alias /media /var/www-cargo/media/
+</VirtualHost>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Особое внимание надо уделить трём строкам, которые начинаются
+	с <token>WSGI...</token>. Строка с
+	<token>WSGIScriptAlias</token> ссылается на файл, который был
+	создан ранее. Другие две строки необходимы в случае, когда вы
+	размещаете на сервере несколько виртуальных сайтов.
+      </para>
+
+    </section>
+
+  </section>
 
 </chapter>
