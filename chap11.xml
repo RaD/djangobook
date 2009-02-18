@@ -1240,8 +1240,8 @@ class MyFeedWithEnclosures(Feed):
       
       <para>
 	Трансляции создаваемые средой автоматически получают
-	соответствующий тэг <![CDATA[<language>]]> (RSS 2.0) или
-	атрибут <token>xml:lang</token> (Atom). Значение этого тэга
+	соответствующий тег <![CDATA[<language>]]> (RSS 2.0) или
+	атрибут <token>xml:lang</token> (Atom). Значение этого тега
 	зависит от параметра конфигурации
 	<token>LANGUAGE_CODE</token>.
       </para>

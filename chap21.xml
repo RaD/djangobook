@@ -505,7 +505,7 @@ def my_view(request):
 
       <para>
 	Для отключения автоматического экранирования для всего шаблона
-	следует обернуть шаблон или отдельную его часть тэгом
+	следует обернуть шаблон или отдельную его часть тегом
 	<token>autoescape</token>:
 	<screen>
 	  <![CDATA[
@@ -635,12 +635,12 @@ def my_view(request):
     <section id="&BASEID;.less-common-changes.template-tags">
 
       <title id="&BASEID;.less-common-changes.template-tags.title">
-	Шаблонные тэги
+	Шаблонные теги
       </title>
 
       <para>
-	Тэг <token>spaceless</token> удаляет <emphasis>все</emphasis>
-	пробелы внутри HTML тэгов, оставляя там только один.
+	Тег <token>spaceless</token> удаляет <emphasis>все</emphasis>
+	пробелы внутри HTML тегов, оставляя там только один.
       </para>
 
     </section>
