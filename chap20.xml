@@ -924,7 +924,11 @@ $ emacs apache/django.wsgi
 	<screen>
 	  <![CDATA[
 import os, sys
-sys.path.append('~/development/cargo')
+# место, где лежит джанго
+sys.path.append('/home/rad/devel/django-trunk/')
+# место, где лежит проект
+sys.path.append('/home/rad/devel/')
+# файл конфигурации проекта
 os.environ['DJANGO_SETTINGS_MODULE'] = 'cargo.settings'
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
@@ -953,16 +957,25 @@ application = django.core.handlers.wsgi.WSGIHandler()
 	и внесите в него изменения:
 	<screen>
 	  <![CDATA[
-<VirtualHost *:80>
-ServerAdmin rаd@саml.ru
-ServerName  cargo.caml.ru
-ServerAlias www.cargo.caml.ru
-DocumentRoot /var/www-cargo
-LogLevel warn
-WSGIScriptAlias / /home/rad/development/cargo/apache/django.wsgi
-WSGIDaemonProcess rad processes=2 maximum-requests=500 threads=1
-WSGIProcessGroup rad
-Alias /media /var/www-cargo/media/
+<VirtualHost *>
+        DocumentRoot /var/www-cargo/
+        ServerAdmin ruslаn.pоpоv@gmаil.cоm
+        ServerName cargo
+
+        WSGIScriptAlias / /home/rad/devel/cargo/apache/django.wsgi
+        WSGIDaemonProcess www-data processes=2 maximum-requests=5 threads=1
+        WSGIProcessGroup www-data
+
+        ErrorLog "|/usr/sbin/rotatelogs /var/log/apache2/cargo.error.%Y-%m-%d.log 86400"
+        CustomLog "|/usr/sbin/rotatelogs /var/log/apache2/cargo.access.%Y-%m-%d.log 86400" combined
+        ServerSignature On
+
+        Alias /css/     "/home/rad/django/cargo/css/"
+        Alias /js/      "/home/rad/django/cargo/js/"
+        Alias /pics/    "/home/rad/django/cargo/pics/"
+        Alias /djangobook/pics/ "/home/rad/django/cargo/djangobook/pics/"
+        Alias /media/   "/home/rad/django/cargo/media/"
+        Alias /adminmedia/ "/home/rad/devel/django-trunk/django/contrib/admin/media/"
 </VirtualHost>
 	  ]]>
 	</screen>
@@ -974,6 +987,18 @@ Alias /media /var/www-cargo/media/
 	<token>WSGIScriptAlias</token> ссылается на файл, который был
 	создан ранее. Другие две строки необходимы в случае, когда вы
 	размещаете на сервере несколько виртуальных сайтов.
+      </para>
+
+      <para>
+	А самое главное, это не забыть проверить, что в Apache
+	подгружается <token>mod_wsgi</token>:
+	<screen>
+	  <![CDATA[
+# ls -l /etc/apache2/mods-enabled/ | grep wsgi
+lrwxrwxrwx 1 root root 27 2009-02-18 22:41 wsgi.conf -> ../mods-available/wsgi.conf
+lrwxrwxrwx 1 root root 27 2009-02-18 22:41 wsgi.load -> ../mods-available/wsgi.load
+	  ]]>
+	</screen>
       </para>
 
     </section>
