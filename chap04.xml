@@ -1854,7 +1854,7 @@ def current_datetime(request):
     <para>
       Для использования этого API сначала требуется указать среде
       разработки где располагаются шаблоны. Это делать надо в
-      <emphasis>файле <filename>setting.py</filename></emphasis>.
+      <emphasis>файле <filename>settings.py</filename></emphasis>.
     </para>
 
     <para>
@@ -1869,7 +1869,7 @@ def current_datetime(request):
       linkend="djangobook.chap02.startproject"
       endterm="djangobook.chap02.startproject.title"/></quote>, был
       создан файл настроек со значениями по умолчанию, метко названный
-      <filename>setting.py</filename>. Посмотрим на содержимое этого
+      <filename>settings.py</filename>. Посмотрим на содержимое этого
       файла. Он содержит переменные, похожие на эти (не обязательно в
       указанном порядке):
       <screen>
