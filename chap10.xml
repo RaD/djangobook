@@ -1553,7 +1553,7 @@ class CommentNode(template.Node):
 	  После вызова метода <function>parse()</function> парсер ещё
 	  не <quote>использовал</quote> тег <token>{% endcomment
 	  %}</token>, поэтому необходимо явно вызвать метод
-	  <function>delete_fist_token()</function>, чтобы не
+	  <function>delete_first_token()</function>, чтобы не
 	  обрабатывать этот тег дважды.
 	</para>
 

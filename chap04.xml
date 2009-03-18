@@ -2494,7 +2494,7 @@ t = get_template('dateapp/current_datetime.html')
     <para>
       С помощью стратегии использования включений шаблонов, работать с
       заголовками и окончаниями страниц легко. Но подход неряшлив. В
-      данном примере, у обоих страниц есть тег
+      данном примере, у обеих страниц есть тег
       <token>&lt;title&gt;</token> &mdash; &lt;h1&gt;My helpful
       timestamp&lt;/h1&gt; &mdash; но мы не можем поместить его в
       <filename>header.html</filename>, т.к. содержимое тегов
