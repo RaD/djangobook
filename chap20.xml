@@ -963,8 +963,8 @@ application = django.core.handlers.wsgi.WSGIHandler()
         ServerName cargo
 
         WSGIScriptAlias / /home/rad/devel/cargo/apache/django.wsgi
-        WSGIDaemonProcess www-data processes=2 maximum-requests=5 threads=1
-        WSGIProcessGroup www-data
+        WSGIDaemonProcess cargo processes=2 maximum-requests=5 threads=1
+        WSGIProcessGroup cargo
 
         ErrorLog "|/usr/sbin/rotatelogs /var/log/apache2/cargo.error.%Y-%m-%d.log 86400"
         CustomLog "|/usr/sbin/rotatelogs /var/log/apache2/cargo.access.%Y-%m-%d.log 86400" combined
@@ -987,6 +987,15 @@ application = django.core.handlers.wsgi.WSGIHandler()
 	<token>WSGIScriptAlias</token> ссылается на файл, который был
 	создан ранее. Другие две строки необходимы в случае, когда вы
 	размещаете на сервере несколько виртуальных сайтов.
+	<note>
+	  <para>
+	    Следует принять во внимание то, что директива
+	    <token>WSGIDaemonProcess</token> и соответствующие
+	    элементы не доступны под ОС MS Windows, а также при
+	    использовании Apache 1.3. <ulink
+	    url="http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives">Подробности...</ulink>
+	  </para>
+	</note>
       </para>
 
       <para>
