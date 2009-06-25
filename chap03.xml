@@ -12,6 +12,11 @@
   </title>
 
   <para>
+    Данная глава временно взята из первой версии книги и подлежит
+    корректировке. Вы можете помочь с этим!
+  </para>
+
+  <para>
     Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
   </para>
 
@@ -405,8 +410,8 @@ urlpatterns = patterns('',
     <para>
       Для проверки внесённых нами изменений надо запустить сервер
       разработки Django, как это было описано в <quote><xref
-      linkend="djangobook.chap02.devserver"
-      endterm="djangobook.chap02.devserver.title"/></quote>, с помощью
+      linkend="djangobook.chap02.running-devserver"
+      endterm="djangobook.chap02.running-devserver.title"/></quote>, с помощью
       команды <command>python manage.py runserver</command>. (Если вы
       его не останавливали, что ж, это прекрасно. Сервер разработки
       автоматически определит наличие изменений в вашем коде и

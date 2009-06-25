@@ -26,7 +26,6 @@ XML_SOURCES=chap01.xml chap02.xml chap03.xml chap04.xml \
 	chap09.xml chap10.xml chap11.xml chap12.xml \
 	chap13.xml chap14.xml chap15.xml chap16.xml \
 	chap17.xml chap18.xml chap19.xml chap20.xml \
-	chap21.xml \
 	appendix_a.xml appendix_b.xml appendix_c.xml \
 	appendix_d.xml appendix_e.xml appendix_f.xml \
 	appendix_g.xml appendix_h.xml
