@@ -196,8 +196,8 @@ MIDDLEWARE_CLASSES = (
       обратном порядке. Таким образом, Django рассматривает
       <varname>MIDDLEWARE_CLASSES</varname> как вид обработчика для
       функции представления. Обратитесь к разделу <quote><xref
-      linkend="djangobook.chap03.requestprocess"
-      endterm="djangobook.chap03.requestprocess.title"/></quote> для
+      linkend="djangobook.chap03.process-request"
+      endterm="djangobook.chap03.process-request.title"/></quote> для
       получения подробной информации.
     </para>
 
