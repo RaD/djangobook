@@ -1700,7 +1700,7 @@ def hours_ahead(request, offset):
       осуществления своих зловредных планов. По этой причине Django
       отображает страницу с ошибкой только когда находится в режиме
       отладки. Мы объясним позже как деактивировать отладочный режим в
-      <quote><xref linkend="djangobook.chap12"
+      главе <quote><xref linkend="djangobook.chap12"
       endterm="djangobook.chap12.title"/></quote>. Просто запомните,
       что после создания проект находится в режиме отладки.
     </para>
