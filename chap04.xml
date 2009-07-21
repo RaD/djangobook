@@ -8,13 +8,8 @@
 <chapter lang="ru" id="&BASEID;">
 
   <title id="&BASEID;.title">
-    Система шаблонов
+    Шаблоны
   </title>
-
-  <para>
-    Данная глава временно взята из первой версии книги и подлежит
-    корректировке. Вы можете помочь с этим!
-  </para>
 
   <para>
     Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
@@ -23,34 +18,60 @@
   <para>
     В предыдущей главе вы могли заметить что-то особенное в том, как
     мы возвращали текст в наших представлениях. А именно, HTML был
-    вбит в код на Python.
+    напрямую вбит в код на Python, примерно так:
+    <screen>
+      <![CDATA[
+def current_datetime(request):
+    now = datetime.datetime.now()
+    html = "<html><body>It is now %s.</body></html>" % now
+    return HttpResponse(html)
+      ]]>
+    </screen>
   </para>
 
   <para>
-    Такой подход приводит к нескольким проблемам:
+    Несмотря на то, что данный подход был удобен для объяснения
+    принципов работы представления, он не может быть признан годным
+    для использования в реальных проектах. И вот почему:
+
     <itemizedlist>
-      <listitem><para>Любое изменение дизайна страницы требует
-      изменения кода. Обычно, дизайн сайта изменяется гораздо чаще чем
-      код. Будет удобнее отделить дизайн от кода.</para></listitem>
+      <listitem>
+	<para>
+	  Любое изменение в дизайне страницы требует изменения в
+	  коде. Дизайн сайта изменяется гораздо чаще, чем сам код
+	  сайта. Удобнее будет иметь возможность вносить изменения в
+	  дизайн, не затрагивая код.
+	</para>
+      </listitem>
 
-      <listitem><para>Создание кода на языке Python и дизайн HTML
-      страниц являются двумя разными дисциплинами. Профессиональные
-      среды веб разработки разделяют ответственность за них между
-      разными людьми (или даже между разными отделами). Дизайнеры и
-      HTML/CSS разработчики не должны редактировать код на Python для
-      выполнения своей работы, они должны работать с
-      HTML.</para></listitem>
+      <listitem>
+	<para>
+	  Разработка кода на языке Python и работа с HTML являются
+	  двумя различными дисциплинам и наиболее профессиональные
+	  среды web-разработки разделяют такую ответственность между
+	  отдельными людьми (или даже отдельными подразделениями). От
+	  дизайнеров и HTML/CSS кодеров не следует требовать
+	  редактирования Python кода для выполнения их работы.
+	</para>
+      </listitem>
 
-      <listitem><para>Аналогично, будет эффективнее, если разработчики
-      смогут писать код, а дизайнеры смогут работать над шаблонами
-      одновременно, а не ждать друг друга.</para></listitem>
+      <listitem>
+	<para>
+	  Возможность одновременной работы программистов на Python
+	  кодом и дизайнеров над шаблонами является наиболее
+	  эффективным подходом, в отличие от необходимости одним
+	  ожидать окончания работ других, чтобы приступить к
+	  выполнению своих задач.
+	</para>
+      </listitem>
     </itemizedlist>
   </para>
 
   <para>
-    По этим причинам, более очевидно и удобно отделять дизайн страницы
-    от кода. Мы можем делать это с помощью <emphasis>системы
-    шаблонов</emphasis> Django, которую мы рассмотрим в этой главе.
+    По этим причинам гораздо проще и более удобно разделять дизай
+    страницы от кода, обеспечивающего её работу. Мы можем сделать это
+    с помощью <emphasis>шаблонной системы</emphasis> Django, которую
+    мы обсудим в этой главе.
   </para>
 
   <section id="&BASEID;.basics">
@@ -60,241 +81,287 @@
     </title>
     
     <para>
-      Шаблон в Django &mdash; это строка текста, предназначенная для
-      разделения представления документа от его данных. Шаблон
-      определяет точки подстановки и различные части основной логики
-      (т.е. теги шаблона), которые управляют отображением
-      документа. Обычно шаблоны используются для генерации HTML, но
-      шаблоны в Django позволяют создавать любой текстовый вывод.
+      Шаблон Dkango &mdash; это строка текста, которая предназначена
+      для разделения представления документа от его данных. Шаблон
+      определяет места подстановки и различные виды основной логики
+      (шаблонные теги), которая управляет отображением
+      документа. Обычно, шаблоны используются для создания HTML, но
+      шаблоны Django также способны участвовать в генерации любого
+      текстового формата.
     </para>
 
     <para>
-      Давайте рассмотрим простой пример шаблона. Этот шаблон описывает
-      HTML страницу, которая благодарит людей по алфавиту. Считайте
-      это шаблоном письма:
+      Давайте начнём с простого примера. Данный шаблон описывает HTML
+      страницу, которая благодарит посетителя за заказ, отправленный
+      компании. Рассматривайте его как вид письма:
       <screen>
 	<![CDATA[
 <html>
-  <head>
-    <title>Ordering notice</title>
-  </head>
-  <body>
-    <p>Dear {{ person_name }},</p>
+<head><title>Ordering notice</title></head>
 
-    <p>Thanks for placing an order from {{ company }}. 
-    It's scheduled to ship on {{ ship_date|date:"F j, Y" }}.</p>
+<body>
 
-    <p>Here are the items you've ordered:</p>
+<h1>Ordering notice</h1>
 
-    <ul>
-      {% for item in item_list %}
-        <li>{{ item }}</li>
-      {% endfor %}
-    </ul>
+<p>Dear {{ person_name }},</p>
 
-    {% if ordered_warranty %}
-      <p>Your warranty information will be included in the packaging.</p>
-    {% endif %}
+<p>Thanks for placing an order from {{ company }}. It's scheduled to
+ship on {{ ship_date|date:"F j, Y" }}.</p>
 
-    <p>Sincerely,<br />{{ company }}</p>
-  </body>
+<p>Here are the items you've ordered:</p>
+
+<ul>
+{% for item in item_list %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+
+{% if ordered_warranty %}
+    <p>Your warranty information will be included in the packaging.</p>
+{% else %}
+    <p>You didn't order a warranty, so you're on your own when
+    the products inevitably stop working.</p>
+{% endif %}
+
+<p>Sincerely,<br />{{ company }}</p>
+
+</body>
 </html>
 	]]>
       </screen>
     </para>
 
     <para>
-      Данный шаблон является просто HTML страницей с несколькими
-      переменными и тегами шаблонов. Рассмотрим его:
+      Данный шаблон представляет собой обычный HTML с несколькими
+      переменными и шаблонными тегами. Рассмотрим его подробнее:
+
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Любой текст окружённый парой скобок (т.е. <token>{{
-	    person_name }}</token>) является
-	    <emphasis>переменной</emphasis>. Это означает
-	    <quote>вставь значение переменной с указанным
-	    именем</quote>. Как мы определяем значения переменных? Мы
-	    ещё вернёмся к этому.
+	    Любой текст взятый в скобки (т.е., <token>{{ person_name
+	    }}</token>) является <emphasis>переменной</emphasis>. Это
+	    означает <quote>вставить значение переменной с указанным
+	    именем.</quote> (Как же мы определяем значения переменных?
+	    Скоро мы это рассмотрим.)
 	  </para>
 	</listitem>
 
 	<listitem>
 	  <para>
-	    Любой текст окружённый фигурными скобками и знаками
-	    процента (т.е. <token>{% if ordered_warranty %}</token>)
-	    является <emphasis>тегом шаблона</emphasis>. Определение
-	    тега достаточно свободно: тег просто указывает шаблонной
-	    системе <quote>сделать что-нибудь</quote>.
+	    Любой текст взятый в фигурные скобки и проценты (т.е.,
+	    <token>{% if ordered_warranty %}</token>) является
+	    <emphasis>шаблонным тегом</emphasis>. Определение тега
+	    достаточно простое: тег просто указывает шаблонной системе
+	    <quote>сделать что-то.</quote>
 	  </para>
 
 	  <para>
-	    Этот пример шаблона содержит два тега: <token>{% for item
-	    in item_list %}</token> (тег <token>for</token>) и
-	    <token>{% if ordered_warranty %}</token> (тег
-	    <token>if</token>).
+	    Вышеприведёный шаблон содержит тег <token>for</token>
+	    (<token>{% for item in item_list %}</token>) и тег
+	    <token>if</token> (<token>{% if ordered_warranty
+	    %}</token>).
 	  </para>
 
 	  <para>
-	    Тег <token>for</token> работает как обычный цикл, позволяя
-	    вам циклически обрабатывать каждый элемент
+	    Тег <token>for</token> работает почти так же как и
+	    оператор <token>for</token> языка Python, позволяя вам
+	    циклически обрабатывать каждый элемент
 	    последовательности. Тег <token>if</token>, как вы можете
-	    предположить, работает как логический элемент
-	    <quote>если</quote>. В данном случае, тег проверяет
-	    вычисляется ли выражение переменной
-	    <varname>ordered_warranty</varname> в
-	    <token>True</token>. Если да, то шаблонная система
-	    отобразит всё между <token>{% if ordered_warranty
-	    %}</token> и <token>{% endif %}</token>. В противном
-	    случае шаблонная система ничего не отобразит. Шаблонная
-	    система также поддерживает <token>{% else %}</token> и
-	    другие логические операторы.
+	    ожидать, работает аналогично логическому оператору
+	    <token>if</token>. В данном примере, тег проверяет
+	    является ли <token>True</token> значением
+	    <varname>ordered_warranty</varname>. Если это так,
+	    шаблонная система отобразит всё, что находится между
+	    <token>{% if ordered_warranty %}</token> и <token>{% else
+	    %}</token>. В противном случае, шаблонная система
+	    отобразит всё между <token>{% else %}</token> и <token>{%
+	    endif %}</token>. Следует отметить, что элемент <token>{%
+	    else %}</token> является необязательным.
 	  </para>
 	</listitem>
 
 	<listitem>
 	  <para>
-	    Наконец, второй параграф этого шаблона содержит пример
-	    <emphasis>фильтра</emphasis>, с помощью которого вы можете
-	    влиять на отображение переменной. В примере, <token>{{
-	    ship_date|date:"F j, Y" }}</token>, мы передаём переменную
-	    <varname>ship_date</varname> в фильтр <token>date</token>,
-	    передавая последнему аргумент <quote>F j,
-	    Y</quote>. Фильтр <token>date</token> форматирует даты в
-	    указанный формат, определённый в аргументе. Фильтры
-	    присоединяются с помощью символа канала
-	    (<token>|</token>), аналогично каналам в Unix.
+	    Наконец, второй параграф данного шаблона содержит пример
+	    использования <emphasis>фильтра</emphasis>, который
+	    предоставляет наиболее удобный способ изменения формата
+	    переменной. В данном примере, <token>{{ ship_date|date:"F
+	    j, Y" }}</token>, мы передаём значение переменной
+	    <varname>ship_date</varname> фильтру <token>date</token>,
+	    указывая для него аргументы <token>"F j,
+	    Y"</token>. Фильтр <token>date</token> форматирует дату в
+	    соответствии с указанным форматом. Фильтры подключаются к
+	    переменным с помощью символа <token>|</token>, аналогично
+	    Unix потокам.
 	  </para>
 	</listitem>
       </itemizedlist>
     </para>
 
     <para>
-      Каждый шаблон Django имеет доступ к стандартным тегам и
-      фильтрам, многие из которых описаны в этой главе
-      далее. Приложение <quote><xref linkend="djangobook.appendix_f"
-      endterm="djangobook.appendix_f.title"/></quote> содержит полный
-      список тегов и фильтров, и неплохо бы вам ознакомиться с
-      ними. Также существует возможность создания собственных фильтров
-      и тегов, это мы рассмотрим в главе <quote><xref
-      linkend="djangobook.chap10"
-      endterm="djangobook.chap10.title"/></quote>.
+      Каждый шаблон Django имеет доступ к некоторому количеству
+      встроенных тегов и фильтров, многие из которых будут рассмотрены
+      в последующих разделах главы. Приложение F FIXME содержит полный
+      список тегов и фильтров, будет неплохо, если вы ознакомитесь с
+      этим списком. Также есть возможность создавать свои собственный
+      фильтры и теги, мы рассмотрим это в главе 9 FIXME.
     </para>
 
   </section>
 
-  <section id="&BASEID;.using">
+  <section id="&BASEID;.usage">
 
-    <title id="&BASEID;.using.title">
-      Использование системы шаблонов
+    <title id="&BASEID;.usage.title">
+      Использование шаблонной системы
     </title>
     
     <para>
-      Для использования системы шаблонов с кодом на языке Python
-      достаточно следовать двум правилам:
+      Давайте рассмотрим шаблонную систему Django подробнее, вы
+      сможете увидеть как она работает, но <emphasis>пока</emphasis>
+      мы не будем интегрировать её с представлениями, которые мы
+      создали в прошлой главе. Наша цель в данный момент &mdash;
+      показать вам как шаблонная система работает независимо от
+      остальной части Django. (Предположим другой способ: обычно вы
+      будете использовать шаблонную систему совместно с
+      представлениями, но мы желаем показать то, что шаблонная система
+      является обычной библиотекой Python, которую вы можете
+      использовать <emphasis>где угодно</emphasis>, не только с
+      представлениями Django.)
+    </para>
+
+    <para>
+      Ниже указан самый основной способ использования шаблонной
+      системы Django в коде Python:
+
       <orderedlist>
 	<listitem>
 	  <para>
-	    Создайте объект <classname>Template</classname>,
-	    предоставив HTML код в виде строки. Django также
-	    предоставляет способ для создания таких объектов, надо
-	    указать путь к файлу с шаблоном на файловой системе. Мы
-	    рассмотрим это позже.
+	    Создать объект <classname>Template</classname>, передав
+	    ему шаблон в виде строки.
 	  </para>
 	</listitem>
 
 	<listitem>
 	  <para>
-	    Вызовите метод <function>render()</function> объекта
-	    <classname>Template</classname> с определённым набором
-	    переменных (имеется в виду контекст). Метод вернёт
-	    сгенерированный шаблон в виде строки, где будут вычислены
-	    все переменные и теги в соответствии с контекстом.
+	    Вызвать метод <function>render()</function> объекта
+	    <classname>Template</classname> с набором переменных
+	    (<emphasis>контекст</emphasis>). Метод возвратит полностью
+	    обработанный шаблон в виде строки, все переменные и
+	    шаблонные теги будут вычислены в соответствии с
+	    контекстом.
 	  </para>
 	</listitem>
       </orderedlist>
     </para>
 
     <para>
-      Следующие разделы главы описывают всё это более подробно.
+      Пример использования:
+      <screen>
+	<![CDATA[
+>>> from django import template
+>>> t = template.Template('My name is {{ name }}.')
+>>> c = template.Context({'name': 'Adrian'})
+>>> print t.render(c)
+My name is Adrian.
+>>> c = template.Context({'name': 'Fred'})
+>>> print t.render(c)
+My name is Fred.
+	]]>
+      </screen>
     </para>
 
-    <section id="&BASEID;.using.create">
+    <para>
+      Следующие разделы описывают каждый шаг более детально.
+    </para>
 
-      <title id="&BASEID;.using.create.title">
-	Создание объектов Template
+    <section id="&BASEID;.usage.create">
+      
+      <title id="&BASEID;.usage.create.title">
+	Создание шаблонных объектов
       </title>
-    
+
       <para>
-	Самым простым способом создания объекта
-	<classname>Template</classname> является его прямая
-	инициализация. Класс <classname>Template</classname> определён
-	в модуле <token>django.template</token>, его конструктор
-	принимает один аргумент, код шаблона. Посмотрим, как
-	интерпретатор языка Python работает с этим.
+	Простейшим способом создания объекта
+	<classname>Template</classname> является его прямое
+	порождение. Класс <classname>Template</classname> расположен в
+	модуле <token>django.template</token>, конструктор принимает
+	единственный аргумент &mdash; строку с кодом шаблона. Давайте
+	рассмотрим как это всё работает с помощью интерактивного
+	интерпретатора языка Python.
+      </para>
+
+      <para>
+	В каталоге проекта <token>mysite</token>, созданном с помощью
+	команды <command>django-admin.py startproject</command> (это
+	было описано в главе <quote><xref linkend="djangobook.chap02"
+	endterm="djangobook.chap02.title"/></quote>), выполните
+	команды <command>python manage.py shell</command> для запуска
+	интерактивного интерпретатора.
       </para>
 
       <para>
 	<note>
 	  <title>
-	    Примеры интерактивной интерпретации
+	    A special Python prompt FIXME
 	  </title>
 
 	  <para>
-	    По всей книге мы приводим примеры сессий работы с
-	    интерактивным интерпретатором Python. Вы можете узнать
-	    такие примеры по наличию приглашения интерпретатора
-	    (<token>&gt;&gt;&gt;</token>). Если вы копируете эти
-	    примеры из книги, не копируйте символы приглашения.
+	    Если вы использовали Python ранее, вас может
+	    заинтересовать, почему мы используем <command>python
+	    manage.py shell</command>, а не просто
+	    <command>python</command>. Обе команды запускают
+	    интерпретатор, но наш вариант имеет одну ключевую
+	    особенность: перед запуском интерпретатора, он указывает
+	    Django какой файл конфигурации следует
+	    использовать. Многие компоненты Django, включая шаблонную
+	    систему, зависят от ваших настроек и вы не сможете их
+	    использовать до тех пор, пока среда разработки не будет
+	    знать где их брать.
 	  </para>
 
 	  <para>
-	    Многострочные операторы в сессии выравнены с помощью
-	    троеточия (<token>...</token>), например:
-	    <screen>
-	      <![CDATA[
->>> Print """This is a
-... string that spans
-... three lines."""
-This is a
-string that spans
-three lines.
->>> def my_function(value):
-...     print value
->>> my_function('hello')
-hello
-	      ]]>
-	    </screen>
+	    Если вам это интересно, расскажем как всё это работает
+	    внутри. Django ищет переменную среды с именем
+	    <varname>DJANGO_SETTINGS_MODULE</varname>, которая должна
+	    содержать путь до вашего файла
+	    <filename>settings.py</filename>. Например,
+	    <varname>DJANGO_SETTINGS_MODULE</varname> может быть
+	    установлено в <token>mysite.settings</token>,
+	    подразумевая, что каталог <filename>mysite</filename>
+	    находится в пути Python.
 	  </para>
 
 	  <para>
-	    Это троеточия в начале дополнительных строк вставляются
-	    средой Python &mdash; они не предназначены нами для
-	    выравнивания нашего ввода. Мы привели их для полного
-	    соответствия текста выводу интерпретатора. При копировании
-	    кода игнорируйте троеточия.
+	    При запуске <command>python manage.py shell</command>
+	    настройка <varname>DJANGO_SETTINGS_MODULE</varname>
+	    производится автоматически. Мы рекомендуем использовать
+	    данный метод для работы с приведёнными ниже примерами.
+	  </para>
+
+	  <para>
+	    После того, как вы лучше изучите Django, вероятно вы
+	    перестанете использовать данный способ и будете
+	    устанавливать <varname>DJANGO_SETTINGS_MODULE</varname>
+	    вручную в вашем <filename>.bash_profile</filename> или в
+	    другом конфигурационном файле вашей среды.
 	  </para>
 	</note>
       </para>
 
       <para>
-	В каталоге, который был создан в главе <quote><xref
-	linkend="djangobook.chap02.startproject"
-	endterm="djangobook.chap02.startproject.title"/></quote> с
-	помощью команды <command>django-admin.py
-	startproject</command>, выполните команды <command>python
-	manage.py shell</command> для запуска интерактивного
-	интерпретатора. Вот простой пример:
+	Рассмотрим основы шаблонной системы:
 	<screen>
 	  <![CDATA[
 >>> from django.template import Template
->>> t = Template("My name is {{ name }}.")
+>>> t = Template('My name is {{ name }}.')
 >>> print t
 	  ]]>
 	</screen>
       </para>
 
       <para>
-	Интерпретатор выдаст нечто такое:
+	Если вы попробовали запустить данный код в интерпретаторе, то
+	вы увидели нечто подобное:
 	<screen>
 	  <![CDATA[
 <django.template.Template object at 0xb7d5f24c>
@@ -303,2452 +370,81 @@ hello
       </para>
 
       <para>
-	Идентификатор <token>0xb7d5f24c</token> будет всё время
-	разным, он ничего особенного не означает, это идентификатор
-	Python для обозначения созданного объекта
+	Шестнадцатеричный адрес объекта &mdash;
+	<token>0xb7d5f24c</token> будет всякий раз разным, не
+	обращайте на это внимание. Это внутренняя информация Python,
+	так называемый <quote>идентификатор</quote> созданного объекта
 	<classname>Template</classname>.
       </para>
 
       <para>
-	<note>
-	  <title>
-	    Настройки Django
-	  </title>
-
-	  <para>
-	    При работе с Django необходимо указать, какие настройки он
-	    должен использовать. Интерактивно это производится с
-	    помощью команды <command>python manage.py shell</command>,
-	    но ещё несколько опций описано в приложении <quote><xref
-	    linkend="djangobook.appendix_e"
-	    endterm="djangobook.appendix_e.title"/></quote>.
-	  </para>
-	</note>
-      </para>
-
-      <para>
 	При создании объекта <classname>Template</classname> шаблонная
-	система компилирует код шаблона во внутреннюю оптимизированную
-	форму, готовую к отображению. Но если код вашего шаблона
-	содержит синтаксические ошибки, вызов функции
-	<function>Template()</function> выдаст исключение
-	<token>TemplateSyntaxError</token>:
+	система компилирует строку с кодом шаблона во внутренний
+	оптимизированный формат, готовый для обработки. Но если ваш
+	шаблонный код содержит синтаксические ошибки, вызов
+	<function>Template()</function> приведёт к исключению
+	<classname>TemplateSyntaxError</classname>:
 	<screen>
 	  <![CDATA[
 >>> from django.template import Template
->>> t = Template('{% notatag %} ')
+>>> t = Template('{% notatag %}')
 Traceback (most recent call last):
   File "<stdin>", line 1, in ?
   ...
-  django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
+django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
 	  ]]>
 	</screen>
       </para>
 
-      <para>
-	Система генерирует исключение
-	<token>TemplateSyntaxError</token> для любых нижеприведённых
-	случаев:
-	<itemizedlist>
-	  <listitem><para>Неправильные блочные теги.</para></listitem>
-
-	  <listitem><para>Неправильные аргументы у блочных
-	  тегов.</para></listitem>
-
-	  <listitem><para>Неправильные фильтры.</para></listitem>
-
-	  <listitem><para>Неправильные аргументы у правильных
-	  фильтров.</para></listitem>
-
-	  <listitem><para>Неправильный синтаксис
-	  шаблона.</para></listitem>
-
-	  <listitem><para>Незакрытый блочный тег (для тех типов тега,
-	  которые это требуют).</para></listitem>
-	</itemizedlist>
-      </para>
-
     </section>
 
-    <section id="&BASEID;.using.render">
-
-      <title id="&BASEID;.using.render.title">
-	Генерация шаблона
-      </title>
-    
-      <para>
-	После того как вы получили объект
-	<classname>Template</classname>, вы можете передавать ему
-	данные, предоставляя <emphasis>контекст</emphasis>. Контекстом
-	называется набор переменных и ассоциированные с ними
-	значения. Шаблоны используют контекст для заполнения значений
-	своих переменных и вычисления блочных тегов.
-      </para>
-
-      <para>
-	Контекст представлен в Django в виде класса
-	<classname>Context</classname>, который определён в модуле
-	<token>django.template</token>. Конструктор класса принимает
-	один необязательный аргумент: словарь соответствия имён
-	переменных значениям переменных. Вызов метода
-	<function>render()</function> объекта
-	<classname>Template</classname> с контекстом
-	<quote>заполняет</quote> шаблон:
-	<screen>
-&gt;&gt;&gt; from django.template import Context, Template
-&gt;&gt;&gt; t = Template("My name is {{ name }}.")
-&gt;&gt;&gt; c = Context({"name": "Stephane"})
-&gt;&gt;&gt; t.render(c)
-'My name is Stephane.'
-	</screen>
-      </para>
-
-      <para>
-	<note>
-	  <title>
-	    Словари и контексты
-	  </title>
-
-	  <para>
-	    Словарь Python &mdash; это соответствие между известными
-	    ключами и значениями
-	    переменных. <classname>Context</classname> подобен
-	    словарю, но предоставляет дополнительную функциональность,
-	    описанную в главе <quote><xref linkend="djangobook.chap10"
-	    endterm="djangobook.chap10.title"/></quote>.
-	  </para>
-	</note>
-      </para>
-
-      <para>
-	Имя переменной должно начинаться с буквы (A-Z или a-z) и может
-	содержать цифры, символы подчёркивания и точки. (Точки имеют
-	особое значение, об этом расскажем позже.) Имена переменных
-	чувствительны к регистру.
-      </para>
-
-      <para>
-	Ниже представлен пример обработки шаблона, представленного в
-	начале главы, и генерации результата:
-	<screen>
-	  <![CDATA[
->>> from django.template import Template, Context
->>> raw_template = """<p>Dear {{ person_name }},</p>
-...
-... <p>Thanks for ordering {{ product }} from {{ company }}. It's scheduled
-... to ship on {{ ship_date|date:"F j, Y" }}.</p>
-...
-... {% if ordered_warranty %}
-... <p>Your warranty information will be included in the packaging.</p>
-... {% endif %}
-...
-... <p>Sincerely,<br />{{ company }}</p>"""
->>> t = Template(raw_template)
->>> import datetime
->>> c = Context({'person_name': 'John Smith',
-...     'product': 'Super Lawn Mower',
-...     'company': 'Outdoor Equipment',
-...     'ship_date': datetime.date(2009, 4, 2),
-...     'ordered_warranty': True})
->>> t.render(c)
-"<p>Dear John Smith,</p>\n\n<p>Thanks for ordering Super Lawn Mower from
-Outdoor Equipment. It's scheduled \nto ship on April 2, 2009.</p>\n\n\n
-<p>Your warranty information will be included in the packaging.</p>\n\n\n
-<p>Sincerely,<br />Outdoor Equipment</p>"
-	  ]]>
-	</screen>
-      </para>
-
-      <para>
-	Пройдёмся по коду, разбираясь с каждой строчкой отдельно:
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Первым делом мы производим импорт классов
-	      <classname>Template</classname> и
-	      <classname>Context</classname>, которые определены в
-	      модуле <token>django.template</token>.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Мы сохраняем содержимое нашего шаблона в переменной
-	      <varname>raw_template</varname>. Следует отметить, что
-	      мы используем тройные кавычки для определения строки,
-	      так как она распределена на несколько строк кода. По
-	      правилам языка Python, строки, заключённые в одинарные
-	      кавычки, не могут располагаться на нескольких строках
-	      кода.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Затем мы создаём объект для шаблона, <token>t</token>,
-	      передавая переменную <varname>raw_template</varname>
-	      конструктору класса <classname>Template</classname>.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Мы импортируем модуль <token>datetime</token> из
-	      стандартной библиотеки Python, он понадобится нам в
-	      следующем операторе.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Затем мы создаём объект для контекста,
-	      <token>c</token>. Конструктор класса
-	      <classname>Context</classname> получает словарь с
-	      переменными и их значениями. Здесь, для примера, мы
-	      указали, что <varname>person_name</varname> имеет
-	      значение <token>John Smith</token>,
-	      <varname>product</varname> &mdash; <token>Super Lawn
-	      Mower</token> и так далее.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Наконец, мы вызываем метод <function>render()</function>
-	      для нашего объекта с шаблоном, передавая ему
-	      контекст. Он возвращает обработанный шаблон, т.е. в
-	      шаблоне заменяются все переменные на их значения и
-	      выполняются все блочные теги.
-	    </para>
-
-	    <para>
-	      Следует отметить, что параграф с информацией о гарантии
-	      был отображён так как переменная
-	      <varname>ordered_warranty</varname> вычислилась как
-	      <token>True</token>. Также обратите внимание на дату,
-	      <token>April 2, 2009</token>, которая была отображена в
-	      соответствии шаблону <token>F j, Y</token>. (Мы кратко
-	      расскажем о возможностях фильтра <token>date</token>.)
-	    </para>
-
-	    <para>
-	      Если вы новичок в Python, вас может удивить то, что
-	      вывод включает знаки <token>\n</token>, вместо перевода
-	      строк на экране. Так происходит из-за особенностей
-	      работы интерактивного интерпретатора: вызов метода
-	      <function>t.render(c)</function> возвращает строку и, по
-	      умолчанию, интерпретатор отображает
-	      <emphasis>представление</emphasis> строки, вместо её
-	      вывода. Чтобы получить вывод надо использовать команду:
-	      <command>print t.render(c)</command>.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-      </para>
-
-      <para>
-	Мы описали основы использования шаблонной системы Django:
-	просто создайте шаблон, создайте объект
-	<classname>Template</classname>, создайте объект
-	<classname>Context</classname> и вызовите метод
-	<function>render()</function>.
-      </para>
-
-    </section>
-
-    <section id="&BASEID;.using.contexts">
-
-      <title id="&BASEID;.using.contexts.title">
-	Множество контекстов и один шаблон
-      </title>
-    
-      <para>
-	Как только вы создали объект <classname>Template</classname>,
-	вы можете обрабатывать шаблон, используя множество контекстов,
-	например:
-	<screen>
-&gt;&gt;&gt; from django.template import Template, Context
-&gt;&gt;&gt; t = Template('Hello, {{ name }}')
-&gt;&gt;&gt; print t.render(Context({'name': 'John'}))
-Hello, John
-&gt;&gt;&gt; print t.render(Context({'name': 'Julie'}))
-Hello, Julie
-&gt;&gt;&gt; print t.render(Context({'name': 'Pat'}))
-Hello, Pat
-	</screen>
-      </para>
-
-      <para>
-	Если надо обработать один шаблон, используя несколько
-	контекстов, как показано выше, рекомендуем создать объект
-	<classname>Template</classname> <emphasis>один раз</emphasis>,
-	а затем вызывать <function>render()</function> необходимое
-	количество раз:
-	<screen>
-# Неправильно
-for name in ('John', 'Julie', 'Pat'):
-    t = Template('Hello, {{ name }}')
-    print t.render(Context({'name': name}))
-
-# Правильно
-t = Template('Hello, {{ name }}')
-for name in ('John', 'Julie', 'Pat'):
-    print t.render(Context({'name': name}))
-	</screen>
-      </para>
+    <section id="&BASEID;.usage.render">
       
-      <para>
-	Обработка шаблонов в Django достаточно быстра. Большая часть
-	обработки происходит при единственном вызове регулярного
-	выражения. Это так непохоже на работу шаблонных движков
-	основанных на XML, которые тратят ресурсы на XML парсер и
-	работают значительно медленнее описанной системы.
-      </para>
-
-    </section>
-
-    <section id="&BASEID;.using.varlookup">
-
-      <title id="&BASEID;.using.varlookup.title">
-	Подстановка переменной контекста
+      <title id="&BASEID;.usage.render.title">
+	Обработка шаблона
       </title>
     
-      <para>
-	В приведённых ранее примерах мы передавали простые значения в
-	контекст &mdash; в основном строки и даты. Тем не менее,
-	шаблонная система может обрабатывать более сложные структуры
-	данных, такие как списки, словари и отдельные объекты.
-      </para>
+    </section>
 
-      <para>
-	Для работы со сложными структурами данных в шаблонах Django
-	используется символ точки (<token>.</token>). Используйте
-	точку для доступа к ключам словаря, атрибутам, индексам или
-	методам объекта.
-      </para>
+    <section id="&BASEID;.usage.many-contexts">
+      
+      <title id="&BASEID;.usage.many-contexts.title">
+	Множество контекстов и единственный шаблон
+      </title>
+    
+    </section>
 
-      <para>
-	Лучше это показать на примере. Предположим, что вы передали
-	словарь в шаблон. Для доступа к значениям этого словаря по
-	ключам следует использовать точку:
-	<screen>
-&gt;&gt;&gt; from django.template import Template, Context
-&gt;&gt;&gt; person = {'name': 'Sally', 'age': '43'}
-&gt;&gt;&gt; t = Template('{{ person.name }} is {{ person.age }} years old.')
-&gt;&gt;&gt; c = Context({'person': person})
-&gt;&gt;&gt; t.render(c)
-'Sally is 43 years old.'
-	</screen>
-      </para>
-
-      <para>
-	Аналогично, точка даёт доступ к атрибутам объекта. Например,
-	объект <classname>datetime.date</classname> имеет атрибуты
-	<token>year</token>, <token>month</token> и
-	<token>day</token>. Доступ к ним можно получить через точку:
-	<screen>
-&gt;&gt;&gt; from django.template import Template, Context
-&gt;&gt;&gt; import datetime
-&gt;&gt;&gt; d = datetime.date(1993, 5, 2)
-&gt;&gt;&gt; d.year
-1993
-&gt;&gt;&gt; d.month
-5
-&gt;&gt;&gt; d.day
-2
-&gt;&gt;&gt; t = Template('The month is {{ date.month }} and the year is {{ date.year }}.')
-&gt;&gt;&gt; c = Context({'date': d})
-&gt;&gt;&gt; t.render(c)
-'The month is 5 and the year is 1993.'
-	</screen>
-      </para>
-
-      <para>
-	Пример использует новый класс:
-	<screen>
-&gt;&gt;&gt; from django.template import Template, Context
-&gt;&gt;&gt; class Person(object):
-...     def __init__(self, first_name, last_name):
-...         self.first_name, self.last_name = first_name, last_name
-&gt;&gt;&gt; t = Template('Hello, {{ person.first_name }} {{ person.last_name }}.')
-&gt;&gt;&gt; c = Context({'person': Person('John', 'Smith')})
-&gt;&gt;&gt; t.render(c)
-'Hello, John Smith.'
-	</screen>
-      </para>
-
-      <para>
-	Точка также используется при вызове методов объекта. Например,
-	каждая строка в Python имеет методы
-	<function>upper()</function> и
-	<function>isdigit()</function>. Вы можете вызвать эти методы
-	из шаблона с помощью такого же синтаксиса с точкой:
-	<screen>
-	  <![CDATA[
->>> from django.template import Template, Context
->>> t = Template('{{ var }} -- {{ var.upper }} -- {{ var.isdigit }}')
->>> t.render(Context({'var': 'hello'}))
-'hello -- HELLO -- False'
->>> t.render(Context({'var': '123'}))
-'123 -- 123 -- True'
-	  ]]>
-	</screen>
-      </para>
-
-      <para>
-	Следует отметить, что не надо включать скобочки в вызов
-	метода. Невозможно передать аргументы этим методам, вы можете
-	только вызвать их. (Причину такого поведения мы объясним позже
-	в этой главе.)
-      </para>
-
-      <para>
-	Наконец, точка используется для доступа к значениям списка по
-	индексу:
-	<screen>
-	  <![CDATA[
->>> from django.template import Template, Context
->>> t = Template('Item 2 is {{ items.2 }}.')
->>> c = Context({'items': ['apples', 'bananas', 'carrots']})
->>> t.render(c)
-'Item 2 is carrots.'
-	  ]]>
-	</screen>
-      </para>
-
-      <para>
-	Отрицательное значение индекса для списка не
-	поддерживается. Например, переменная шаблона <token>{{
-	items.-1 }}</token> вызовет
-	<token>TemplateSyntaxError</token>.
-      </para>
-
-      <para>
-	<note>
-	  <title>
-	    Списки в Python
-	  </title>
-
-	  <para>
-	    Списки используют индексы, которые отсчитываются от
-	    нуля. Таким образом, первый элемент будет иметь индекс
-	    <token>0</token>, второй &mdash; <token>1</token> и так
-	    далее.
-	  </para>
-	</note>
-      </para>
-
-      <para>
-	Использование точки можно точно описать так: как только
-	шаблонная система распознаёт точку в имени переменной, она
-	производит следующие действия в указанном порядке:
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Поиск в словаре, т.е. <command>foo["bar"]</command>;
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Поиска атрибута, т.е. <command>foo.bar</command>;
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Вызов метода, т.е. <command>foo.bar()</command>;
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Поиск в списке по индексу, т.е. <command>foo[bar]</command>.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-      </para>
-
-      <para>
-	Система использует первое сработавшее совпадение. Вот такая
-	логика.
-      </para>
-
-      <para>
-	Определение значения точки может быть вложенным. Например,
-	следующий пример использует <token>{{ person.name.upper
-	}}</token>, что преобразовывается в поиск по словарю
-	(<token>person.['name']</token>) и затем вызов метода
-	(<function>upper()</function>):
-	<screen>
-&gt;&gt;&gt; from django.template import Template, Context
-&gt;&gt;&gt; person = {'name': 'Sally', 'age': '43'}
-&gt;&gt;&gt; t = Template('{{ person.name.upper }} is {{ person.age }} years old.')
-&gt;&gt;&gt; c = Context({'person': person})
-&gt;&gt;&gt; t.render(c)
-'SALLY is 43 years old.'
-	</screen>
-      </para>
-
-      <section id="&BASEID;.using.contexts.callbeh">
+    <section id="&BASEID;.usage.lookup">
+      
+      <title id="&BASEID;.usage.lookup.title">
+	Поиск контекстной переменной
+      </title>
+    
+      <section id="&BASEID;.usage.lookup.method-call">
+      
+	<title id="&BASEID;.usage.lookup.method-call.title">
+	  Вызов методов
+	</title>
 	
-	<title id="&BASEID;.using.contexts.callbeh.title">
-	  Поведение при вызове методов
-	</title>
-    
-	<para>
-	  Методика вызова методов более сложна по сравнению с другими
-	  шагами в определении назначения точки. Вот, что надо
-	  помнить:
-	  <itemizedlist>
-	    <listitem>
-	      <para>
-		Если во время подстановки метода, метод вызывает
-		исключение, то оно будет учтено в случае, если атрибут
-		<varname>silent_variable_failure</varname> установлен
-		в значение <token>True</token>. Если исключение
-		<emphasis>имеет</emphasis> атрибут
-		<varname>silent_variable_failure</varname>, переменная
-		превратится в пустую строку, как показано ниже:
-		<screen>
-&gt;&gt;&gt; t = Template("My name is {{ person.first_name }}.")
-&gt;&gt;&gt; class PersonClass3:
-...     def first_name(self):
-...         raise AssertionError, "foo"
-&gt;&gt;&gt; p = PersonClass3()
-&gt;&gt;&gt; t.render(Context({"person": p}))
-Traceback (most recent call last):
-...
-AssertionError: foo
-
-&gt;&gt;&gt; class SilentAssertionError(AssertionError):
-...     silent_variable_failure = True
-&gt;&gt;&gt; class PersonClass4:
-...     def first_name(self):
-...         raise SilentAssertionError
-&gt;&gt;&gt; p = PersonClass4()
-&gt;&gt;&gt; t.render(Context({"person": p}))
-"My name is ."
-		</screen>
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Вызов метода работает только в случае отсутствия
-		аргументов передаваемых методу. В противном случае,
-		система перейдёт к рассмотрению подстановки по индексу
-		списка.
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Очевидно, что некоторые методы могут иметь побочные
-		эффекты, что может привести к проблемам безопасности,
-		если позволить шаблонной системе иметь к ним доступ.
-	      </para>
-
-	      <para>
-		Скажем, у вас есть объект
-		<classname>BankAccount</classname>, у которого есть
-		метод <function>delete()</function>. Нельзя разрешать
-		шаблону вызов подобного метода, <command>{{
-		account.delete }}</command>.
-	      </para>
-
-	      <para>
-		Для предотвращения вызова метода, следует установить у
-		метода атрибут <varname>alters_data</varname>:
-		<screen>
-def delete(self):
-    # Delete the account
-delete.alters_data = True
-		</screen>
-	      </para>
-
-	      <para>
-		Шаблонная система никогда не запустит любой метод,
-		помеченный таким способом. Другими словами, если
-		шаблон будет включать в себя <command>{{
-		account.delete }}</command>, этот тег не будет
-		выполнен. Он <quote>обломится</quote> тихо.
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-	</para>
-
       </section>
 
-      <section id="&BASEID;.using.contexts.invvars">
+      <section id="&BASEID;.usage.lookup.invalid-vars">
+      
+	<title id="&BASEID;.usage.lookup.invalid-vars.title">
+	  Обработка неправильных переменных
+	</title>
 	
-	<title id="&BASEID;.using.contexts.invvars.title">
-	  Как обрабатываются неправильные переменные
-	</title>
-    
-	<para>
-	  По умолчанию, если переменная не существует, шаблонная
-	  система представляет её в виде пустой строки, не выводя
-	  сообщения об ошибке:
-	  <screen>
-&gt;&gt;&gt; from django.template import Template, Context
-&gt;&gt;&gt; t = Template('Your name is {{ name }}.')
-&gt;&gt;&gt; t.render(Context())
-'Your name is .'
-&gt;&gt;&gt; t.render(Context({'var': 'hello'}))
-'Your name is .'
-&gt;&gt;&gt; t.render(Context({'NAME': 'hello'}))
-'Your name is .'
-&gt;&gt;&gt; t.render(Context({'Name': 'hello'}))
-'Your name is .'
-	  </screen>
-	</para>
-
-	<para>
-	  Система не выводит ошибку, не выдаёт исключение, так как она
-	  должна быть отказоустойчивой к ошибкам разработчиков. В
-	  данном случае, все подстановки не удались, так как имена
-	  переменных имели неправильный регистр или ошибку. В реальном
-	  приложении нельзя допускать отказ в работе из-за небольшой
-	  синтаксической ошибки в шаблоне.
-	</para>
-
-      </section>
-      
-    </section>
-
-  </section>
-
-  <section id="&BASEID;.basictagsandfilters">
-    
-    <title id="&BASEID;.basictagsandfilters.title">
-      Основные теги и фильтры шаблона
-    </title>
-    
-    <para>
-      Как мы уже упоминали, шаблонная система поставляется со
-      встроенными тегами и фильтрами. Этот раздел описывает наиболее
-      используемые из них.
-    </para>
-
-    <section id="&BASEID;.basictagsandfilters.tags">
-    
-      <title id="&BASEID;.basictagsandfilters.tags.title">
-	Теги
-      </title>
-      
-      <section id="&BASEID;.basictagsandfilters.tags.ifelse">
-    
-	<title id="&BASEID;.basictagsandfilters.tags.ifelse.title">
-	  if/else
-	</title>
-      
-	<para>
-	  Тег <token>{% if %}</token> вычисляет переменную и если она
-	  имеет значение <token>True</token> (т.е. существует, не
-	  пуста и не имеет значение <token>False</token>), шаблонная
-	  система отображает всё между тегами <token>{% if %}</token>
-	  и <token>{% endif %}</token>. Например:
-	  <screen>
-	    <![CDATA[
-{% if today_is_weekend %}
-    <p>Welcome to the weekend!</p>
-{% endif %}
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  Тег <token>{% else %}</token> является опциональным:
-	  <screen>
-	    <![CDATA[
-{% if today_is_weekend %}
-    <p>Welcome to the weekend!</p>
-{% else %}
-    <p>Get back to work.</p>
-{% endif %}
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  <note>
-	    <title>
-	      <quote>Истинность</quote> в Python
-	    </title>
-
-	    <para>
-	      В языке Python в булевом контексте имеют значение
-	      <token>False</token> следующие элементы языка: пустой
-	      список (<token>[]</token>), пустой кортеж
-	      (<token>()</token>), пустой словарь (<token>{}</token>),
-	      пустая строка (<token>''</token>), ноль
-	      (<token>0</token>) и специальный объект
-	      <classname>None</classname>. Всё остальное имеет
-	      значение <token>True</token>.
-	    </para>
-	  </note>
-	</para>
-
-	<para>
-	  Тег <token>{% if %}</token> работает с логическими
-	  операторами <token>and</token>, <token>or</token> и
-	  <token>not</token> при проверке нескольких
-	  переменных. Например:
-	  <screen>
-{% if athlete_list and coach_list %}
-    Both athletes and coaches are available.
-{% endif %}
-
-{% if not athlete_list %}
-    There are no athletes.
-{% endif %}
-
-{% if athlete_list or coach_list %}
-    There are some athletes or some coaches.
-{% endif %}
-
-{% if not athlete_list or coach_list %}
-    There are no athletes or there are some coaches. (OK, so
-    writing English translations of Boolean logic sounds
-    stupid; it's not our fault.)
-{% endif %}
-
-{% if athlete_list and not coach_list %}
-    There are some athletes and absolutely no coaches.
-{% endif %}
-	  </screen>
-	</para>
-
-	<para>
-	  Тег <token>{% if %}</token> не позволяет смешивать операторы
-	  <token>and</token> и <token>or</token> в одном теге, из-за
-	  двусмысленности конструкции. Следующий пример неверен:
-	  <screen>
-{% if athlete_list and coach_list or cheerleader_list %}
-	  </screen>
-	</para>
-
-	<para>
-	  Не поддерживается использование скобок для управления
-	  порядком вычисления операторов. Если вам потребуется
-	  подобная функциональность, пересмотрите логику вашей функции
-	  представления для упрощения шаблона. Если будет серьёзная
-	  причина для объединения логики <token>and</token> и
-	  <token>or</token>, просто используйте вложение тегов
-	  <token>{% if %}</token>, например:
-	  <screen>
-{% if athlete_list %}
-    {% if coach_list or cheerleader_list %}
-        We have athletes, and either coaches or cheerleaders!
-    {% endif %}
-{% endif %}
-	  </screen>
-	</para>
-
-	<para>
-	  Вы можете многократно использовать один и тот же оператор в
-	  теге. Нельзя использовать разные операторы. Следующий пример
-	  верен:
-	  <screen>
-{% if athlete_list or coach_list or parent_list or teacher_list %}
-	  </screen>
-	</para>
-
-	<para>
-	  Тег <token>{% elif %}</token> не поддерживается. Используйте
-	  вложение тегов <token>{% if %}</token>:
-	  <screen>
-	    <![CDATA[
-{% if athlete_list %}
-    <p>Here are the athletes: {{ athlete_list }}.</p>
-{% else %}
-    <p>No athletes are available.</p>
-    {% if coach_list %}
-        <p>Here are the coaches: {{ coach_list }}.</p>
-    {% endif %}
-{% endif %}
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  Обязательно закрывайте каждый тег <token>{% if %}</token> с
-	  помощью тега <token>{% endif %}</token>, иначе Django
-	  вызовет исключение <token>TemplateSyntaxError</token>.
-	</para>
-
-      </section>
-
-      <section id="&BASEID;.basictagsandfilters.tags.for">
-    
-	<title id="&BASEID;.basictagsandfilters.tags.for.title">
-	  for
-	</title>
-      
-	<para>
-	  Тег <token>{% for %}</token> позволяет циклически
-	  обрабатывать элементы последовательности. Аналогично
-	  оператору <token>for</token> в языке Python, синтаксис таков
-	  &mdash; <command>for X in Y</command>, где <token>Y</token>
-	  является последовательностью, а <token>X</token> &mdash;
-	  именем переменной, которая последовательно принимает
-	  значение каждого элемента последовательности. На каждую
-	  итерацию шаблонная система обрабатывает всё между тегами
-	  <token>{% for %}</token> и <token>{% endfor %}</token>.
-	</para>
-
-	<para>
-	  Следующий пример можно использовать для отображения списков
-	  атлетов, который определён в переменной
-	  <varname>athlete_list</varname>:
-	  <screen>
-	    <![CDATA[
-<ul>
-{% for athlete in athlete_list %}
-    <li>{{ athlete.name }}</li>
-{% endfor %}
-</ul>
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  Если добавить атрибут <token>reversed</token> в тег, то
-	  последовательность будет обработана с конца:
-	  <screen>
-{% for athlete in athlete_list reversed %}
-...
-{% endfor %}
-	  </screen>
-	</para>
-
-	<para>
-	  Можно вкладывать теги <token>{% for %}</token> друг в друга:
-	  <screen>
-	    <![CDATA[
-{% for country in countries %}
-    <h1>{{ country.name }}</h1>
-    <ul>
-    {% for city in country.city_list %}
-        <li>{{ city }}</li>
-    {% endfor %}
-    </ul>
-{% endfor %}
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  Нет поддержки со стороны Django для выхода из цикла
-	  (<token>break</token>). Для осуществления подобного следует
-	  изменить переменную, по которой идёт цикл, так, чтобы она
-	  содержала только необходимые элементы. Аналогично, нет
-	  поддержки для перехода к следующей итерации
-	  (<token>continue</token>). (Обратитесь к разделу
-	  <quote><xref linkend="&BASEID;.phylandlimits"
-	  endterm="&BASEID;.phylandlimits.title"/></quote> этой главы,
-	  там описаны причины такого подхода.)
-	</para>
-
-	<para>
-	  Тег <token>{% for %}</token> устанавливает
-	  <quote>волшебную</quote> переменную шаблона
-	  <varname>forloop</varname> во время цикла. Эта переменная
-	  имеет несколько атрибутов, которые предоставляют информацию
-	  о цикле:
-	  <itemizedlist>
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.counter</token> всегда содержит
-		целое число, представляющее количество пройденных
-		итераций. Отсчёт начинается с единицы, таким образом,
-		во время первой итерации этот атрибут будет содержать
-		значение <token>1</token>. Пример:
-		<screen>
-		  <![CDATA[
-{% for item in todo_list %}
-    <p>{{ forloop.counter }}: {{ item }}</p>
-{% endfor %}
-		  ]]>
-		</screen>
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.counter0</token> аналогичен
-		предыдущему атрибуту, но отсчёт у него начинается с
-		нуля. Таким образом, во время первой итерации этот
-		атрибут будет содержать значение <token>0</token>.
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.revcounter</token> всегда
-		содержит целое число, представляющее количество
-		оставшихся итераций. Во время первой итерации этот
-		атрибут будет содержать число всех шагов цикла. Во
-		время последней итерации, этот атрибут будет содержать
-		значение <token>1</token>.
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.revcounter0</token> аналогичен
-		предыдущему атрибуту, но отсчёт у него начинается с
-		нуля. Во время первой итерации этот атрибут будет
-		содержать число всех шагов цикла минус один. Во время
-		последней итерации, этот атрибут будет содержать
-		значение <token>0</token>.
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.first</token> содержит булево
-		значение, которое установлено в <token>True</token>
-		только во время первой итерации цикла. Это удобно для
-		такого случая:
-		<screen>
-		  <![CDATA[
-{% for object in objects %}
-    {% if forloop.first %}<li class="first">{% else %}<li>{% endif %}
-    {{ object }}
-    </li>
-{% endfor %}
-		  ]]>
-		</screen>
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.last</token> содержит булево
-		значение, которое установлено в <token>True</token>
-		только во время последней итерации цикла. Это удобно
-		для установки символов <token>|</token> между списком
-		ссылок:
-		<screen>
-{% for link in links %}{{ link }}{% if not forloop.last %} | {% endif %}{% endfor %}
-
-The above template code might output something like this::
-
-        Link1 | Link2 | Link3 | Link4
-		</screen>
-	      </para>
-	    </listitem>
-
-	    <listitem>
-	      <para>
-		Атрибут <token>forloop.parentloop</token> содержит
-		ссылку на объект <token>forloop</token> в
-		<emphasis>родительском</emphasis> цикле, в случае
-		вложенных циклов. Пример:
-		<screen>
-		  <![CDATA[
-{% for country in countries %}
-    <table>
-    {% for city in country.city_list %}
-        <tr>
-        <td>Country #{{ forloop.parentloop.counter }}</td>
-        <td>City #{{ forloop.counter }}</td>
-        <td>{{ city }}</td>
-        </tr>
-    {% endfor %}
-    </table>
-{% endfor %}
-		  ]]>
-		</screen>
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-	</para>
-
-	<para>
-	  Эта переменная доступна только внутри цикла. Как только
-	  парсер достигнет тега <token>{% endfor %}</token>,
-	  переменная <varname>forloop</varname> исчезнет.
-	</para>
-
-	<para>
-	  <note>
-	    <title>
-	      Контекст и переменная <varname>forloop</varname>
-	    </title>
-	    
-	    <para>
-	      Внутри блока <token>{% for %}</token> существующие
-	      переменные выносятся для того, чтобы избежать
-	      переопределения переменной
-	      <varname>forloop</varname>. Django ищет вынесенный
-	      контекст в атрибуте
-	      <token>forloop.parentloop</token>. Обычно вам не следует
-	      беспокоиться об этом, но если вы определили в своём
-	      шаблоне переменную <varname>forloop</varname> (хотя мы
-	      это не рекомендуем), она будет переименована в
-	      <varname>forloop.parentloop</varname> до конца блока
-	      <token>{% for %}</token>.
-	    </para>
-	  </note>
-	</para>
-		
-      </section>
-
-      <section id="&BASEID;.basictagsandfilters.tags.ifequal">
-    
-	<title id="&BASEID;.basictagsandfilters.tags.ifequal.title">
-	  ifequal/ifnotequal
-	</title>
-      
-	<para>
-	  Шаблонная система Django намеренно создана в виде
-	  неполноценного языка программирования и, следовательно, не
-	  позволяет вам выполнять операторы Python. (Подробности
-	  такого подхода приведены в разделе <quote><xref
-	  linkend="&BASEID;.phylandlimits"
-	  endterm="&BASEID;.phylandlimits.title"/></quote>.) Тем не
-	  менее, достаточно часто требуется сравнивать два значения и
-	  отображать что-нибудь если они совпадают &mdash; Django
-	  предоставляет для этого тег <token>{% ifequal %}</token>.
-	</para>
-
-	<para>
-	  Тег <token>{% ifequal %}</token> предназначен для сравнения
-	  двух значений и вывода всего, что находится между тегами
-	  <token>{% ifequal %}</token> и <token>{% endifequal
-	  %}</token>, если значения равны.
-	</para>
-
-	<para>
-	  Следующий пример сравнивает шаблонные переменные
-	  <varname>user</varname> и <varname>currentuser</varname>:
-	  <screen>
-	    <![CDATA[
-{% ifequal user currentuser %}
-    <h1>Welcome!</h1>
-{% endifequal %}
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  Аргументом для этого тега может быть обычная строка, с
-	  одинарными или двойными кавычками, пример:
-	  <screen>
-	    <![CDATA[
-{% ifequal section 'sitenews' %}
-    <h1>Site News</h1>
-{% endifequal %}
-
-{% ifequal section "community" %}
-    <h1>Community</h1>
-{% endifequal %}
-	    ]]>
-	  </screen>
-	</para>
-	
-	<para>
-	  Подобно <token>{% if %}</token> тег <token>{% ifequal
-	  %}</token> поддерживает необязательный тег <token>{% else
-	  %}</token>:
-	  <screen>
-	    <![CDATA[
-{% ifequal section 'sitenews' %}
-    <h1>Site News</h1>
-{% else %}
-    <h1>No News Here</h1>
-{% endifequal %}
-	    ]]>
-	  </screen>
-	</para>
-
-	<para>
-	  Аргументами для этого тега могут быть только переменные
-	  шаблона, строки, целые числа. Пример:
-	  <screen>
-{% ifequal variable 1 %}
-{% ifequal variable 1.23 %}
-{% ifequal variable 'foo' %}
-{% ifequal variable "foo" %}
-	  </screen>
-	</para>
-
-	<para>
-	  Другие типы переменных, такие как словари, списки или булевы
-	  значения не могут быть использованы с этим тегом. Пример
-	  неправильного кода:
-	  <screen>
-{% ifequal variable True %}
-{% ifequal variable [1, 2, 3] %}
-{% ifequal variable {'key': 'value'} %}
-	  </screen>
-	</para>
-
-	<para>
-	  При необходимости проверить булево значение переменной
-	  используйте тег <token>{% if %}</token>.
-	</para>
-
-      </section>
-
-      <section id="&BASEID;.basictagsandfilters.tags.comments">
-    
-	<title id="&BASEID;.basictagsandfilters.tags.comments.title">
-	  Комментарии
-	</title>
-      
-	<para>
-	  Подобно HTML или языкам программирования, как Python,
-	  шаблонный язык Django позволяет вставлять комментарии. Для
-	  комментирования кода используйте <token>{# #}</token>:
-	  <screen>
-{# This is a comment #}
-	  </screen>
-	</para>
-
-	<para>
-	  Комментарий не будет отображён на странице.
-	</para>
-
-	<para>
-	  Комментарий не может располагаться на нескольких
-	  строках. Это ограничение увеличивает производительность
-	  шаблонного парсера. В следующем примере показан результат
-	  обработки шаблона, т.е. тег комментария не был распознан:
-	  <screen>
-This is a {# this is not
-a comment #}
-test.
-	  </screen>
-	</para>
-
       </section>
 
     </section>
-	
-    <section id="&BASEID;.basictagsandfilters.filters">
-    
-      <title id="&BASEID;.basictagsandfilters.filters.title">
-	Фильтры
-      </title>
+
+    <section id="&BASEID;.usage.playing">
       
-      <para>
-	Как было написано ранее в этой главе, шаблонные фильтры
-	являются простым методом для изменения значения переменных
-	перед их отображением. Фильтры выглядят так:
-	<screen>
-{{ name|lower }}
-	</screen>
-      </para>
-
-      <para>
-	Этот пример отображает значение переменной <token>{{ name
-	}}</token> после обработки фильтром <token>lower</token>,
-	которые преобразовывает текст в нижний регистр. Используйте
-	символ <token>|</token> для применения фильтра.
-      </para>
-
-      <para>
-	Фильтры можно вызывать <emphasis>по очереди</emphasis>, в этом
-	случае результат работы фильтра будет передан следующему. Ниже
-	показан общий подход для экранирования текста и преобразования
-	переводов строк в теги &lt;p&gt;:
-	<screen>
-{{ my_text|escape|linebreaks }}
-	</screen>
-      </para>
-
-      <para>
-	Некоторые фильтры принимают аргументы. Это выглядит так:
-	<screen>
-{{ bio|truncatewords:"30" }}
-	</screen>
-      </para>
-
-      <para>
-	Этот пример отображает первые 30 слов переменной
-	<varname>bio</varname>. Аргументы фильтра всегда должны быть
-	заключены в двойные кавычки.
-      </para>
-
-      <para>
-	Ниже приведены несколько наиболее важных фильтров. Остальные
-	описаны в приложении <quote><xref
-	linkend="djangobook.appendix_f"
-	endterm="djangobook.appendix_f.title"/></quote>.
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Фильтр <token>addslashes</token> добавляет обратный слеш
-	      перед любым обратным слэшем, одинарной или двойной
-	      кавычками. Это полезно при внедрении текста в строку
-	      JavaScript.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Фильтр <token>date</token> форматирует объекты
-	      <token>date</token> или <token>datetime</token> в
-	      соответствии с форматом, определённом в
-	      параметре. Например:
-	      <screen>
-{{ pub_date|date:"F j, Y" }}
-	      </screen>
-	    </para>
-
-	    <para>
-	      Строка формата описана в приложении <quote><xref
-	      linkend="djangobook.appendix_f"
-	      endterm="djangobook.appendix_f.title"/></quote>.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Фильтр <token>escape</token> экранирует амперсанды,
-	      кавычки, угловые скобки в обрабатываемой строке. Это
-	      полезно для обработки пользовательских данных и для
-	      проверки XML или XHTML. Если быть точным, то данный
-	      фильтр выполняет следующие преобразования:
-
-	      <itemizedlist>
-		<listitem>
-		  <para>
-		    Преобразовывает <token>&amp;</token> в
-		    <token>&amp;amp;</token>;
-		  </para>
-		</listitem>
-
-		<listitem>
-		  <para>
-		    Преобразовывает <token>&lt;</token> в
-		    <token>&amp;lt;</token>;
-		  </para>
-		</listitem>
-
-		<listitem>
-		  <para>
-		    Преобразовывает <token>&gt;</token> в
-		    <token>&amp;gt;</token>;
-		  </para>
-		</listitem>
-
-		<listitem>
-		  <para>
-		    Преобразовывает <token>"</token> (двойная кавычка)
-		    в <token>&amp;quot;</token>;
-		  </para>
-		</listitem>
-
-		<listitem>
-		  <para>
-		    Преобразовывает <token>'</token> (одинарная
-		    кавычка) в <token>&amp;#39;</token>.
-		  </para>
-		</listitem>
-	      </itemizedlist>
-
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Фильтр <token>length</token> возвращает длину строки. Вы
-	      можете использовать данный фильтр совместно со списком
-	      или строкой, или с любым объектом Python, который знает
-	      как определять свою длину (т.е. с любым объектом,
-	      который имеет метод <function>__len__()</function>).
-	    </para>
-	  </listitem>
-	</itemizedlist>
-      </para>
-
-    </section>
-
-  </section>
-	  
-  <section id="&BASEID;.phylandlimits">
-
-    <title id="&BASEID;.phylandlimits.title">
-      Философия и ограничения
-    </title>
-    
-    <para>
-      Теперь, когда у вас есть понимание языка шаблонов Django, мы
-      должны остановиться на его осознанных ограничениях и на том,
-      почему так сделано.
-    </para>
-
-    <para>
-      Мнения разработчиков о шаблонной системе варьируются очень
-      широко по сравнению с другими компонентами веб
-      приложений. Поддерживает это утверждение тот факт, что сам
-      Python содержит их десятки, если не сотни. Каждая шаблонная
-      система вероятно была создана потому что её разработчик счёл все
-      существующие системы неподходящими. (В действительности,
-      существует своеобразный экзамен для разработчика на Python
-      &mdash; написать свой собственный язык шаблонной системы! Если
-      вы не сделали такого, попробуйте. Это интересный опыт.)
-    </para>
-
-    <para>
-      Помня это вам возможно будет интересно узнать, что Django не
-      требует, чтобы вы использовали именно её язык шаблонов. По
-      причине того, что Django создана как полноценная система веб
-      разработки, которая предоставляет все необходимые компоненты для
-      продуктивной работы, будет гораздо удобнее использовать её
-      шаблонную систему, вместо других шаблонных библиотек Python. Но
-      это не накладывает никаких ограничений на вас. Как вы увидите в
-      разделе <quote><xref linkend="&BASEID;.tplinviews"
-      endterm="&BASEID;.tplinviews.title"/></quote>, очень легко
-      использовать другой шаблонный язык совместно с Django.
-    </para>
-
-    <para>
-      Но уже сейчас ясно, что мы настойчиво предлагаем использовать
-      шаблонный язык Django. Шаблонная система ведёт свою историю из
-      разработки для World Online и объединяет опыт создателей
-      Django. Вот некоторые из постулатов:
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    <emphasis>Бизнес-логика должна быть отделена от логики
-	    представления.</emphasis> Мы рассматриваем шаблонную
-	    систему как инструмент управления представлением и логикой
-	    для этого представления, не более. Шаблонная система не
-	    должна поддерживать функциональность, которая выходит за
-	    рамки этой основополагающей цели.
-	  </para>
-
-	  <para>
-	    По этой причине нет возможности вызвать напрямую код на
-	    языке Python из шаблонов Django. Всё
-	    <quote>программирование</quote> принципиально ограничено
-	    рамками возможностей тегов. Можно создать пользовательские
-	    шаблонные теги для выполнения определённых задач, но
-	    намеренно не позволяется выполнять код на языке Python вне
-	    тегов шаблона.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    <emphasis>Синтаксис должен быть отделён от
-	    HTML/XML.</emphasis> Несмотря на то, что шаблонная система
-	    Django используется в первую очередь для генерации HTML,
-	    она разрабатывалась с поддержкой не HTML форматов, таких
-	    как обычный текст. Некоторые другие языки шаблонов
-	    основаны на XML, размещая всю шаблонную логику в тегах и
-	    атрибутах XML, но Django сознательно избегает это
-	    ограничение. Требование верного XML для создания шаблонов
-	    привносит целый букет человеческих ошибок и
-	    трудно-понимаемых сообщений о них. Также, использование
-	    XML парсера привносит неприемлемый уровень нагрузки на
-	    процессор шаблонов.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    <emphasis>Предполагается, что дизайнеры способны работать
-	    с чистым HTML.</emphasis> Шаблонная система не разработана
-	    так, чтобы шаблоны всегда отображались красиво в WYSIWYG
-	    редакторах, подобных Dreamweaver. Поддержка таких
-	    редакторов накладывает слишком серьёзные ограничения на
-	    синтаксис шаблона. Django ожидает, что авторы шаблонов
-	    работают с HTML напрямую.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    <emphasis>Предполагается, что дизайнеры не являются Python
-	    программистами.</emphasis> Авторы шаблонной системы
-	    признают, что чаще всего шаблоны для страниц
-	    разрабатываются дизайнерами, не разработчиками, и,
-	    следовательно, это не должно предполагать наличия знания
-	    языка Python.
-	  </para>
-
-	  <para>
-	    Тем не менее, шаблонная система старается поддерживать
-	    небольшие команды, в которых шаблоны создаются Python
-	    программистами. Она предлагает способ расширения
-	    синтаксиса системы с помощью кода на языке Python
-	    (подробности в главе <quote><xref
-	    linkend="djangobook.chap10"
-	    endterm="djangobook.chap10.title"/></quote>).
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    <emphasis>Изобретение языка программирования &mdash; не
-	    наша цель.</emphasis> Цель &mdash; предложить достаточно
-	    программистской функциональности, такой как ветвление и
-	    циклы, чего будет достаточно для презентационных решений.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </para>
-
-    <para>
-      Результатом этих постулатов являются следующие ограничения:
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    <emphasis>Шаблон не может создать переменную или изменить
-	    значение переменной.</emphasis> Можно создавать свои
-	    шаблонные теги, которые решают такие задачи (см. главу
-	    <quote><xref linkend="djangobook.chap10"
-	    endterm="djangobook.chap10.title"/></quote>), но набор
-	    стандартных тегов этого не позволяет.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    <emphasis>Шаблон не может вызвать код на языке
-	    Python.</emphasis> Не существует метода перехода в
-	    <quote>режим Python</quote> или использования кода на
-	    языке Python. Аналогично, можно создавать свои шаблонные
-	    теги для таких задач, но набор стандартных тегов этого не
-	    позволяет.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </para>
-
-  </section>
-
-  <section id="&BASEID;.tplinviews">
-
-    <title id="&BASEID;.tplinviews.title">
-      Использование шаблонов в представлениях
-    </title>
-    
-    <para>
-      Вы изучили основы использования шаблонной системы. Теперь
-      давайте используем эти знания для создания
-      представления. Вспомните представление
-      <token>current_datetime</token> из модуля
-      <token>mysite.views</token>, с которого мы начали предыдущую
-      главу. Вот как оно выглядит:
-      <screen>
-	<![CDATA[
-from django.http import HttpResponse
-import datetime
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      Внесём изменение в это представление, чтобы оно стало
-      использовать шаблонную систему Django. Сначала вы можете
-      подумать о чём-то подобном:
-      <screen>
-	<![CDATA[
-from django.template import Template, Context
-from django.http import HttpResponse
-import datetime
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    t = Template("<html><body>It is now {{ current_date }}.</body></html>")
-    html = t.render(Context({'current_date': now}))
-    return HttpResponse(html)
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      Конечно, такой подход использует шаблонную систему, но не решает
-      проблемы, которые мы описали в начале этой главы. А именно,
-      шаблон всё ещё внедрён в код. Исправим это, поместив шаблон в
-      <emphasis>отдельный файл</emphasis>, который будет
-      использоваться этим представлением.
-    </para>
-
-    <para>
-      Сначала вы можете рассмотреть вариант сохранения шаблона в
-      каком-нибудь файле на файловой системе и затем использовать
-      стандартную для Python функциональность для загрузки содержимого
-      этого шаблона. Ниже показан такой вариант, предполагается, что
-      шаблон находится в файле
-      <filename>/home/djangouser/templates/mytemplate.html</filename>:
-      <screen>
-from django.template import Template, Context
-from django.http import HttpResponse
-import datetime
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    # Simple way of using templates from the filesystem.
-    # This doesn't account for missing files!
-    fp = open('/home/djangouser/templates/mytemplate.html')
-    t = Template(fp.read())
-    fp.close()
-    html = t.render(Context({'current_date': now}))
-    return HttpResponse(html)
-      </screen>
-    </para>
-
-    <para>
-      Такой подход, тем не менее, не элегантен по следующим причинам:
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    Он не обрабатывает случай отсутствия файла. Если файл
-	    <filename>/home/djangouser/templates/mytemplate.html</filename>
-	    не существует или недоступен для чтения, вызов
-	    <function>open()</function> приведёт к исключению
-	    <token>IOError</token>.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Он ищет шаблон по жёстко указанному пути. Если вы
-	    используете такой метод для каждой функции представления,
-	    вы будете размножать путь до шаблона. Мы даже не говорим,
-	    как это надо будет набирать!
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Он включает в себя много одинакового кода. Многое можно
-	    сделать вместо вызова <function>open()</function>,
-	    <function>fp.read.()</function> и
-	    <function>fp.close()</function> при каждой загрузке
-	    шаблона.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </para>
-
-    <para>
-      Для решения подобных проблем мы будем использовать
-      <emphasis>загрузку шаблонов</emphasis> и <emphasis>каталоги
-      шаблонов</emphasis>, которые описаны в этой главе далее.
-    </para>
-
-  </section>
-
-  <section id="&BASEID;.tplloading">
-
-    <title id="&BASEID;.tplloading.title">
-      Загрузка шаблонов
-    </title>
-    
-    <para>
-      Django предоставляет удобный и мощный API для загрузки шаблонов
-      с диска с целью удаления избыточности в вызовах для загрузки
-      шаблонов и в самих шаблонах.
-    </para>
-
-    <para>
-      Для использования этого API сначала требуется указать среде
-      разработки где располагаются шаблоны. Это делать надо в
-      <emphasis>файле <filename>settings.py</filename></emphasis>.
-    </para>
-
-    <para>
-      Файл настроек Django является местом размещения конфигурации для
-      вашего экземпляра среды (ваш проект). Это обычный модуль Python
-      c переменными модульного уровня, по одному на каждую настройку.
-    </para>
-
-    <para>
-      Когда вы выполнили команду <command>django-admin startproject
-      mysite</command>, описанную в главе <quote><xref
-      linkend="djangobook.chap02.startproject"
-      endterm="djangobook.chap02.startproject.title"/></quote>, был
-      создан файл настроек со значениями по умолчанию, метко названный
-      <filename>settings.py</filename>. Посмотрим на содержимое этого
-      файла. Он содержит переменные, похожие на эти (не обязательно в
-      указанном порядке):
-      <screen>
-DEBUG = True
-TIME_ZONE = 'America/Chicago'
-USE_I18N = True
-ROOT_URLCONF = 'mysite.urls'
-      </screen>
-    </para>
-
-    <para>
-      Тут всё очевидно. Настройки и их значения являются переменными
-      языка Python. И так как файл настроек является обычным модулем
-      Python, вы можете выполнять проверку значения одной переменной
-      перед установкой другой. (Также это означает, что вы должны
-      избегать синтаксических ошибок в вашем файле настроек.)
-    </para>
-
-    <para>
-      Мы рассмотрим все настройки в приложении <quote><xref
-      linkend="djangobook.appendix_e"
-      endterm="djangobook.appendix_e.title"/></quote>, но сейчас
-      гляньте на параметр <token>TEMPLATE_DIRS</token>. Этот параметр
-      указывает механизму загрузки шаблонов где надо искать
-      шаблоны. По умолчанию, параметр содержит пустой кортеж. Укажите
-      каталог с вашими шаблонами следующим образом:
-      <screen>
-TEMPLATE_DIRS = (
-    '/home/django/mysite/templates',
-)
-      </screen>
-    </para>
-
-    <para>
-      Надо отметить два момента:
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    Вы можете указать любой каталог, который доступен на
-	    чтение пользователю, от которого работает ваш веб
-	    сервер. Если вы не можете придумать такое место, мы
-	    рекомендуем создать каталог <filename>templates</filename>
-	    в каталоге вашего проекта (т.е. в каталоге
-	    <filename>mysite</filename>).
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Не забудьте запятую в конце строки с каталогом шаблонов!
-	    Python требует наличия запятой внутри одноэлементного
-	    кортежа для исключения неоднозначности записанного в виде
-	    выражения со скобками. Это стандартная ошибка у новичков.
-	  </para>
-
-	  <para>
-	    Чтобы избежать подобной ошибки вы можете сделать
-	    <token>TEMPLATE_DIRS</token> списком вместо кортежа,
-	    т.к. одноэлементные списки не требуют завершающей запятой:
-	    <screen>
-TEMPLATE_DIRS = [
-    '/home/django/mysite/templates'
-]
-	    </screen>
-	  </para>
-
-	  <para>
-	    Семантически кортеж несколько более правилен, чем список
-	    (кортеж не может быть изменён после создания и ничто не
-	    изменит настройки после их чтения), так что мы рекомендуем
-	    использовать кортеж для настройки
-	    <token>TEMPLATE_DIRS</token>.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Если вы используете Windows, включите букву диска и
-	    используйте Unix-стиль с прямыми слэшами вместо обратных,
-	    вот так:
-	    <screen>
-TEMPLATE_DIRS = (
-    'C:/www/django/templates',
-)
-	    </screen>
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Проще всего использовать абсолютные пути (т.е. пути до
-	    каталогов, которые начинаются от корня файловой
-	    системы). Если вы желаете быть более гибким и независимым
-	    в данном вопросе, вы можете воспользоваться тем, что файлы
-	    настроек в Django &mdash; это всего лишь код на языке
-	    Python и содержимое <token>TEMPLATE_DIRS</token> можно
-	    изменять динамически, например:
-	    <screen>
-import os.path
-
-TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
-)
-	    </screen>
-	  </para>
-
-	  <para>
-	    Этот пример использует <quote>волшебную</quote> переменную
-	    <varname>__file__</varname>, которая автоматически
-	    заменяется именем файла модуля Python, в котором
-	    располагается данный код.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </para>
-
-    <para>
-      После установки <token>TEMPLATE_DIRS</token>, следующим шагом
-      будет изменение кода представления для использования
-      функциональности Django для загрузки шаблонов, вместо указания
-      путей к шаблонам. Возвращаясь к нашему представлению
-      <token>current_datetime</token>, давайте изменим его следующим
-      образом:
-      <screen>
-from django.template.loader import get_template
-from django.template import Context
-from django.http import HttpResponse
-import datetime
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    t = get_template('current_datetime.html')
-    html = t.render(Context({'current_date': now}))
-    return HttpResponse(html)
-      </screen>
-    </para>
-
-    <para>
-      В данном примере, мы использовали функцию
-      <function>django.template.loader.get_template()</function>
-      вместо ручной загрузки шаблона из файловой системы. Функция
-      <function>get_template()</function> принимает имя шаблона в
-      качестве аргумента, производит поиск такого шаблона на файловой
-      системе, открывает этот файл и возвращает скомпилированный
-      объект <classname>Template</classname>.
-    </para>
-
-    <para>
-      Если <function>get_template()</function> не может найти шаблон с
-      указанным именем, она возвращает исключение
-      <token>TemplateDoesNotExist</token>. Чтобы посмотреть на него,
-      снова запустите сервер разработки Django с помощью команды
-      <command>python manage.py runserver</command>, выполненной в
-      каталоге проекта. Затем запустите с помощью браузера
-      представление <token>current_datetime</token> (т.е. перейдите по
-      ссылке <ulink url="http://127.0.0.1:8000/time/"/>). Предполагая
-      что настройка <token>DEBUG</token> установлена
-      <token>True</token> и вы ещё не создали шаблон
-      <filename>current_datetime.html</filename>, вы должны увидеть
-      страницу с ошибкой, на которой выделено исключение
-      <token>TemplateDoesNotExist</token>.
-    </para>
-
-    <para>
-      <figure id="&BASEID;.pic1" float="0">
-	<title id="&BASEID;.pic1.title">
-	  Страница с ошибкой показывающей, что шаблон не найден
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/missing_template.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
-      </figure>
-    </para>
-
-    <para>
-      Эта страница с ошибкой похожа на такую же, которую мы
-      рассматривали в Главе 3, только одна вещь тут новая &mdash;
-      отладочная информация: секция <quote>Template-loader
-      postmortem</quote>. Эта информация неоценима при отладке ошибок
-      загрузки шаблона.
-    </para>
-
-    <para>
-      Как вероятно вы можете сказать из сообщения об ошибке
-      показанного на рисунке, Django пытался найти шаблон, комбинируя
-      каталоги в <token>TEMPLATE_DIRS</token> с именем шаблона,
-      переданным <function>get_template()</function>. Таким образом,
-      если ваша <token>TEMPLATE_DIRS</token> содержит
-      <filename>/home/django/templates</filename>, то Django проверяет
-      наличие файла
-      <filename>/home/django/templates/current_datetime.html</filename>. Если
-      <token>TEMPLATE_DIRS</token> содержит более одного каталога, то
-      каждый проверяется на наличие такого файла, пока он не будет
-      найден или не кончится список каталогов.
-    </para>
-
-    <para>
-      Далее, создадим файл
-      <filename>/home/django/templates/current_datetime.html</filename>
-      в вашем каталоге с шаблонами, с помощью кода:
-      <screen>
-&lt;html&gt;&lt;body&gt;It is now {{ current_date }}.&lt;/body&gt;&lt;/html&gt;
-      </screen>
-    </para>
-
-    <para>
-      Обновите страницу в вашем браузере и вы увидите результат
-      обработки шаблона.
-    </para>
-
-    <section id="&BASEID;.tplloading.rend2resp">
-      
-      <title id="&BASEID;.tplloading.rend2resp.title">
-	render_to_response()
+      <title id="&BASEID;.usage.playing.title">
+	Играем с контекстными объектами
       </title>
     
-      <para>
-	По причине частого использования загрузки шаблона, заполнения
-	<classname>Context</classname> и возвращения объекта
-	<classname>HttpResponse</classname> с результатами
-	обработанного шаблона, Django предоставляет более короткий
-	метод, который позволяет вам выполнять эти действия одной
-	строкой кода. Речь идёт о функции
-	<function>render_to_response()</function>, которая определена
-	в модуле <token>django.shortcuts</token>. Чаще всего вы будете
-	использовать <function>render_to_response()</function> вместо
-	вышеописанных действий.
-      </para>
-
-      <para>
-	Ниже представлен старый знакомый пример
-	<token>current_datetime</token>, использующий функцию
-	<function>render_to_response()</function>:
-	<screen>
-from django.shortcuts import render_to_response
-import datetime
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    return render_to_response('current_datetime.html', {'current_date': now})
-	</screen>
-      </para>
-
-      <para>
-	Какая разница! Пройдёмся по изменениям в коде:
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Нам больше не надо импортировать
-	      <function>get_template</function>,
-	      <classname>Template</classname>,
-	      <classname>Context</classname> или
-	      <classname>HttpResponse</classname>. Вместо этого, мы
-	      импортируем
-	      <token>django.shortcuts.render_to_response</token>. Импорт
-	      <token>datetime</token> остался без изменений.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      В функции <function>current_datetime</function> мы всё
-	      ещё вычисляем <varname>now</varname>, но загрузка
-	      шаблона, создание контекста, обработка шаблона и
-	      создание объекта <classname>HttpResponse</classname>
-	      &mdash; обо всём этом заботится функция
-	      <function>render_to_response()</function>. Так как эта
-	      функция возвращает объект
-	      <classname>HttpResponse</classname>, мы просто
-	      возвращаем это значение в представление.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-      </para>
-
-      <para>
-	Первым аргументом функции
-	<function>render_to_response()</function> должно быть имя
-	используемого шаблона. Вторым аргументом, если он есть, должен
-	быть словарь, для создания контекста для этого шаблона. Если
-	вы не предоставите второй аргумент, функция будет использовать
-	пустой словарь.
-      </para>
-
     </section>
-
-    <section id="&BASEID;.tplloading.locals">
-      
-      <title id="&BASEID;.tplloading.locals.title">
-	Трюк с locals()
-      </title>
-    
-      <para>
-	Рассмотрим последнюю инкарнацию функции
-	<function>current_datetime</function>:
-	<screen>
-def current_datetime(request):
-    now = datetime.datetime.now()
-    return render_to_response('current_datetime.html', {'current_date': now})
-	</screen>
-      </para>
-
-      <para>
-	Постоянно вы будете ловить себя на том, что вы вычисляете
-	значения, сохраняете их в переменных
-	(см. <varname>now</varname> в предыдущем примере) и
-	отправляете эти переменные в шаблон. Особо ленивые
-	разработчики должны отметить, что это немного излишне
-	назначать имена временным переменным и шаблонным
-	переменным. Это не только излишне, но и требует много набора
-	на клавиатуре.
-      </para>
-
-      <para>
-	Таким образом, если вы один из таких ленивых разработчиков и
-	вам нравится краткий код, вы можете воспользоваться встроенной
-	в Python функцией <function>locals()</function>. Она
-	возвращает словарь, хранящий все локальные переменные и их
-	соответствующие значения. Следовательно, предыдущую функцию
-	представления можно переписать так:
-	<screen>
-def current_datetime(request):
-    current_date = datetime.datetime.now()
-    return render_to_response('current_datetime.html', locals())
-	</screen>
-      </para>
-
-      <para>
-	Здесь, вместо ручного ввода контекстного словаря, как это было
-	раньше, вы передали значение функции
-	<function>locals()</function>, которое содержало все
-	переменные определённые в этой точке выполнения функции. Как
-	результат, мы переименовали переменную <varname>now</varname>
-	в <varname>current_date</varname>, потому что это то имя,
-	которое шаблон ожидает. В этом примере
-	<function>locals()</function> не предлагает
-	<emphasis>значительного</emphasis> удобства, но эта методика
-	может сохранить вам время, если вы используете несколько
-	шаблонных переменных или если вы ленивы.
-      </para>
-
-      <para>
-	Следует обратить внимание при использовании
-	<function>locals()</function> на то, что она включает в
-	результат <emphasis>каждую</emphasis> локальную
-	переменную. Это может быть не совсем то, что вам нужно. В
-	предыдущем примере, <function>locals()</function> также
-	включает <token>request</token>. Важно ли это для вас, зависит
-	от вашего приложения.
-      </para>
-
-      <para>
-	Наконец, следует учитывать, что использование функции
-	<function>locals()</function> создаёт небольшие накладные
-	расходы. Python должен создать словарь динамически. Если вы
-	укажите вручную контекстный словарь, вы избавитесь от этой
-	потери производительности.
-      </para>
-
-    </section>
-
-    <section id="&BASEID;.tplloading.subdirs">
-      
-      <title id="&BASEID;.tplloading.subdirs.title">
-	Подкаталоги в get_template()
-      </title>
-    
-      <para>
-	Может стать неудобно хранить все шаблоны в одном каталоге. Вам
-	может понадобиться хранить шаблоны в подкаталогах вашего
-	каталога шаблонов, это нормально. Действительно, мы
-	рекомендуем делать так. Более продвинутые особенности Django
-	(такие как общая система представлений, которая будет описана
-	в главе <quote><xref linkend="djangobook.chap09"
-	endterm="djangobook.chap09.title"/></quote>) ожидают такое
-	расположение шаблонов по умолчанию.
-      </para>
-
-      <para>
-	Хранение шаблонов в подкаталогах несложное занятие. В вашем
-	вызове <function>get_template()</function>, просто включите
-	имя подкаталога и слэш перед именем шаблона, вот так:
-	<screen>
-t = get_template('dateapp/current_datetime.html')
-	</screen>
-      </para>
-
-      <para>
-	Так как <function>render_to_response()</function> является
-	небольшой прослойкой к <function>get_template()</function>, вы
-	можете делать то же самое и с первым аргументом функции
-	<function>render_to_response()</function>.
-      </para>
-
-      <para>
-	Нет ограничений на глубину дерева подкаталогов. Используйте
-	столько сколько нужно.
-      </para>
-
-      <para>
-	<note>
-	  <para>
-	    Пользователи Windows должны использовать прямой слэш
-	    (<token>/</token>) вместо обратного
-	    (<token>\</token>). Функция
-	    <function>get_template()</function> ожидает прямые слэши в
-	    имени файла с шаблоном.
-	  </para>
-	</note>
-      </para>
-
-    </section>
-
-    <section id="&BASEID;.tplloading.include">
-      
-      <title id="&BASEID;.tplloading.include.title">
-	Тег include
-      </title>
-    
-      <para>
-	После того как мы описали механизм загрузки шаблонов, мы можем
-	рассказать о встроенном шаблонном теге, который использует
-	его: <token>{% include %}</token>. Этот тег позволяет вам
-	подключать содержимое другого шаблона. Аргументом тега
-	является путь к подключаемому шаблону. Имя шаблона может быть
-	представлено как переменной, так и строкой, заключённой в
-	двойные или одинарные кавычки. Если вы используете один и тот
-	же код в нескольких шаблонах, рассмотрите возможность
-	использования тега <token>{% include %}</token>, чтобы
-	исключить дублирование кода.
-      </para>
-
-      <para>
-	Следующий пример дважды подключает содержимое шаблона
-	<filename>nav.html</filename>. Строки примера эквивалентны,
-	несмотря на разницу используемых кавычек:
-	<screen>
-{% include 'nav.html' %}
-{% include "nav.html" %}
-	</screen>
-      </para>
-
-      <para>
-	Следующий пример показывает как следует подключать содержимое
-	шаблона <filename>includes/nav.html</filename>:
-	<screen>
-{% include 'includes/nav.html' %}
-	</screen>
-      </para>
-
-      <para>
-	Следующий пример подключает содержимое шаблона, имя которого
-	содержится в переменной <varname>template_name</varname>:
-	<screen>
-{% include template_name %}
-	</screen>
-      </para>
-
-      <para>
-	Подобно функции <function>get_template()</function>, имя файла
-	для шаблона определяется с использованием каталога для
-	шаблонов из параметра конфигурации
-	<token>TEMPLATE_DIRS</token>.
-      </para>
-
-      <para>
-	Подключенные шаблоны обрабатываются в контексте шаблона,
-	который их подключил.
-      </para>
-
-      <para>
-	Если подключаемый шаблон не существует, Django выполнит одно
-	действие из нижеприведённых:
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Если параметр конфигурации <token>DEBUG</token> имеет
-	      значение <token>True</token>, вы увидите исключение
-	      <token>TemplateDoesNotExist</token> на странице с
-	      ошибкой.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Если параметр конфигурации <token>DEBUG</token> имеет
-	      значение <token>False</token>, вы не увидите никакой
-	      ошибки, просто в месте подключаемого шаблона ничего не
-	      отобразится.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-      </para>
-
-    </section>
-
-  </section>
-
-  <section id="&BASEID;.tplinheritance">
-      
-    <title id="&BASEID;.tplinheritance.title">
-      Наследование шаблонов
-    </title>
-    
-    <para>
-      До этого момента наши примеры шаблонов содержали крошечные
-      фрагменты HTML, но в реальном проекте, вы будете использовать
-      шаблонную систему Django для создания всех страниц проекта. Это
-      приводит к общей проблеме веб разработки &mdash; рассматривая
-      весь сайт, как уменьшить повторение и избыточность общих
-      областей страниц, таких как навигация по сайту?
-    </para>
-
-    <para>
-      Классическим методом решения этой задачи является использование
-      <emphasis>кода на серверной стороне</emphasis> &mdash; команд,
-      которые вы можете добавлять в ваши HTML страницы,
-      <quote>подключая</quote> одну страницу в другую. Действительно,
-      Django предоставляет поддержку этого метода с помощью
-      вышеописанного тега <token>{% include %}</token>. Но более
-      предпочтительным методом решения такой задачи с помощью Django
-      является использование элегантной стратегии под названием
-      <emphasis>наследование шаблонов</emphasis>.
-    </para>
-
-    <para>
-      В сущности, наследование шаблонов позволяет создать основной
-      <quote>скелетный</quote> шаблон, который содержит все общие
-      части вашего сайта и определить <quote>блоки</quote>, которые
-      могут быть заменены шаблонами-наследниками.
-    </para>
-
-    <para>
-      Давайте рассмотрим такой пример, создав более сложный шаблон для
-      представления <token>current_datetime</token>. Отредактируем
-      его:
-      <screen>
-	<![CDATA[
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="en">
-<head>
-    <title>The current time</title>
-</head>
-<body>
-    <h1>My helpful timestamp site</h1>
-    <p>It is now {{ current_date }}.</p>
-
-    <hr>
-    <p>Thanks for visiting my site.</p>
-</body>
-</html>
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      Выглядит неплохо, но что случится, когда нам понадобится создать
-      другое представление, скажем, <token>hours_ahead</token> из
-      главы <quote><xref linkend="djangobook.chap03"
-      endterm="djangobook.chap03.title"/></quote>. Если мы снова
-      желаем получить приятный, правильный, полный HTML шаблон, нам
-      потребуется создать нечто такое:
-      <screen>
-	<![CDATA[
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="en">
-<head>
-    <title>Future time</title>
-</head>
-<body>
-    <h1>My helpful timestamp site</h1>
-    <p>In {{ hour_offset }} hour(s), it will be {{ next_time }}.</p>
-
-    <hr>
-    <p>Thanks for visiting my site.</p>
-</body>
-</html>
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      Очевидно, что мы просто скопировали большую часть
-      HTML. Представьте, что у нас более однородный сайт, включая
-      навигационную панель, несколько стилей, возможно, немного
-      JavaScript &mdash; нам потребуется использовать повторяющийся
-      HTML в каждом шаблоне.
-    </para>
-
-    <para>
-      Решение этой проблемы с помощью подключения шаблонов на
-      серверной стороне &mdash; выделение общих кусков в обоих
-      шаблонах и сохранение их в отдельных шаблонах, которые затем
-      включаются в каждый шаблон. Возможно, вы сохранили верхнюю часть
-      шаблона в файле <filename>header.html</filename>:
-      <screen>
-	<![CDATA[
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="en">
-<head>
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      И, возможно, вы сохранили нижнюю часть в файле
-      <filename>footer.html</filename>:
-      <screen>
-	<![CDATA[
-    <hr>
-    <p>Thanks for visiting my site.</p>
-</body>
-</html>
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      С помощью стратегии использования включений шаблонов, работать с
-      заголовками и окончаниями страниц легко. Но подход неряшлив. В
-      данном примере, у обеих страниц есть тег
-      <token>&lt;title&gt;</token> &mdash; &lt;h1&gt;My helpful
-      timestamp&lt;/h1&gt; &mdash; но мы не можем поместить его в
-      <filename>header.html</filename>, т.к. содержимое тегов
-      различно. Если мы включим тег &lt;h1&gt; в заголовок, нам
-      потребуется включить и &lt;title&gt;, что не позволит нам
-      настраивать его содержимое для каждой страницы. Видите, куда это
-      нас ведёт?
-    </para>
-
-    <para>
-      Система наследования шаблонов Django решает такие проблемы. Вы
-      можете рассматривать её как версию с <quote>вынесением
-      различий</quote> шаблонов на серверной стороне. Вместо
-      определения <emphasis>общих</emphasis> частей шаблона, вы
-      определяете <emphasis>различающиеся</emphasis> части.
-    </para>
-
-    <para>
-      Первым шагом является определение <emphasis>базового
-      шаблона</emphasis> &mdash; основы вашей страницы, которую позже
-      будут заполнять <emphasis>дочерние шаблоны</emphasis>. Ниже
-      представлен базовый шаблон для нашего текущего примера:
-      <screen>
-	<![CDATA[
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="en">
-<head>
-    <title>{% block title %}{% endblock %}</title>
-</head>
-<body>
-    <h1>My helpful timestamp site</h1>
-    {% block content %}{% endblock %}
-    {% block footer %}
-    <hr>
-    <p>Thanks for visiting my site.</p>
-    {% endblock %}
-</body>
-</html>
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      Этот шаблон, который мы назвали <filename>base.html</filename>,
-      определяет основу HTML документа, которую мы будем использовать
-      для каждой страницы на сайте. Это уже задача дочерних шаблонов
-      заполнить или добавить, или не трогать содержимое этих
-      блоков. (Если вы следуете за нашим рассказом, сохраните этот
-      файл в каталог для шаблонов.)
-    </para>
-
-    <para>
-      Здесь мы используем тег, который раньше не определяли: <token>{%
-      block %}</token>. Всё, что такие теги делают &mdash; указывают
-      шаблонной системе, что дочерние шаблоны могут переопределять
-      эту часть основного шаблона.
-    </para>
-
-    <para>
-      Имея основной шаблон, мы можем внести изменения в существующий
-      <filename>current_datetime.html</filename>, чтобы использовать
-      его:
-      <screen>
-	<![CDATA[
-{% extends "base.html" %}
-
-{% block title %}The current time{% endblock %}
-
-{% block content %}
-<p>It is now {{ current_date }}.</p>
-{% endblock %}
-	]]>
-      </screen>
-    </para>
-
-    <para>
-      Теперь, давайте создадим шаблон для представления
-      <token>hours_ahead</token> из главы <quote><xref
-      linkend="djangobook.chap03"
-      endterm="djangobook.chap03.title"/></quote>. (Если вы читаете,
-      изменяя код, мы оставим на вас изменение кода
-      <token>hours_ahead</token> для использования шаблонной системы.)
-      Вот как он должен выглядеть:
-      <screen>
-{% extends "base.html" %}
-
-{% block title %}Future time{% endblock %}
-
-{% block content %}
-&lt;p&gt;In {{ hour_offset }} hour(s), it will be {{ next_time }}.&lt;/p&gt;
-{% endblock %}
-      </screen>
-    </para>
-
-    <para>
-      Разве не прекрасно? Каждый шаблон содержит только
-      <emphasis>уникальный</emphasis> код. Нет никакой
-      избыточности. Если вам потребуется внести глобальные изменения в
-      сайт, просто измените содержимое шаблона
-      <filename>base.html</filename> и все остальные шаблоны
-      немедленно отразят ваши изменения.
-    </para>
-
-    <para>
-      Вот так это работает. При загрузке шаблона
-      <filename>current_datetime.html</filename>, шаблонная система
-      видит тег <token>{% extends %}</token>, что означает, что перед
-      ней дочерний шаблон. Система немедленно загружает базовый
-      шаблон, в данном случае, <filename>base.html</filename>.
-    </para>
-
-    <para>
-      После этого, шаблонная система находит три тега <token>{% block
-      %}</token> в <filename>base.html</filename> и заменяет эти блоки
-      содержимым дочернего шаблона. Таким образом, заголовок, который
-      мы определили в <token>{% block title %}</token> дочернего
-      шаблона, будет использован вместо блока <token>{% block title
-      %}</token> базового шаблона, а текст, определённый в <token>{%
-      block content %}</token> &mdash; вместо блока <token>{% block
-      content %}</token>.
-    </para>
-
-    <para>
-      Следует отметить, что раз дочерний шаблон не определяет блок
-      <token>footer</token>, шаблонная система вместо этого использует
-      значение из базового шаблона. Содержимое внутри тега <token>{%
-      block %}</token> в основном шаблоне всегда используется в
-      качестве запасного.
-    </para>
-
-    <para>
-      Наследование никак не влияет на работу контекста. Вы можете
-      использовать столько уровней наследования, сколько
-      необходимо. Одним из общих способов использования наследования
-      является следующий трёх-уровневый подход:
-      <orderedlist>
-	<listitem>
-	  <para>
-	    Создать шаблон <filename>base.html</filename>, который
-	    содержит основную информацию о дизайне сайта. Эта часть
-	    изменяется очень редко, если вообще изменяется.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Создать шаблон <filename>base_SECTION.html</filename> для
-	    каждого <quote>раздела</quote> вашего сайта
-	    (т.е. <filename>base_photos.html</filename> и
-	    <filename>base_forum.html</filename>). Эти шаблоны
-	    расширяют <filename>base.html</filename> и включают стили
-	    и дизайн для конкретного раздела.
-	  </para>
-	</listitem>
-
-
-	<listitem>
-	  <para>
-	    Создать индивидуальные шаблоны для каждого типа страниц,
-	    таких как страница форума или фотогалереи. Эти шаблоны
-	    расширяют определённые разделы шаблона.
-	  </para>
-	</listitem>
-      </orderedlist>
-    </para>
-
-    <para>
-      Этот подход увеличивает повторное использование кода и упрощает
-      добавление элементов к разделяемым частям сайта, например, к
-      навигации.
-    </para>
-
-    <para>
-      Ниже приведены некоторые советы для работы с наследованием
-      шаблонов:
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    Если вы используете <token>{% extends %}</token> в
-	    шаблоне, он должен быть первым тегом в этом шаблоне. В
-	    противном случае, наследование шаблонов работать не будет.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    В общем случае, чем больше тегов <token>{% block
-	    %}</token> в основном шаблоне, тем лучше. Запомните,
-	    дочерние шаблоны не обязаны определять все блоки основного
-	    шаблона. Так что вы можете указать разумные значения по
-	    умолчанию в ряде блоков, а затем определить в дочернем
-	    шаблоне только те, которые надо изменить. Лучше иметь
-	    больше обработчиков.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Если вы заметили, что повторяете код в ряде шаблонов,
-	    возможно вам надо перенести этот код в <token>{% block
-	    %}</token> в основном шаблоне.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Если вам надо получить содержимое блока из основного
-	    шаблона, переменная <varname>{{ block.super }}</varname>
-	    поможет с этим. Это полезно, если вам потребуется лишь
-	    добавить данные в блок, вместо его полной замены.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Вы не можете определять множество тегов <token>{% block
-	    %}</token> с одинаковым именем в одном шаблоне. Это
-	    ограничение существует по причине того, что эти теги
-	    работают в <quote>обоих</quote> направлениях. То есть,
-	    этот тег не просто предоставляет место для заполнения
-	    данными, он также определяет содержимое, которое заполняет
-	    место в <emphasis>основном шаблоне</emphasis>. Если бы
-	    было два одинаково названных тега <token>{% block
-	    %}</token> в шаблоне, то основной шаблон бы не знал, какое
-	    содержимое блока использовать.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Шаблон, имя которого вы передаёте в <token>{% extends
-	    %}</token> загружается тем же способом, что и при
-	    использовании <function>get_template()</function>. То
-	    есть, имя шаблона добавляется к содержимому параметра
-	    <token>TEMPLATE_DIRS</token>.
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    В большинстве случаев, аргументом для тега <token>{%
-	    extends %}</token> будет строка. Но может быть и
-	    переменная, если вы не знаете имя основного шаблона до
-	    запуска приложения. Это позволяет вам реализовывать
-	    динамические вещи.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </para>
 
   </section>
 
