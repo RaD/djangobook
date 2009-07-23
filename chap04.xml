@@ -396,6 +396,58 @@ django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
 	</screen>
       </para>
 
+      <para>
+	Термин <quote>block tag<footnote><para>Блочный
+	тег</para></footnote></quote> в данном случае относится к
+	<token>{% notatag %}</token>. <quote>Блочный тег</quote> и
+	<quote>шаблонный тег</quote> являются синонимами.
+      </para>
+
+      <para>
+	Система вызывает исключение
+	<classname>TemplateSyntaxError</classname> в любом из
+	нижеприведённых случаев:
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Неверные теги;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Неверные аргументы у верных тегов;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Неверные фильтры;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Неверные аргументы у верных фильтров;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Неверный синтаксис шаблона;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Незакрытые теги (для тегов, которые требуют наличия
+	      завершающих тегов).
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
     </section>
 
     <section id="&BASEID;.usage.render">
@@ -403,6 +455,206 @@ django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
       <title id="&BASEID;.usage.render.title">
 	Обработка шаблона
       </title>
+
+      <para>
+	После того, как объект <classname>Template</classname> создан,
+	вы можете передавать ему данные через
+	<emphasis>контекст</emphasis>. Контекстом называют набор
+	значений, ассоциированных с шаблоннымм переменными. Шаблон
+	использует контекст для замены шаблонных переменных на
+	значения и для вычисления тегов.
+      </para>
+
+      <para>
+	Контекст в Django представлен классом
+	<classname>Context</classname>, который определён в модуле
+	<token>django.template</token>. Конструктор этого класса
+	принимает один необязательный аргумент &mdash; словарь,
+	содержащий имена переменных и ассоциированные им
+	значения. Вызовите метод <function>render()</function> объекта
+	<classname>Template</classname> для заполнения шаблона
+	контекстными значениями:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Context, Template
+>>> t = Template('My name is {{ name }}.')
+>>> c = Context({'name': 'Stephane'})
+>>> t.render(c)
+u'My name is Stephane.'
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Единственное, о чём следует упомянуть &mdash; то, что значение
+	<token>t.render(c)</token> является объектом
+	<classname>Unicode</classname>, а не обычной строкой
+	Python. Вы можете выразить это, добавив <token>u</token> перед
+	строкой. Django везде использует объекты
+	<classname>Unicode</classname> вместо обычных строк. Если вы
+	не понимаете последствия этого подхода, не
+	беспокойтесь. Просто запомните, что поддержка Unicode
+	позволяет упростить для вашего приложения поддержку
+	национальных языков.
+      </para>
+
+      <para>
+	<note>
+	  <title>
+	    Словари и контексты
+	  </title>
+
+	  <para>
+	    Словарь в языке Python является отображением между
+	    известным набором ключей и их
+	    значений. <classname>Context</classname> подобен словарю,
+	    но он также предоставляет дополнительный функционал,
+	    который описан в главе 9 FIXME.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Имена переменных должны начинаться с буквы (<token>A-Z</token>
+	или <token>a-z</token>) и могут состоять из множества букв,
+	цифр, символов подчёркивания и точек. (Точки являются особым
+	случаем, мы скоро рассмотрим их.) Имена переменных
+	регистрозависимы.
+      </para>
+
+      <para>
+	Ниже показан пример компиляции и обработки шаблона, который
+	похож на тот, что мы рассмотрели в начале главы:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> raw_template = """<p>Dear {{ person_name }},</p>
+...
+... <p>Thanks for placing an order from {{ company }}. It's scheduled to
+... ship on {{ ship_date|date:"F j, Y" }}.</p>
+...
+... {% if ordered_warranty %}
+... <p>Your warranty information will be included in the packaging.</p>
+... {% else %}
+... <p>You didn't order a warranty, so you're on your own when
+... the products inevitably stop working.</p>
+... {% endif %}
+...
+... <p>Sincerely,<br />{{ company }}</p>"""
+>>> t = Template(raw_template)
+>>> import datetime
+>>> c = Context({'person_name': 'John Smith',
+...     'company': 'Outdoor Equipment',
+...     'ship_date': datetime.date(2009, 4, 2),
+...     'ordered_warranty': False})
+>>> t.render(c)
+u"<p>Dear John Smith,</p>\n\n<p>Thanks for placing an order from Outdoor
+Equipment. It's scheduled to\nship on April 2, 2009.</p>\n\n\n<p>You
+didn't order a warranty, so you're on your own when\nthe products
+inevitably stop working.</p>\n\n\n<p>Sincerely,<br />Outdoor Equipment
+</p>"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Рассмотрим каждую строку кода:
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Сначала мы импортируем классы
+	      <classname>Template</classname> и
+	      <classname>Context</classname>, которые определены в
+	      модуле <token>django.template</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Мы сохраняем оригинальный текст нашего шаблона в
+	      переменной <varname>raw_template</varname>. Следует
+	      отметить, что мы используем тройные кавычки для
+	      выделения строки, так как мы имеем дело с многострочной
+	      строкой. Дело в том, что строки, заключённый в одинарные
+	      кавычки, не могут быть многострочными.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Затем мы создаём шаблонный объект, <token>t</token>,
+	      передавая <varname>raw_template</varname> в конструктор
+	      класса <classname>Template</classname>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Мы импортируем модуль <token>datetime</token> из
+	      стандартной библиотеки Python, так как нам он
+	      понадобится в далее.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Затем мы создаём контекстный объект,
+	      <token>c</token>. Конструктор класса
+	      <classname>Context</classname> принимает словарь,
+	      который содержит ассоциированные именам значения. В
+	      нашем случае, мы определили, что
+	      <varname>person_name</varname> имеет значение
+	      <token>'John Smith'</token>, <varname>company</varname>
+	      &mdash; <token>'Outdoor Equipment'</token> и так далее.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      В конце мы вызвали метод <function>render()</function>
+	      для нашего шаблонного объекта, передав ему контекст. Нам
+	      был возвращён обработанный шаблон, т.е., метод заменил
+	      переменные их действительными значениями и вычислил все
+	      шаблонные теги.
+	    </para>
+
+	    <para>
+	      Следует отметить, что параграф <quote>You didn’t order a
+	      warranty</quote> был отображён, потому что переменная
+	      <varname>ordered_warranty</varname> вычислилась в
+	      <token>False</token>. Обратите внимание на дату,
+	      <token>April 2, 2009</token>, которая отобразилась в
+	      соответствии с заданным форматом &mdash; <token>'F j,
+	      Y'</token>. (Мы расскажем о аргументак фильтра
+	      <function>date</function> немного позже.)
+	    </para>
+
+	    <para>
+	      Если вы новичок в Python, вы можете заинтересоваться
+	      почему результат содержит символы перевода строки
+	      (<token>\n</token>), вместо того, чтобы отображать
+	      реальные переводы строк. Так происходит из-за тонкостей
+	      работы интерактивного интерпретатора Python: вызов
+	      <token>t.render(c)</token> возвращает строку и, по
+	      умолчанию, интерактивный интерпретатор отображает
+	      <emphasis>представление</emphasis> строки, вместо
+	      печатного варианта строки. Если вы желаете получить
+	      печатную строку, используйте оператор
+	      <function>print</function>: <token>print
+	      t.render(c)</token>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Таковы основы использования шаблонной системы Django: просто
+	напишите шаблонную строку, создайте объект
+	<classname>Template</classname>, создайте
+	<classname>Context</classname> и вызовите метод
+	<function>render()</function>.
+      </para>
     
     </section>
 
@@ -411,7 +663,34 @@ django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
       <title id="&BASEID;.usage.many-contexts.title">
 	Множество контекстов и единственный шаблон
       </title>
-    
+
+      <para>
+	После того, как вы создали объект
+	<classname>Template</classname>, вы можете с его помощью
+	обработать множество контекстов. Например:
+	<screen>
+	  <![CDATA[
+# Так делать не стоит
+for name in ('John', 'Julie', 'Pat'):
+    t = Template('Hello, {{ name }}')
+    print t.render(Context({'name': name}))
+
+# Правильный подход
+t = Template('Hello, {{ name }}')
+for name in ('John', 'Julie', 'Pat'):
+    print t.render(Context({'name': name}))
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Django обрабатывает шаблон достаточно быстро. Внутри всё это
+	сводится к вызову единственного регулярного выражения. Это
+	сильно контрастирует по отношению к шаблонным движкам,
+	построенных на XML, которые вносят затраты на разбор XML и по
+	скорости проигрывают шаблонной системе Django.
+      </para>
+
     </section>
 
     <section id="&BASEID;.usage.lookup">
@@ -419,6 +698,79 @@ django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
       <title id="&BASEID;.usage.lookup.title">
 	Поиск контекстной переменной
       </title>
+
+      <para>
+	В вышеприведённых примерах мы передавали простые значения в
+	контекст, в основном это были строки, иногда даты. Тем не
+	менее, шаблонная система легко обрабатывает более сложные
+	структуры данных, такие как списки, словари и различные
+	объекты.
+      </para>
+
+      <para>
+	Ключом к такой всеядности является символ <token>.</token>
+	(точка). Используйте точку для получения доступа к ключам
+	словаря, атрибутам, методам и индексам объекта.
+      </para>
+
+      <para>
+	Это хорошо проиллюстрировано в нескольких примерах. Например,
+	предположим, что вы передали словарь в шаблон. Для получения
+	доступа к значениям этого словаря по ключу следует
+	использовать точку:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> person = {'name': 'Sally', 'age': '43'}
+>>> t = Template('{{ person.name }} is {{ person.age }} years old.')
+>>> c = Context({'person': person})
+>>> t.render(c)
+u'Sally is 43 years old.'
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Аналогично, точка также позволяет получить доступ к атрибутам
+	объекта. Например, объект <classname>datetime.date</classname>
+	содержит атрибуты <token>year</token>, <token>month</token> и
+	<token>day</token>, и вы можете получить к ним доступ:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> import datetime
+>>> d = datetime.date(1993, 5, 2)
+>>> d.year
+1993
+>>> d.month
+5
+>>> d.day
+2
+>>> t = Template('The month is {{ date.month }} and the year is {{ date.year }}.')
+>>> c = Context({'date': d})
+>>> t.render(c)
+u'The month is 5 and the year is 1993.'
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следующий пример использует класс, демонстрируя методику
+	получения доступа к атрибутам объекта:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> class Person(object):
+...     def __init__(self, first_name, last_name):
+...         self.first_name, self.last_name = first_name, last_name
+>>> t = Template('Hello, {{ person.first_name }} {{ person.last_name }}.')
+>>> c = Context({'person': Person('John', 'Smith')})
+>>> t.render(c)
+u'Hello, John Smith.'
+	  ]]>
+	</screen>
+      </para>
+
     
       <section id="&BASEID;.usage.lookup.method-call">
       
