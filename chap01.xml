@@ -437,6 +437,31 @@ urlpatterns = patterns('',
     </para>
 
     <para>
+      <note>
+	<para>
+	  Рекомендуем ознакомиться с:
+
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		<ulink
+		url="http://www.python.org/dev/peps/pep-0008/">Руководство
+		по стилю кода на языке Python</ulink>.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<ulink
+		url="http://docs.python.org/tutorial/index.html">Туториал</ulink>.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+      </note>
+    </para>
+
+    <para>
       Летом 2005, развив эту среду до такого состояния, что она
       поддерживала большинство сайтов World Online, команда
       разработчиков, включая Якоба Каплан-Мосса (Jacob Kaplan-Moss),
