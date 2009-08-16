@@ -771,6 +771,120 @@ u'Hello, John Smith.'
 	</screen>
       </para>
 
+      <para>
+	С помощью точек можно получать доступ к
+	<emphasis>методам</emphasis> объектов. Например, каждая строка
+	Python обладает методами <function>upper()</function> и
+	<function>isdigit()</function>, и вы можете использовать их в
+	шаблонной системе Django с помощью <quote>точечного</quote>
+	синтаксиса:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> t = Template('{{ var }} -- {{ var.upper }} -- {{ var.isdigit }}')
+>>> t.render(Context({'var': 'hello'}))
+u'hello -- HELLO -- False'
+>>> t.render(Context({'var': '123'}))
+u'123 -- 123 -- True'
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить, что <emphasis>не следует</emphasis>
+	завершать имя метода скобками. Также нет никакой возможности
+	передать аргументы в методы, вы можете использовать только те
+	методы, которые не требуют аргументов. (Мы объясним такой
+	подход немного позже в этой главе.)
+      </para>
+
+      <para>
+	Наконец, точки используюся для доступа к элементам списка по
+	индексу, например:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> t = Template('Item 2 is {{ items.2 }}.')
+>>> c = Context({'items': ['apples', 'bananas', 'carrots']})
+>>> t.render(c)
+u'Item 2 is carrots.'
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Отрицательные значения индекса не допускаются. Например,
+	шаблонная переменная <token>{{ items.-1 }}</token> вызовет
+	исключение <classname>TemplateSyntaxError</classname>.
+
+	<note>
+	  <title>
+	    Списки в Python
+	  </title>
+
+	  <para>
+	    Запомните: индексирование элементов списка в Python
+	    начинается с нуля. Первый элемент имеет индекс 0, второй
+	    &mdash; 1 и так далее.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Использование <quote>точечного</quote> синтаксиса можно
+	описать так, когда шаблонная система обнаруживает точку в
+	имени переменной, она пытается выполнить следующие действия в
+	указанном порядке:
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Поиск в словаре (т.е., <token>foo["bar"]</token>);
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Поиск атрибута (т.е., <token>foo.bar</token>);
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Вызов метода (т.е., <token>foo.bar()</token>);
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Поиск в списке по индексу (т.е., <token>foo[2]</token>).
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Система использует первое, что сработает.
+      </para>
+
+      <para>
+	<quote>Точечный</quote> поиск может быть
+	многоуровневым. Например, в следующем примере используется
+	переменная <token>{{ person.name.upper }}</token>, которая
+	преобразовывается в поиск по словарю
+	(<token>person['name']</token>) и затем вызывается метод
+	(<function>upper()</function>):
+	<screen>
+	  <![CDATA[
+>>> from django.template import Template, Context
+>>> person = {'name': 'Sally', 'age': '43'}
+>>> t = Template('{{ person.name.upper }} is {{ person.age }} years old.')
+>>> c = Context({'person': person})
+>>> t.render(c)
+u'SALLY is 43 years old.'
+	  ]]>
+	</screen>
+      </para>
     
       <section id="&BASEID;.usage.lookup.method-call">
       
@@ -778,6 +892,98 @@ u'Hello, John Smith.'
 	  Вызов методов
 	</title>
 	
+	<para>
+	  Вызовы методов являются более сложным процессом, чем другие
+	  типы <quote>точечного</quote> поиска. Ниже представлены
+	  вещи, о которых рекомендуется помнить:
+
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		Если в процессе <quote>точечного</quote> поиска метод
+		вызывает исключение, оно будет обработано. Но только
+		если исключение не будет иметь атрибута
+		<varname>silent_variable_failure</varname>
+		установленный в <token>True</token>. Если исключение
+		<emphasis>имеет</emphasis> атрибут
+		<varname>silent_variable_failure</varname>, переменная
+		будет преобразовываться в пустую строку, например:
+		<screen>
+		  <![CDATA[
+>>> t = Template("My name is {{ person.first_name }}.")
+>>> class PersonClass3:
+...     def first_name(self):
+...         raise AssertionError, "foo"
+>>> p = PersonClass3()
+>>> t.render(Context({"person": p}))
+Traceback (most recent call last):
+...
+AssertionError: foo
+
+>>> class SilentAssertionError(AssertionError):
+...     silent_variable_failure = True
+>>> class PersonClass4:
+...     def first_name(self):
+...         raise SilentAssertionError
+>>> p = PersonClass4()
+>>> t.render(Context({"person": p}))
+u'My name is .'
+		  ]]>
+		</screen>
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Вызов метода срабатывает только в случае, если метод
+		не требует наличия аргументов. В противном случае,
+		система попробует следующий тип поиска (поиск в списке
+		по индексу).
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Очевидно, что некоторые методы будут иметь побочные
+		эффекты и, в лучшем случае, было бы глупо давать
+		шаблонной системе доступ к ним.
+	      </para>
+
+	      <para>
+		Например, у вас есть объект
+		<classname>BankAccount</classname>, у которого есть
+		метод <function>delete()</function>. Если шаблон
+		содержит что-то аналогичное <token>{{ account.delete
+		}}</token>, где <token>account</token> &mdash; это
+		объект <classname>BankAccount</classname>, то объект
+		будет удалён во время обработки шаблона!
+	      </para>
+
+	      <para>
+		Чтобы сделать такое невозможным, установите для этого
+		метода атрибут <token>alters_data</token>:
+		<screen>
+		  <![CDATA[
+def delete(self):
+    # Delete the account
+delete.alters_data = True
+		  ]]>
+		</screen>
+	      </para>
+
+	      <para>
+		Шаблонная система не будет выполнять метод, помеченный
+		таким образом. Продолжая обсуждение вышеприведённого
+		примера, если шаблон содержит <token>{{ account.delete
+		}}</token> и метод <function>delete()</function> имеет
+		<token>alters_data=True</token>, то метод
+		<function>delete()</function> не будет выполнен при
+		обработке шаблона, он будет просто проигнорирован.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
       </section>
 
       <section id="&BASEID;.usage.lookup.invalid-vars">
@@ -786,6 +992,35 @@ u'Hello, John Smith.'
 	  Обработка неправильных переменных
 	</title>
 	
+	<para>
+	  По умолчанию, если переменная не существует, шаблонная
+	  система отобразит такую переменную как пустую
+	  строку. Например:
+	  <screen>
+	    <![CDATA[
+>>> from django.template import Template, Context
+>>> t = Template('Your name is {{ name }}.')
+>>> t.render(Context())
+u'Your name is .'
+>>> t.render(Context({'var': 'hello'}))
+u'Your name is .'
+>>> t.render(Context({'NAME': 'hello'}))
+u'Your name is .'
+>>> t.render(Context({'Name': 'hello'}))
+u'Your name is .'
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Система просто игнорирует такие шаблонные переменные, не
+	  вызывая исключение, потому что она должна быть устойчивой к
+	  человеческим ошибкам. В данном случае все
+	  <quote>точечные</quote> проверки будут неудачными. В случае
+	  настоящего приложения недопустимо, чтобы web-сайт стал
+	  недоступным из-за маленькой ошибки в шаблоне.
+	</para>
+
       </section>
 
     </section>
@@ -796,8 +1031,616 @@ u'Hello, John Smith.'
 	Играем с контекстными объектами
       </title>
     
+      <para>
+	Большую часть времени, вы будете создавать объекты
+	<classname>Context</classname> передавая готовый словарь в
+	<function>Context()</function>. Но вы можете добавлять и
+	удалять элементы из объекта <classname>Context</classname>
+	после его создания, используя стандартный синтаксис словаря
+	Python:
+	<screen>
+	  <![CDATA[
+>>> from django.template import Context
+>>> c = Context({"foo": "bar"})
+>>> c['foo']
+'bar'
+>>> del c['foo']
+>>> c['foo']
+Traceback (most recent call last):
+  ...
+KeyError: 'foo'
+>>> c['newvariable'] = 'hello'
+>>> c['newvariable']
+'hello'
+	  ]]>
+	</screen>
+      </para>
+
     </section>
 
+  </section>
+
+  <section id="&BASEID;.tags-and-filters">
+    
+    <title id="&BASEID;.tags-and-filters.title">
+      Основные шаблонные теги и фильтры
+    </title>
+    
+    <para>
+      Как мы уже говорили ранее, шаблонная система поставляется со
+      встроенными тегами и фильтрами. Следующие разделы описывают
+      основные теги и шаблоны.
+    </para>
+
+    <section id="&BASEID;.tags-and-filters.tags">
+    
+      <title id="&BASEID;.tags-and-filters.tags.title">
+	Теги
+      </title>
+
+      <section id="&BASEID;.tags-and-filters.tags.if-else">
+	
+	<title id="&BASEID;.tags-and-filters.tags.if-else.title">
+	  if/else
+	</title>
+
+	<para>
+	  Тег <token>{% if %}</token> вычисляет переменную и если
+	  результатом вычисления является <token>True</token> (т.е.,
+	  она существует, не пустая и не равна <token>False</token>),
+	  система отображает всё между <token>{% if %}</token> и
+	  <token>{% endif %}</token>, например:
+	  <screen>
+	    <![CDATA[
+{% if today_is_weekend %}
+    <p>Welcome to the weekend!</p>
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Тег <token>{% else %}</token> является необязательным:
+	  <screen>
+	    <![CDATA[
+{% if today_is_weekend %}
+    <p>Welcome to the weekend!</p>
+{% else %}
+    <p>Get back to work.</p>
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  <note>
+	    <title>
+	      <quote>Истина</quote> в Python
+	    </title>
+
+	    <para>
+	      В Python и в шаблонной системе Django нижеприведённые
+	      объекты вычисляются в <token>False</token> в контексте
+	      <classname>Boolean</classname>:
+
+	      <itemizedlist>
+		<listitem>
+		  <para>
+		    Пустой список (<token>[]</token>);
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Пустой кортеж (<token>()</token>);
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Пустой словарь (<token>{}</token>);
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Ноль (<token>0</token>);
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Особый объект <classname>None</classname>;
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Объект <classname>False</classname> (это очевидно);
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Особые объекты, которые определяют их собственное
+		    поведение <classname>Boolean</classname> (это
+		    питонские навороты).
+		  </para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+
+	    <para>
+	      Всё остальное вычисляется в <token>True</token>.
+	    </para>
+	  </note>
+	</para>
+
+	<para>
+	  Тег <token>{% if %}</token> принимает <token>and</token>,
+	  <token>or</token> или <token>not</token> для тестирования
+	  множества переменных или инвертирования. Например:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list and coach_list %}
+    Both athletes and coaches are available.
+{% endif %}
+
+{% if not athlete_list %}
+    There are no athletes.
+{% endif %}
+
+{% if athlete_list or coach_list %}
+    There are some athletes or some coaches.
+{% endif %}
+
+{% if not athlete_list or coach_list %}
+    There are no athletes or there are some coaches.
+{% endif %}
+
+{% if athlete_list and not coach_list %}
+    There are some athletes and absolutely no coaches.
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Теги <token>{% if %}</token> не позволяют объединять
+	  <token>and</token> и <token>or</token> в одном теге, потому
+	  что порядок логики будет двусмысленным. Пример с ошибкой:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list and coach_list or cheerleader_list %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Использование скобок для управления порядком операций не
+	  поддерживается. Если вам потребуются скобки, рассмотрите
+	  применение логики вне шаблона и передачу результата
+	  вычисления в виде выделенной шаблонной переменной. Или
+	  просто используйте вложенные теги <token>{% if %}</token>,
+	  например:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list %}
+    {% if coach_list or cheerleader_list %}
+        We have athletes, and either coaches or cheerleaders!
+    {% endif %}
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Допускается множественное использование одного и того же
+	  логического оператора, но вы не можете объединять различные
+	  операторы. Вот правильное использование:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list or coach_list or parent_list or teacher_list %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Тега <token>{% elif %}</token> не существует. Используйте
+	  вложенные теги <token>{% if %}</token> для решения такой
+	  задачи:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list %}
+    <p>Here are the athletes: {{ athlete_list }}.</p>
+{% else %}
+    <p>No athletes are available.</p>
+    {% if coach_list %}
+        <p>Here are the coaches: {{ coach_list }}.</p>
+    {% endif %}
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Не забывайте закрывать каждый тег <token>{% if %}</token> с
+	  помощью <token>{% endif %}</token>. В противном случае
+	  Django будет вызывать исключение
+	  <classname>TemplateSyntaxError</classname>.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.tags-and-filters.tags.for">
+	
+	<title id="&BASEID;.tags-and-filters.tags.for.title">
+	  for
+	</title>
+
+	<para>
+	  Тег <token>{% for %}</token> позволяет обработать каждый
+	  элемент последовательности. Аналогично оператору
+	  <token>for</token> языка Python, синтаксис таков <token>for
+	  X in Y</token>, где <token>Y</token> &mdash; это
+	  последовательность, а <token>X</token> &mdash; это имя
+	  переменной, в которую помещается значение текущего
+	  элемента. На каждом шагу цикла, шаблонная система выводит
+	  всё, что находится между тегами <token>{% for %}</token> и
+	  <token>{% endfor %}</token>.
+	</para>
+
+	<para>
+	  Например, вы можете использовать следующих пример для
+	  отображения списка атлетов, который находится в
+	  <varname>athlete_list</varname>:
+	  <screen>
+	    <![CDATA[
+<ul>
+{% for athlete in athlete_list %}
+    <li>{{ athlete.name }}</li>
+{% endfor %}
+</ul>
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Добавьте <token>reversed</token> к тегу для обработки списка
+	  в обратном порядке:
+	  <screen>
+	    <![CDATA[
+{% for athlete in athlete_list reversed %}
+...
+{% endfor %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Теги <token>{% for %}</token> можно вкладывать друг в друга:
+	  <screen>
+	    <![CDATA[
+{% for athlete in athlete_list %}
+    <h1>{{ athlete.name }}</h1>
+    <ul>
+    {% for sport in athlete.sports_played %}
+        <li>{{ sport }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Ниже показан стандартный способ проверки размера списка
+	  перед итерацией по его элементам или вывода отдельного
+	  сообщения, в случае пустого списка:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list %}
+    {% for athlete in athlete_list %}
+        <p>{{ athlete.name }}</p>
+    {% endfor %}
+{% else %}
+    <p>There are no athletes. Only computer programmers.</p>
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Так как этот способ часто употребляется на практике, тег
+	  <token>{% for %}</token> поддерживает необязательный
+	  оператор <token>{% empty %}</token>, который позволяет
+	  выводить сообщение, в случае пустого списка. Этот пример
+	  эквивалентен предыдущему:
+	  <screen>
+	    <![CDATA[
+{% for athlete in athlete_list %}
+    <p>{{ athlete.name }}</p>
+{% empty %}
+    <p>There are no athletes. Only computer programmers.</p>
+{% endfor %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Нет стандартной возможности прекратить цикл до окончания
+	  обработки списка. Если вам надо это сделать, создайтё
+	  переменную, которая будет содержать список только с теми
+	  значениями, которые нужны. Аналогично, нет поддержки
+	  оператора <token>continue</token>, который бы позволил
+	  перейти к обработке следующего элемента списка. (Обратитесь
+	  к разделу <quote><xref linkend="&BASEID;.limitations"
+	  endterm="&BASEID;.limitations.title"/></quote> для описания
+	  причин, которые привели к такому поведению тега.)
+	</para>
+
+	<para>
+	  Во время каждой итерации <token>{% for %}</token> вы
+	  получаете доступ к шаблонной переменной
+	  <varname>forloop</varname>. Эта переменная обладает
+	  несколькими атрибутами, которые предоставляют информацию о
+	  текущем цикле:
+
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		<varname>forloop.counter</varname> всегда содержит
+		целое число, представляющее собой количество
+		выполненных итераций, включая текущую. Отсчёт
+		начинается с единицы, таким образом, во время первой
+		итерации данный атрибут будет иметь значение
+		<token>1</token>. Пример:
+		<screen>
+		  <![CDATA[
+{% for item in todo_list %}
+    <p>{{ forloop.counter }}: {{ item }}</p>
+{% endfor %}
+		  ]]>
+		</screen>
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<varname>forloop.counter0</varname> аналогичен
+		<varname>forloop.counter</varname>, только отсчёт
+		начинается с нуля. То есть, во время первой итерации
+		данный атрибут будет иметь значение <token>0</token>.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<varname>forloop.revcounter</varname> всегда содержит
+		целое число, представляющее собой количество
+		оставшихся итераций. Во время первой итерации данный
+		атрибут содержит число, равное количеству итераций
+		цикла, а время последней итерации &mdash; атрибут
+		содержит значение <token>1</token>.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<varname>forloop.revcounter0</varname> аналогичен
+		атрибуту <varname>forloop.revcounter</varname>, только
+		отсчёт начинается с нуля. Во время первой итерации
+		данный атрибут содержит число, равное количеству
+		итераций цикла минус единица, а время последней
+		итерации &mdash; атрибут содержит значение
+		<token>0</token>.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<varname>forloop.first</varname> является
+		<token>Boolean</token> и установлен в
+		<token>True</token> только во время первой итерации
+		цикла. Пример использования:
+		<screen>
+		  <![CDATA[
+{% for object in objects %}
+    {% if forloop.first %}<li class="first">{% else %}<li>{% endif %}
+    {{ object }}
+    </li>
+{% endfor %}
+		  ]]>
+		</screen>
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<varname>forloop.last</varname> является
+		<token>Boolean</token> и установлен в
+		<token>True</token> только во время последней итерации
+		цикла. Пример использования:
+		<screen>
+		  <![CDATA[
+{% for link in links %}{{ link }}
+  {% if not forloop.last %}|{% endif %}
+{% endfor %}
+		  ]]>
+		</screen>
+	      </para>
+
+	      <para>
+		После обработки данного тега получается примерно такой
+		результат:
+		<screen>
+		  <![CDATA[
+Link1 | Link2 | Link3 | Link4
+		  ]]>
+		</screen>
+	      </para>
+
+	      <para>
+		Другим пример может быть пример с разделением слов с
+		помощью запятой:
+		<screen>
+		  <![CDATA[
+Favorite places:
+{% for p in places %}{{ p }}{% if not forloop.last %}, {% endif %}{% endfor %}
+		  ]]>
+		</screen>
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<varname>forloop.parentloop</varname> является ссылкой
+		на объект <token>forloop</token>
+		<emphasis>родительского</emphasis> цикла, в случае
+		вложенных циклов. Пример:
+		<screen>
+		  <![CDATA[
+{% for country in countries %}
+    <table>
+    {% for city in country.city_list %}
+        <tr>
+        <td>Country #{{ forloop.parentloop.counter }}</td>
+        <td>City #{{ forloop.counter }}</td>
+        <td>{{ city }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endfor %}
+		  ]]>
+		</screen>
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+	<para>
+	  Эта волшебная переменная <varname>forloop</varname> доступна
+	  только внутри циклов. После того, как парсер достигнет тега
+	  <token>{% endfor %}</token>, переменная
+	  <varname>forloop</varname> уничтожается.
+	</para>
+
+	<para>
+	  <note>
+	    <title>
+	      Контекст и переменная <varname>forloop</varname>
+	    </title>
+
+	    <para>
+	      Inside the <token>{% for %}</token> block, the existing
+	      variables are moved out of the way to avoid overwriting
+	      the magic <varname>forloop</varname> variable. Django
+	      exposes this moved context in
+	      <varname>forloop.parentloop</varname> FIXME. В общем
+	      случае вам не надо беспокоиться об этом, но если вы
+	      будете использовать в блоке переменную
+	      <varname>forloop</varname> (не смотря на наши
+	      рекомендации не делать так), она будет переименована в
+	      <varname>forloop.parentloop</varname> на время обработки
+	      блока <token>{% for %}</token>.
+	    </para>
+	  </note>
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.tags-and-filters.tags.ifequal-ifnotequal">
+	
+	<title id="&BASEID;.tags-and-filters.tags.ifequal-ifnotequal.title">
+	  ifequal/ifnotequal
+	</title>
+
+	<para>
+	  
+      </section>
+
+      <section id="&BASEID;.tags-and-filters.tags.comments">
+	
+	<title id="&BASEID;.tags-and-filters.tags.comments.title">
+	  Комментарии
+	</title>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.tags-and-filters.filters">
+    
+      <title id="&BASEID;.tags-and-filters.filters.title">
+	Фильтры
+      </title>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.limitations">
+    
+    <title id="&BASEID;.limitations.title">
+      Философия и ограничения
+    </title>
+
+  </section>
+
+  <section id="&BASEID;.usage-templates">
+    
+    <title id="&BASEID;.usage-templates.title">
+      Использование шаблонов в представлениях
+    </title>
+
+  </section>
+
+  <section id="&BASEID;.loading-templates">
+    
+    <title id="&BASEID;.loading-templates.title">
+      Загрузка шаблонов
+    </title>
+
+    <section id="&BASEID;.loading-templates.render-to-response">
+    
+      <title id="&BASEID;.loading-templates.render-to-response.title">
+	render_to_response()
+      </title>
+
+    </section>
+
+    <section id="&BASEID;.loading-templates.locals-trick">
+    
+      <title id="&BASEID;.loading-templates.locals-trick.title">
+	Трюк с locals()
+      </title>
+
+    </section>
+
+    <section id="&BASEID;.loading-templates.subdirs">
+    
+      <title id="&BASEID;.loading-templates.subdirs.title">
+	Подкаталоги в get_template()
+      </title>
+
+    </section>
+
+    <section id="&BASEID;.loading-templates.include">
+    
+      <title id="&BASEID;.loading-templates.include.title">
+	Шаблонный тег include
+      </title>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.template-inheritance">
+    
+    <title id="&BASEID;.template-inheritance.title">
+      Наследование шаблонов
+    </title>
+    
   </section>
 
 </chapter>
