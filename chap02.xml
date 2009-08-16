@@ -158,7 +158,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
       <para>
 	Официальные релизы имеют имена версий подобные 1.0.3 или 1.1,
-	а последный релиз всегда доступ на <ulink
+	а последный релиз всегда доступны на <ulink
 	url="http://www.djangoproject.com/download/"/>. Для его
 	установки, сначала надо скачать архив, который будет иметь имя
 	подобное
