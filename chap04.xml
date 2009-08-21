@@ -302,7 +302,7 @@ My name is Fred.
       <para>
 	<note>
 	  <title>
-	    A special Python prompt FIXME
+	    Пример интерактивной интерпретации
 	  </title>
 
 	  <para>
@@ -1939,6 +1939,119 @@ multi-line comment.
       Использование шаблонов в представлениях
     </title>
 
+    <para>
+      Вы изучили основы использования шаблонной системы. Теперь
+      давайте используем эти знания для создания
+      представления. Вспомните представление
+      <token>current_datetime</token> из модуля
+      <token>mysite.views</token>, с которого мы начали предыдущую
+      главу. Вот как оно выглядит:
+      <screen>
+	<![CDATA[
+from django.http import HttpResponse
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    html = "<html><body>It is now %s.</body></html>" % now
+    return HttpResponse(html)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Внесём изменения в это представление, чтобы оно стало
+      использовать шаблонную систему Django. Сначала вы можете
+      подумать о чём-то подобном:
+      <screen>
+	<![CDATA[
+from django.template import Template, Context
+from django.http import HttpResponse
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    t = Template("<html><body>It is now {{ current_date }}.</body></html>")
+    html = t.render(Context({'current_date': now}))
+    return HttpResponse(html)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Конечно, такой подход использует шаблонную систему, но не решает
+      проблемы, которые мы описали в начале этой главы. А именно,
+      шаблон всё ещё внедрён в код. Исправим это, поместив шаблон в
+      <emphasis>отдельный файл</emphasis>, который будет
+      использоваться этим представлением.
+    </para>
+
+    <para>
+      Сначала вы можете рассмотреть вариант сохранения шаблона в
+      каком-нибудь файле на файловой системе и затем использовать
+      стандартную для Python функциональность для загрузки содержимого
+      этого шаблона. Ниже показан такой вариант, предполагается, что
+      шаблон находится в файле
+      <filename>/home/djangouser/templates/mytemplate.html</filename>:
+      <screen>
+	<![CDATA[
+from django.template import Template, Context
+from django.http import HttpResponse
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    # Simple way of using templates from the filesystem.
+    # This doesn't account for missing files!
+    fp = open('/home/djangouser/templates/mytemplate.html')
+    t = Template(fp.read())
+    fp.close()
+    html = t.render(Context({'current_date': now}))
+    return HttpResponse(html)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Такой подход, тем не менее, не элегантен по следующим причинам:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Он не обрабатывает случай отсутствия файла. Если файл
+	    <filename>/home/djangouser/templates/mytemplate.html</filename>
+	    не существует или недоступен для чтения, вызов
+	    <function>open()</function> приведёт к исключению
+	    <token>IOError</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Он ищет шаблон по жёстко указанному пути. Если вы
+	    используете такой метод для каждой функции представления,
+	    вы будете размножать путь до шаблона. Мы даже не говорим,
+	    как это надо будет набирать!
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Он включает в себя много одинакового кода. Многое можно
+	    сделать вместо вызова <function>open()</function>,
+	    <function>fp.read.()</function> и
+	    <function>fp.close()</function> при каждой загрузке
+	    шаблона.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Для решения подобных проблем мы будем использовать
+      <emphasis>загрузку шаблонов</emphasis> и <emphasis>каталоги
+      шаблонов</emphasis>, которые описаны в этой главе далее.
+    </para>
+
   </section>
 
   <section id="&BASEID;.loading-templates">
@@ -1947,11 +2060,345 @@ multi-line comment.
       Загрузка шаблонов
     </title>
 
+    <para>
+      Django предоставляет удобный и мощный API для загрузки шаблонов
+      с диска с целью удаления избыточности в вызовах подгрузки
+      шаблонов и в самих шаблонах.
+    </para>
+
+    <para>
+      Для использования этого API сначала требуется указать среде
+      разработки где располагаются шаблоны. Это делать надо в файле
+      конфигурации проекта &mdash;
+      <emphasis><filename>settings.py</filename></emphasis>, как мы
+      показывали в прошлой главе, когда рассказывали о параметре
+      <token>ROOT_URLCONF</token>.
+    </para>
+
+    <para>
+      Если вы следуете книге, откройте ваш
+      <filename>settings.py</filename> и найдите параметр
+      <token>TEMPLATE_DIRS</token>. По умолчанию, он равен пустому
+      кортежу, содержащему несколько автоматически сгенерированных
+      комментариев:
+      <screen>
+	<![CDATA[
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Этот параметр указывает механизму шаблонной системы Django пути,
+      по которым следует искать шаблоны. Укажите требуемый каталог, в
+      котором вы будете хранить шаблоны, например так:
+      <screen>
+TEMPLATE_DIRS = (
+    '/home/django/mysite/templates',
+)
+      </screen>
+    </para>
+
+    <para>
+      Надо отметить несколько моментов:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Вы можете указать любой каталог, который доступен на
+	    чтение пользователю, от которого работает ваш веб
+	    сервер. Если вы не можете придумать такое место, мы
+	    рекомендуем создать каталог <filename>templates</filename>
+	    в каталоге вашего проекта (т.е. в каталоге
+	    <filename>mysite</filename>, который вы создали в главе
+	    <quote><xref linkend="djangobook.chap02"
+	    endterm="djangobook.chap02.title"/></quote>).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если ваш параметр <token>TEMPLATE_DIRS</token> содержит
+	    только один каталог, не забудьте запятую в конце строки с
+	    каталогом шаблонов!
+	  </para>
+
+	  <para>
+	    Неправильно:
+	    <screen>
+	      <![CDATA[
+# Missing comma!
+TEMPLATE_DIRS = (
+    '/home/django/mysite/templates'
+)
+	      ]]>
+	    </screen>
+	  </para>
+
+	  <para>
+	    Правильно:
+	    <screen>
+	      <![CDATA[
+# Comma correctly in place.
+TEMPLATE_DIRS = (
+    '/home/django/mysite/templates',
+)
+	      ]]>
+	    </screen>
+	  </para>
+
+	  <para>
+	    Дело в том, что Python требует наличия запятой в
+	    одноэлементном кортеже, чтобы отличать его от обычного
+	    выражения окружённого скобками. На этом обычно попадаются
+	    новички.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если вы используете Windows, включите букву диска и
+	    используйте Unix-стиль с прямыми слэшами вместо обратных,
+	    вот так:
+	    <screen>
+TEMPLATE_DIRS = (
+    'C:/www/django/templates',
+)
+	    </screen>
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Проще всего использовать абсолютные пути (т.е. пути до
+	    каталогов, которые начинаются от корня файловой
+	    системы). Если вы желаете быть более гибким и независимым
+	    в данном вопросе, вы можете воспользоваться тем, что файлы
+	    настроек в Django &mdash; это всего лишь код на языке
+	    Python и содержимое <token>TEMPLATE_DIRS</token> можно
+	    изменять динамически, например:
+	    <screen>
+import os.path
+
+TEMPLATE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
+)
+	    </screen>
+	  </para>
+
+	  <para>
+	    Этот пример использует <quote>волшебную</quote> переменную
+	    <varname>__file__</varname>, которая автоматически
+	    заменяется именем файла модуля Python, в котором
+	    располагается данный код. Она получает имя каталога, в
+	    котором содержится <filename>settings.py</filename>
+	    (<token>os.path.dirname</token>), соединяет его с
+	    <token>templates</token> кроссплатформенным способом
+	    (<token>os.path.join</token>) и затем проверяет, что
+	    используются только прямые слеши, а обратных нет (в случае
+	    Windows).
+	  </para>
+
+	  <para>
+	    Работая с динамическим Python кодом в файле настроек,
+	    следует отметить, что очень важно избегать ошибок в этом
+	    коде. Если вы сделает синтаксическую ошибку или ошибку,
+	    которая возникнет во время исполнения кода, ваш сайт не
+	    будет работать.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      После установки <token>TEMPLATE_DIRS</token>, следующим шагом
+      будет изменение кода представления для использования
+      функциональности Django для загрузки шаблонов, вместо указания
+      путей к шаблонам. Возвращаясь к нашему представлению
+      <token>current_datetime</token>, давайте изменим его следующим
+      образом:
+      <screen>
+from django.template.loader import get_template
+from django.template import Context
+from django.http import HttpResponse
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    t = get_template('current_datetime.html')
+    html = t.render(Context({'current_date': now}))
+    return HttpResponse(html)
+      </screen>
+    </para>
+
+    <para>
+      В данном примере, мы использовали функцию
+      <function>django.template.loader.get_template()</function>
+      вместо ручной загрузки шаблона из файловой системы. Функция
+      <function>get_template()</function> принимает имя шаблона в
+      качестве аргумента, производит поиск такого шаблона на файловой
+      системе, открывает этот файл и возвращает скомпилированный
+      объект <classname>Template</classname>.
+    </para>
+
+    <para>
+      В данном примере наш шаблон имеет имя
+      <filename>current_datetime.html</filename>, но в расширении
+      <token>.html</token> нет ничего особенного. Вы можете давать
+      вашим шаблоном любое расширение или вообще не использовать его.
+    </para>
+
+    <para>
+      Для того, чтобы определить расположение шаблонов на файловой
+      системе, <function>get_template()</function> использует
+      информацию из <token>TEMPLATE_DIRS</token> и переданное имя
+      шаблона. Например, если параметр <token>TEMPLATE_DIRS</token>
+      содержит <token>'/home/django/mysite/templates'</token>, функция
+      <function>get_template()</function> будет искать шаблон по пути
+      <filename>/home/django/mysite/templates/current_datetime.html</filename>.
+    </para>
+
+    <para>
+      Если <function>get_template()</function> не может найти шаблон с
+      указанным именем, она возвращает исключение
+      <token>TemplateDoesNotExist</token>. Чтобы посмотреть на него,
+      снова запустите сервер разработки Django с помощью команды
+      <command>python manage.py runserver</command>, выполненной в
+      каталоге проекта. Затем запустите с помощью браузера
+      представление <token>current_datetime</token> (т.е. перейдите по
+      ссылке <ulink url="http://127.0.0.1:8000/time/"/>). Предполагая
+      что настройка <token>DEBUG</token> установлена
+      <token>True</token> и вы ещё не создали шаблон
+      <filename>current_datetime.html</filename>, вы должны увидеть
+      страницу с ошибкой, на которой выделено исключение
+      <token>TemplateDoesNotExist</token>.
+    </para>
+
+    <para>
+      <figure id="&BASEID;.pic1" float="0">
+	<title id="&BASEID;.pic1.title">
+	  Страница с ошибкой показывающей, что шаблон не найден
+	</title>
+	<screenshot>
+	  <mediaobject>
+	    <imageobject>
+	      <imagedata fileref="pics/missing_template.png" format="PNG"/>
+	    </imageobject>
+	  </mediaobject>
+	</screenshot>
+      </figure>
+    </para>
+
+    <para>
+      Эта страница с ошибкой похожа на такую же, которую мы
+      рассматривали в главе <quote><xref linkend="djangobook.chap03"
+      endterm="djangobook.chap03.title"/></quote>, только одна вещь
+      тут новая &mdash; отладочная информация: секция
+      <quote>Template-loader postmortem</quote>. Эта информация
+      неоценима при отладке ошибок загрузки шаблона.
+    </para>
+
+    <para>
+      Далее, создадим файл
+      <filename>/home/django/templates/current_datetime.html</filename>
+      в вашем каталоге с шаблонами, с помощью кода:
+      <screen>
+	<![CDATA[
+<html><body>It is now {{ current_date }}.</body></html>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Обновите страницу в вашем браузере и вы увидите результат
+      обработки шаблона.
+    </para>
+
     <section id="&BASEID;.loading-templates.render-to-response">
     
       <title id="&BASEID;.loading-templates.render-to-response.title">
 	render_to_response()
       </title>
+
+      <para>
+	Мы показали вам как загружать шаблон, заполнять
+	<classname>Context</classname> и возвращать объект
+	<classname>HttpResponse</classname> с обработанным
+	шаблоном. Мы оптимизировали код, используя
+	<function>get_template()</function> для загрузки шаблона. Но
+	вам по-прежнему требуется набирать много кода для выполнения
+	этих действий. По причине частого использования этой
+	последовательности действий Django предоставляет более
+	короткий метод, который позволяет вам выполнять эти действия
+	одной строкой кода.
+      </para>
+
+      <para>
+	Речь идёт о функции <function>render_to_response()</function>,
+	которая определена в модуле
+	<token>django.shortcuts</token>. Чаще всего вы будете
+	использовать <function>render_to_response()</function> вместо
+	вышеописанных действий, кроме случая когда ваш работодатель
+	оценивает ваш труд по количеству написанных строк кода.
+      </para>
+
+      <para>
+	Ниже представлен старый знакомый пример
+	<token>current_datetime</token>, использующий функцию
+	<function>render_to_response()</function>:
+	<screen>
+from django.shortcuts import render_to_response
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    return render_to_response('current_datetime.html', {'current_date': now})
+	</screen>
+      </para>
+
+      <para>
+	Какая разница! Пройдёмся по изменениям в коде:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Нам больше не надо импортировать
+	      <function>get_template</function>,
+	      <classname>Template</classname>,
+	      <classname>Context</classname> или
+	      <classname>HttpResponse</classname>. Вместо этого, мы
+	      импортируем
+	      <token>django.shortcuts.render_to_response</token>. Импорт
+	      <token>datetime</token> остался без изменений.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      В функции <function>current_datetime</function> мы всё
+	      ещё вычисляем <varname>now</varname>, но загрузка
+	      шаблона, создание контекста, обработка шаблона и
+	      создание объекта <classname>HttpResponse</classname>
+	      &mdash; обо всём этом заботится функция
+	      <function>render_to_response()</function>. Так как эта
+	      функция возвращает объект
+	      <classname>HttpResponse</classname>, мы просто
+	      возвращаем это значение в представление.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Первым аргументом функции
+	<function>render_to_response()</function> должно быть имя
+	используемого шаблона. Вторым аргументом, если он есть, должен
+	быть словарь, используемый при создании контекста для этого
+	шаблона. Если вы не предоставите второй аргумент, функция
+	будет использовать пустой словарь.
+      </para>
 
     </section>
 
@@ -1961,6 +2408,66 @@ multi-line comment.
 	Трюк с locals()
       </title>
 
+      <para>
+	Рассмотрим последнюю инкарнацию функции
+	<function>current_datetime</function>:
+	<screen>
+def current_datetime(request):
+    now = datetime.datetime.now()
+    return render_to_response('current_datetime.html', {'current_date': now})
+	</screen>
+      </para>
+
+      <para>
+	Постоянно вы будете ловить себя на том, что вы вычисляете
+	значения, сохраняете их в переменных
+	(см. <varname>now</varname> в предыдущем примере) и
+	отправляете эти переменные в шаблон. Особо ленивые
+	разработчики должны отметить, что это немного излишне
+	назначать имена временным переменным <emphasis>и</emphasis>
+	шаблонным переменным. Это не только излишне, но и требует
+	много набора на клавиатуре.
+      </para>
+
+      <para>
+	Таким образом, если вы один из таких ленивых разработчиков и
+	вам нравится краткий код, вы можете воспользоваться встроенной
+	в Python функцией <function>locals()</function>. Она
+	возвращает словарь, хранящий все локальные переменные и их
+	соответствующие значения (речь идёт о всех переменных,
+	определённых в текущей области видимости). Следовательно,
+	предыдущую функцию представления можно переписать так:
+	<screen>
+def current_datetime(request):
+    current_date = datetime.datetime.now()
+    return render_to_response('current_datetime.html', locals())
+	</screen>
+      </para>
+
+      <para>
+	Здесь, вместо ручного ввода контекстного словаря, как это было
+	раньше, вы передали значение функции
+	<function>locals()</function>, которое содержало все
+	переменные определённые в этой точке выполнения функции. Как
+	результат, мы переименовали переменную <varname>now</varname>
+	в <varname>current_date</varname>, потому что это то имя,
+	которое шаблон ожидает. В этом примере
+	<function>locals()</function> не предлагает
+	<emphasis>значительного</emphasis> удобства, но эта методика
+	может сохранить вам время, если вы используете несколько
+	шаблонных переменных или если вы ленивы.
+      </para>
+
+      <para>
+	Следует обратить внимание при использовании
+	<function>locals()</function> на то, что она включает в
+	результат <emphasis>каждую</emphasis> локальную
+	переменную. Это может быть не совсем то, что вам нужно. В
+	предыдущем примере, <function>locals()</function> также
+	включает <token>request</token>. Важно ли это для вас, зависит
+	от вашего приложения и вашего уровня перфекционизма.
+      </para>
+
     </section>
 
     <section id="&BASEID;.loading-templates.subdirs">
@@ -1969,6 +2476,50 @@ multi-line comment.
 	Подкаталоги в get_template()
       </title>
 
+      <para>
+	Может стать неудобно хранить все шаблоны в одном каталоге. Вам
+	может понадобиться хранить шаблоны в подкаталогах вашего
+	каталога шаблонов, это нормально. Действительно, мы
+	рекомендуем делать так. Более продвинутые особенности Django
+	(такие как общая система представлений, которая будет описана
+	в главе <quote><xref linkend="djangobook.chap11"
+	endterm="djangobook.chap11.title"/></quote>) ожидают такое
+	расположение шаблонов по умолчанию.
+      </para>
+
+      <para>
+	Хранение шаблонов в подкаталогах несложное занятие. В вашем
+	вызове <function>get_template()</function>, просто включите
+	имя подкаталога и слэш перед именем шаблона, вот так:
+	<screen>
+t = get_template('dateapp/current_datetime.html')
+	</screen>
+      </para>
+
+      <para>
+	Так как <function>render_to_response()</function> является
+	небольшой обёрткой к <function>get_template()</function>, вы
+	можете делать то же самое и с первым аргументом функции
+	<function>render_to_response()</function>.
+      </para>
+
+      <para>
+	Нет ограничений на глубину дерева подкаталогов. Используйте
+	столько сколько нужно.
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    Пользователи Windows должны использовать прямой слэш
+	    (<token>/</token>) вместо обратного
+	    (<token>\</token>). Функция
+	    <function>get_template()</function> ожидает прямые слэши в
+	    имени файла с шаблоном.
+	  </para>
+	</note>
+      </para>
+
     </section>
 
     <section id="&BASEID;.loading-templates.include">
@@ -1976,6 +2527,111 @@ multi-line comment.
       <title id="&BASEID;.loading-templates.include.title">
 	Шаблонный тег include
       </title>
+
+      <para>
+	После того как мы описали механизм загрузки шаблонов, мы можем
+	рассказать о встроенном шаблонном теге, который использует
+	его: <token>{% include %}</token>. Этот тег позволяет вам
+	подключать содержимое другого шаблона. Аргументом тега
+	является путь к подключаемому шаблону. Имя шаблона может быть
+	представлено как переменной, так и строкой, заключённой в
+	двойные или одинарные кавычки. Если вы используете один и тот
+	же код в нескольких шаблонах, рассмотрите возможность
+	использования тега <token>{% include %}</token>, чтобы
+	исключить дублирование кода.
+      </para>
+
+      <para>
+	Следующий пример дважды подключает содержимое шаблона
+	<filename>nav.html</filename>. Строки примера эквивалентны,
+	несмотря на разницу используемых кавычек:
+	<screen>
+{% include 'nav.html' %}
+{% include "nav.html" %}
+	</screen>
+      </para>
+
+      <para>
+	Следующий пример показывает как следует подключать содержимое
+	шаблона <filename>includes/nav.html</filename>:
+	<screen>
+{% include 'includes/nav.html' %}
+	</screen>
+      </para>
+
+      <para>
+	Следующий пример подключает содержимое шаблона, имя которого
+	содержится в переменной <varname>template_name</varname>:
+	<screen>
+{% include template_name %}
+	</screen>
+      </para>
+
+      <para>
+	Подобно функции <function>get_template()</function>, имя файла
+	для шаблона определяется с использованием каталога для
+	шаблонов из параметра конфигурации
+	<token>TEMPLATE_DIRS</token>.
+      </para>
+
+      <para>
+	Подключенные шаблоны обрабатываются в контексте шаблона,
+	который их подключил. Например, рассмотрим два шаблона:
+	<screen>
+	  <![CDATA[
+# mypage.html
+
+<html>
+<body>
+{% include "includes/nav.html" %}
+<h1>{{ title }}</h1>
+</body>
+</html>
+	  ]]>
+	</screen>
+
+	<screen>
+	  <![CDATA[
+# includes/nav.html
+
+<div id="nav">
+    You are in: {{ current_section }}
+</div>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	При обработке шаблона <filename>mypage.html</filename> с
+	контекстом, в котором определена переменная
+	<varname>current_section</varname>, тогда переменная будет
+	доступна в <quote>подключенном</quote> шаблоне, как вы могли
+	ожидать.
+      </para>
+
+      <para>
+	Если подключаемый шаблон не существует, Django выполнит одно
+	действие из нижеприведённых:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Если параметр конфигурации <token>DEBUG</token> имеет
+	      значение <token>True</token>, вы увидите исключение
+	      <token>TemplateDoesNotExist</token> на странице с
+	      ошибкой.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если параметр конфигурации <token>DEBUG</token> имеет
+	      значение <token>False</token>, вы не увидите никакой
+	      ошибки, просто в месте подключаемого шаблона ничего не
+	      отобразится.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
 
     </section>
 
@@ -1987,6 +2643,379 @@ multi-line comment.
       Наследование шаблонов
     </title>
     
+    <para>
+      До этого момента наши примеры шаблонов содержали крошечные
+      фрагменты HTML, но в реальном проекте, вы будете использовать
+      шаблонную систему Django для создания всех страниц проекта. Это
+      приводит к общей проблеме веб разработки &mdash; рассматривая
+      весь сайт, как уменьшить повторение и избыточность общих
+      областей страниц, таких как навигация по сайту?
+    </para>
+
+    <para>
+      Классическим методом решения этой задачи является использование
+      <emphasis>кода на серверной стороне</emphasis> &mdash; команд,
+      которые вы можете добавлять в ваши HTML страницы,
+      <quote>подключая</quote> одну страницу в другую. Действительно,
+      Django предоставляет поддержку этого метода с помощью
+      вышеописанного тега <token>{% include %}</token>. Но более
+      предпочтительным методом решения такой задачи с помощью Django
+      является использование элегантной стратегии под названием
+      <emphasis>наследование шаблонов</emphasis>.
+    </para>
+
+    <para>
+      В сущности, наследование шаблонов позволяет создать основной
+      <quote>скелетный</quote> шаблон, который содержит все общие
+      части вашего сайта и определить <quote>блоки</quote>, которые
+      могут быть заменены шаблонами-наследниками.
+    </para>
+
+    <para>
+      Давайте рассмотрим такой пример, создав более сложный шаблон для
+      представления <token>current_datetime</token>. Отредактируем
+      его:
+      <screen>
+	<![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <title>The current time</title>
+</head>
+<body>
+    <h1>My helpful timestamp site</h1>
+    <p>It is now {{ current_date }}.</p>
+
+    <hr>
+    <p>Thanks for visiting my site.</p>
+</body>
+</html>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Выглядит неплохо, но что случится, когда нам понадобится создать
+      другое представление, скажем, <token>hours_ahead</token> из
+      главы <quote><xref linkend="djangobook.chap03"
+      endterm="djangobook.chap03.title"/></quote>. Если мы снова
+      желаем получить приятный, правильный, полный HTML шаблон, нам
+      потребуется создать нечто такое:
+      <screen>
+	<![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <title>Future time</title>
+</head>
+<body>
+    <h1>My helpful timestamp site</h1>
+    <p>In {{ hour_offset }} hour(s), it will be {{ next_time }}.</p>
+
+    <hr>
+    <p>Thanks for visiting my site.</p>
+</body>
+</html>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Очевидно, что мы просто скопировали большую часть
+      HTML. Представьте, что у нас более однородный сайт, включая
+      навигационную панель, несколько стилей, возможно, немного
+      JavaScript &mdash; нам потребуется использовать повторяющийся
+      HTML в каждом шаблоне.
+    </para>
+
+    <para>
+      Решение этой проблемы с помощью подключения шаблонов на
+      серверной стороне &mdash; выделение общих кусков в обоих
+      шаблонах и сохранение их в отдельных шаблонах, которые затем
+      включаются в каждый шаблон. Возможно, вы сохранили верхнюю часть
+      шаблона в файле <filename>header.html</filename>:
+      <screen>
+	<![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      И, возможно, вы сохранили нижнюю часть в файле
+      <filename>footer.html</filename>:
+      <screen>
+	<![CDATA[
+    <hr>
+    <p>Thanks for visiting my site.</p>
+</body>
+</html>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      С помощью стратегии использования включений шаблонов, работать с
+      заголовками и окончаниями страниц легко. Но подход неряшлив. В
+      данном примере, у обеих страниц есть тег
+      <token><![CDATA[<title>]]></token> &mdash; <![CDATA[<h1>]]>My
+      helpful timestamp<![CDATA[</h1>]]> &mdash; но мы не можем
+      поместить его в <filename>header.html</filename>,
+      т.к. содержимое тегов различно. Если мы включим тег
+      <![CDATA[<h1>]]> в заголовок, нам потребуется включить и
+      <![CDATA[<title>]]>, что не позволит нам настраивать его
+      содержимое для каждой страницы. Видите, куда это нас ведёт?
+    </para>
+
+    <para>
+      Система наследования шаблонов Django решает такие проблемы. Вы
+      можете рассматривать её как версию с <quote>вынесением
+      различий</quote> шаблонов на серверной стороне. Вместо
+      определения <emphasis>общих</emphasis> частей шаблона, вы
+      определяете <emphasis>различающиеся</emphasis> части.
+    </para>
+
+    <para>
+      Первым шагом является определение <emphasis>базового
+      шаблона</emphasis> &mdash; основы вашей страницы, которую позже
+      будут заполнять <emphasis>дочерние шаблоны</emphasis>. Ниже
+      представлен базовый шаблон для нашего текущего примера:
+      <screen>
+	<![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <h1>My helpful timestamp site</h1>
+    {% block content %}{% endblock %}
+    {% block footer %}
+    <hr>
+    <p>Thanks for visiting my site.</p>
+    {% endblock %}
+</body>
+</html>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Этот шаблон, который мы назвали <filename>base.html</filename>,
+      определяет основу HTML документа, которую мы будем использовать
+      для каждой страницы на сайте. Это уже задача дочерних шаблонов
+      заполнить или добавить, или не трогать содержимое этих
+      блоков. (Если вы следуете за нашим рассказом, сохраните этот
+      файл в каталог для шаблонов.)
+    </para>
+
+    <para>
+      Здесь мы используем тег, который раньше не определяли: <token>{%
+      block %}</token>. Всё, что такие теги делают &mdash; указывают
+      шаблонной системе, что дочерние шаблоны могут переопределять
+      эту часть основного шаблона.
+    </para>
+
+    <para>
+      Имея основной шаблон, мы можем внести изменения в существующий
+      <filename>current_datetime.html</filename>, чтобы использовать
+      его:
+      <screen>
+	<![CDATA[
+{% extends "base.html" %}
+
+{% block title %}The current time{% endblock %}
+
+{% block content %}
+<p>It is now {{ current_date }}.</p>
+{% endblock %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Теперь, давайте создадим шаблон для представления
+      <token>hours_ahead</token> из главы <quote><xref
+      linkend="djangobook.chap03"
+      endterm="djangobook.chap03.title"/></quote>. (Если вы читаете,
+      изменяя код, мы оставим на вас изменение кода
+      <token>hours_ahead</token> для использования шаблонной системы.)
+      Вот как он должен выглядеть:
+      <screen>
+	<![CDATA[
+{% extends "base.html" %}
+
+{% block title %}Future time{% endblock %}
+
+{% block content %}
+<p>In {{ hour_offset }} hour(s), it will be {{ next_time }}.</p>
+{% endblock %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Разве не прекрасно? Каждый шаблон содержит только
+      <emphasis>уникальный</emphasis> код. Нет никакой
+      избыточности. Если вам потребуется внести глобальные изменения в
+      сайт, просто измените содержимое шаблона
+      <filename>base.html</filename> и все остальные шаблоны
+      немедленно отразят ваши изменения.
+    </para>
+
+    <para>
+      Вот так это работает. При загрузке шаблона
+      <filename>current_datetime.html</filename>, шаблонная система
+      видит тег <token>{% extends %}</token>, что означает, что перед
+      ней дочерний шаблон. Система немедленно загружает базовый
+      шаблон, в данном случае, <filename>base.html</filename>.
+    </para>
+
+    <para>
+      После этого, шаблонная система находит три тега <token>{% block
+      %}</token> в <filename>base.html</filename> и заменяет эти блоки
+      содержимым дочернего шаблона. Таким образом, заголовок, который
+      мы определили в <token>{% block title %}</token> дочернего
+      шаблона, будет использован вместо блока <token>{% block title
+      %}</token> базового шаблона, а текст, определённый в <token>{%
+      block content %}</token> &mdash; вместо блока <token>{% block
+      content %}</token>.
+    </para>
+
+    <para>
+      Следует отметить, что раз дочерний шаблон не определяет блок
+      <token>footer</token>, шаблонная система вместо этого использует
+      значение из базового шаблона. Содержимое внутри тега <token>{%
+      block %}</token> в основном шаблоне всегда используется в
+      качестве запасного.
+    </para>
+
+    <para>
+      Наследование никак не влияет на работу контекста. Другими
+      словами, любой шаблон в дереве наследования будет иметь доступ к
+      каждому элементу контекста.
+    </para>
+
+    <para>
+      Вы можете использовать столько уровней наследования, сколько
+      необходимо. Одним из общих способов использования наследования
+      является следующий трёх-уровневый подход:
+      <orderedlist>
+	<listitem>
+	  <para>
+	    Создать шаблон <filename>base.html</filename>, который
+	    содержит основную информацию о дизайне сайта. Эта часть
+	    изменяется очень редко, если вообще изменяется.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Создать шаблон <filename>base_SECTION.html</filename> для
+	    каждого <quote>раздела</quote> вашего сайта
+	    (т.е. <filename>base_photos.html</filename> и
+	    <filename>base_forum.html</filename>). Эти шаблоны
+	    расширяют <filename>base.html</filename> и включают стили
+	    и дизайн для конкретного раздела.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Создать индивидуальные шаблоны для каждого типа страниц,
+	    таких как страница форума или фотогалереи. Эти шаблоны
+	    расширяют определённые разделы шаблона.
+	  </para>
+	</listitem>
+      </orderedlist>
+    </para>
+
+    <para>
+      Этот подход увеличивает повторное использование кода и упрощает
+      добавление элементов к разделяемым частям сайта, например, к
+      навигации.
+    </para>
+
+    <para>
+      Ниже приведены некоторые советы для работы с наследованием
+      шаблонов:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Если вы используете <token>{% extends %}</token> в
+	    шаблоне, он должен быть первым тегом в этом шаблоне. В
+	    противном случае, наследование шаблонов работать не будет.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    В общем случае, чем больше тегов <token>{% block
+	    %}</token> в основном шаблоне, тем лучше. Запомните,
+	    дочерние шаблоны не обязаны определять все блоки основного
+	    шаблона. Так что вы можете указать разумные значения по
+	    умолчанию в ряде блоков, а затем определить в дочернем
+	    шаблоне только те, которые надо изменить. Лучше иметь
+	    больше обработчиков.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если вы заметили, что повторяете код в ряде шаблонов,
+	    возможно вам надо перенести этот код в <token>{% block
+	    %}</token> в основном шаблоне.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если вам надо получить содержимое блока из основного
+	    шаблона, переменная <varname>{{ block.super }}</varname>
+	    поможет с этим. Это полезно, если вам потребуется лишь
+	    добавить данные в блок, вместо его полной замены.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Вы не можете определять множество тегов <token>{% block
+	    %}</token> с одинаковым именем в одном шаблоне. Это
+	    ограничение существует по причине того, что эти теги
+	    работают в <quote>обоих</quote> направлениях. То есть,
+	    этот тег не просто предоставляет место для заполнения
+	    данными, он также определяет содержимое, которое заполняет
+	    место в <emphasis>основном шаблоне</emphasis>. Если бы
+	    было два одинаково названных тега <token>{% block
+	    %}</token> в шаблоне, то основной шаблон бы не знал, какое
+	    содержимое блока использовать.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Шаблон, имя которого вы передаёте в <token>{% extends
+	    %}</token> загружается тем же способом, что и при
+	    использовании <function>get_template()</function>. То
+	    есть, имя шаблона добавляется к содержимому параметра
+	    <token>TEMPLATE_DIRS</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    В большинстве случаев, аргументом для тега <token>{%
+	    extends %}</token> будет строка. Но может быть и
+	    переменная, если вы не знаете имя основного шаблона до
+	    запуска приложения. Это позволяет вам реализовывать
+	    динамические вещи.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
   </section>
 
 </chapter>
