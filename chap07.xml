@@ -1977,4 +1977,37 @@ class ContactForm(forms.Form):
 
   </section>
 
+  <section id="&BASEID;.what-is-next">
+    
+    <title id="&BASEID;.what-is-next.title">
+      Что дальше?
+    </title>
+
+    <para>
+      Данная глава завершает вводную часть этой книги. Следующие
+      главы, с <quote><xref linkend="djangobook.chap08"
+      endterm="djangobook.chap08.title"/></quote> по <quote><xref
+      linkend="djangobook.chap12"
+      endterm="djangobook.chap12.title"/></quote>, рассматривают
+      подробности профессионального использования Django, включая
+      вопрос развёртывания приложения.
+    </para>
+
+    <para>
+      После изучения этих семи глав вы должны обладать достаточным
+      объемом знаний для того, чтобы начать работу над собственными
+      Django проектами. Оставшаяся часть книги поможет вам разобраться
+      с тонкостями этого процесса.
+    </para>
+
+    <para>
+      Мы начнём главу <quote><xref linkend="djangobook.chap08"
+      endterm="djangobook.chap08.title"/></quote> с возвращения к
+      представлениям и схеме URL (о которых было рассказано в главе
+      <quote><xref linkend="djangobook.chap03"
+      endterm="djangobook.chap03.title"/></quote>).
+    </para>
+
+  </section>
+
 </chapter>
