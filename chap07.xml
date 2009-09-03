@@ -33,7 +33,7 @@
     <para>
       Мы впервые коснулись объектов <classname>HttpRequest</classname>
       в главе <quote><xref linkend="djangobook.chap03"
-      encoding="djangobook.chap03.title"/></quote> при начальном
+      endterm="djangobook.chap03.title"/></quote> при начальном
       изучении функций представления, но мы многого тогда не
       рассказали. Помните каждая функция представления принимала
       объект <classname>HttpRequest</classname> в качестве первого
@@ -93,19 +93,19 @@ def hello(request):
 	      <row>
 		<entry><token>request.path</token></entry>
 		<entry>Полный путь, без домена, но с начальным слешом.</entry>
-		<entry><token>"/hello/"</token></entry>
+		<entry><token>/hello/</token></entry>
 	      </row>
 
 	      <row>
 		<entry><token>request.get_host()</token></entry>
 		<entry>Имя компьютера (т.е., <quote>домен</quote>).</entry>
-		<entry><token>"127.0.0.1:8000"</token> или <token>"www.example.com"</token></entry>
+		<entry><token>127.0.0.1:8000</token> или <token>www.example.com</token></entry>
 	      </row>
 
 	      <row>
 		<entry><token>request.get_full_path()</token></entry>
 		<entry>Равен <token>path</token>, но со строкой запроса (если она существует).</entry>
-		<entry><token>"/hello/?print=true"</token></entry>
+		<entry><token>/hello/?print=true</token></entry>
 	      </row>
 
 	      <row>
