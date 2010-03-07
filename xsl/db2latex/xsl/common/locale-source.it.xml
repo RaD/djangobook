@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="US-ASCII"?>
-<l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="it" english-language-name="Italian">
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="http://docbook.sourceforge.net/release/xsl/current/common/it.xml#xpointer(/*/node())"/>
-</l:l10n>

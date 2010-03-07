@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.appendix_g">
+]>
+
+<appendix lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Утилита django-admin
+  </title>
+
+  <para>
+    Эта глава ждёт своего переводчика.
+  </para>
+
+  <para>
+    В ожидании пока это произойдёт, <ulink
+    url="http://djangobook.com/en/1.0/appendixG/">читаем
+    оригинал</ulink>.
+  </para>
+
+</appendix>

@@ -1,0 +1,2455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap12">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Сессии, пользователи и регистрация
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Пришло время для исповеди: до этого момента мы умышленно
+    игнорировали очень важный аспект разработки.
+  </para>
+
+  <para>
+    До сих пор мы рассматривали общий случай создания HTML, но в этой
+    главе мы пойдём другим путём и рассмотрим возможности Django для
+    генерации других видов контента. До этого момента мы рассматривали
+    посетителей нашего сайта как безликую, анонимную массу
+    просматривающую наши аккуратно свёрстанные страницы.
+  </para>
+
+  <para>
+    Конечно, на самом деле всё не так. За браузерами, которые работают
+    с нашим сайтом, сидят реальные люди (по крайней мере, иногда). Это
+    нельзя игнорировать. Интернет предназначен для объединения людей,
+    а не машин. Если мы стараемся разрабатывать совершенно неотразимые
+    сайты, в конечном счёте нам придётся учитывать мнение людей.
+  </para>
+
+  <para>
+    К сожалению, не всё так просто. HTTP разработан так, чтобы
+    <emphasis>не учитывать</emphasis> состояния. Таким образом, каждый
+    запрос происходит как-бы в вакууме. Не существует взаимосвязи
+    между одним запросом и другим. Соответственно, мы никак не сможем
+    привязаться к какому-нибудь аспекту (IP адрес, тип браузера и так
+    далее) для гарантированного определения запросов от одного
+    конкретного пользователя.
+  </para>
+
+  <para>
+    В этой главе вы научитесь как решать подобную задачу. Мы начнём с
+    нижнего уровня (<emphasis>cookes</emphasis>) и продолжим изучение
+    инструментов высокого уровня для поддержки сессий, аутентификации
+    и авторизации пользователей.
+  </para>
+
+  <section id="&BASEID;.cookies">
+
+    <title id="&BASEID;.cookies.title">
+      Cookie
+    </title>
+
+    <para>
+      Разработчики браузеров давно поняли, что отсутствие поддержки
+      состояний в протоколе HTTP вызвало большие трудности у веб
+      разработчиков. И тогда были созданы
+      <emphasis>cookie</emphasis>. Cookie &mdash; это небольшие
+      кусочки информации, которые браузер сохраняет по просьбе веб
+      сервера. При каждом обращении браузера к странице определённого
+      сайта, он отсылает полученную ранее cookie.
+    </para>
+
+    <para>
+      Давайте рассмотрим как это работает. Когда вы открываете свой
+      браузер и переходите на <ulink url="http://google.com/"/>, ваш
+      браузер отправляет HTTP запрос на Google, который начинается
+      так:
+      <screen>
+	<![CDATA[
+GET / HTTP/1.1
+Host: google.com
+...
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Ответ Google выглядит обычно так:
+      <screen>
+	<![CDATA[
+HTTP/1.1 200 OK
+Content-Type: text/html
+Set-Cookie: PREF=ID=5b14f22bdaf1e81c:TM=1167000671:LM=1167000671;
+            expires=Sun, 17-Jan-2038 19:14:07 GMT;
+            path=/; domain=.google.com
+Server: GWS/2.1
+...
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Обратите внимание на заголовок <token>Set-Cookie</token>. Ваш
+      браузер сохранит значение cookie
+      (<token>PREF=ID=5b14f22bdaf1e81c:TM=1167000671:LM=1167000671</token>)
+      и будет отсылать его обратно, при каждом обращении к серверу
+      Google. Таким образом, при следующем посещении Google, ваш
+      браузер будет посылать такой запрос:
+      <screen>
+	<![CDATA[
+GET / HTTP/1.1
+Host: google.com
+Cookie: PREF=ID=5b14f22bdaf1e81c:TM=1167000671:LM=1167000671
+...
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Google затем может использовать значение <token>Cookie</token>
+      для определение того, что вы именно тот, кто обращался к сайту
+      ранее. Значение, например, может быть ключом записи в базе
+      данных, которая хранит информацию о пользователе. Google может
+      (и будет) использовать её для отображения вашего имени на
+      странице.
+    </para>
+
+    <section id="&BASEID;.cookies.get-set">
+
+      <title id="&BASEID;.cookies.get-set.title">
+	Получение и установка
+      </title>
+      
+      <para>
+	Для сохранения состояний в Django большую часть времени вы
+	пожелаете использовать высокоуровневые сессии и/или среду
+	пользователя, которая будет рассмотрена в этой главе чуть
+	позже. Однако, мы прервёмся и посмотрим как читать и писать
+	cookie на низком уровне. Это поможет вам понять как работают
+	инструменты, которые описаны далее. И это вам пригодится, если
+	вам придётся напрямую работать с cookie для решения своих
+	задач.
+      </para>
+
+      <para>
+	Прочитать уже установленный cookie невероятно просто. Каждый
+	объект запроса обладает объектом <token>COOKIES</token>,
+	который выглядит как словарь. Вы можете использовать его для
+	чтения значения любого cookie, которые браузер отправил в
+	представление:
+	<screen>
+	  <![CDATA[
+def show_color(request):
+    if "favorite_color" in request.COOKIES:
+        return HttpResponse("Your favorite color is %s" % \
+            request.COOKIES["favorite_color"])
+    else:
+        return HttpResponse("You don't have a favorite color.")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Записать cookie гораздо сложнее. Вам потребуется использовать
+	метод <function>set_cookie()</function> объекта
+	<classname>HttpResponse</classname>. Ниже приведён пример
+	установки cookie <token>favorite_color</token>, значение для
+	которого берётся из параметра <token>GET</token>:
+	<screen>
+	  <![CDATA[
+def set_color(request):
+    if "favorite_color" in request.GET:
+
+        # Create an HttpResponse object...
+        response = HttpResponse("Your favorite color is now %s" % \
+            request.GET["favorite_color"])
+
+        # ... and set a cookie on the response
+        response.set_cookie("favorite_color",
+                            request.GET["favorite_color"])
+
+        return response
+
+    else:
+        return HttpResponse("You didn't give a favorite color.")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Вы также можете передать ряд необязательных аргументов в
+	<function>response.set_cookie()</function>, которые управляют
+	поведением cookie, подробности описаны в таблице <quote><xref
+	linkend="&BASEID;.tbl1"
+	endterm="&BASEID;.tbl1.title"/></quote>:
+
+	<table id="&BASEID;.tbl1" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl1.title">
+	    Опции cookie
+	  </title>
+	  
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+
+	    <colspec colname="c1" colwidth="2cm"/>
+	    <colspec colname="c2" colwidth="2cm"/>
+	    <colspec colname="c3" colwidth="10cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Параметр</entry>
+		<entry>По умолчанию</entry>
+		<entry>Описание</entry>
+	      </row>
+	    </thead>
+	    
+	    <tbody>
+	      <row>
+		<entry><token>max_age</token></entry>
+		<entry><token>None</token></entry>
+		<entry>Время (в секундах) активности cookie. Если
+		данный параметр имеет значение None, то cookie
+		действует до закрытия браузера.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>expires</token></entry>
+		<entry><token>None</token></entry>
+		<entry>Точная дата и время окончания действия
+		cookie. Должна быть указана в формате <token>Wdy,
+		DD-Mth-YY HH:MM:SS GMT</token>. Если этот параметр
+		установлен, он имеет преимущество над
+		<token>max_age</token>.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>path</token></entry>
+		<entry><token>/</token></entry>
+		<entry>
+		  <para>
+		    Префикс пути для которого верен данный
+		    cookie. Браузеры отправляют cookie на сервер,
+		    только для страниц соответствующих указанному
+		    префиксу пути. Таким образом вы можете
+		    использовать этот параметр для отправления cookie
+		    в определённую секцию сайта.
+		  </para>
+
+		  <para>
+		    Этот параметр очень полезен в случае, когда вы не
+		    контролируете высший уровень домена вашего сайта.
+		  </para>
+		</entry>
+	      </row>
+
+	      <row>
+		<entry><token>domain</token></entry>
+		<entry><token>None</token></entry>
+		<entry>
+		  <para>
+		    Домен для которого действителен cookie. Вы можете
+		    использовать этот параметр для установке cookie
+		    для другого домена. Например,
+		    <token>domain=".example.com"</token> установит
+		    cookie, который будет отправляться страницам
+		    доменов <token>www.example.com</token>,
+		    <token>www2.example.com</token> и
+		    <token>an.other.sub.domain.example.com</token>.
+		  </para>
+
+		  <para>
+		    Если этот параметр установлен в
+		    <token>None</token>, то cookie будет доступен
+		    только для установившего его домена.
+		  </para>
+		</entry>
+	      </row>
+
+	      <row>
+		<entry><token>secure</token></entry>
+		<entry><token>False</token></entry>
+		<entry>Если параметр установлен в <token>True</token>,
+		то браузер передаёт этот cookie на сервер по протоколу
+		HTTPS.</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.cookies.blessing">
+
+      <title id="&BASEID;.cookies.blessing.title">
+	Всеобщее счастье
+      </title>
+      
+      <para>
+	Вы могли отметить ряд потенциальных проблем методики работы с
+	cookie. Взглянем на наиболее важные из них:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Хранение cookie является исключительно
+	      добровольным. Браузеры ничего не гарантируют. В
+	      действительности все браузеры позволяют пользователям
+	      управлять политикой работы с cookie. Если вы желаете
+	      увидеть как важны cookie для веба, включите опцию
+	      браузера <quote>Спрашивать разрешение для каждого
+	      cookie</quote>.
+	    </para>
+
+	    <para>
+	      Несмотря на их почти универсальное использование, cookie
+	      ненадёжны. Это означает, что разработчики должны
+	      проверять, что пользователь действительно принял cookie
+	      прежде чем начинать использовать их.
+	    </para>
+
+	    <para>
+	      Самое главное, <emphasis>никогда</emphasis> не
+	      сохраняйте важную информацию в cookie. Интернет заполнен
+	      ужасными историями о разработчиках, которые сохраняли
+	      не восстанавливаемую информацию в cookie.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Cookie небезопасны, особенно те, которые отправлялись
+	      без использования протокола HTTPS. Cookie крайне легко
+	      прочитать, по причине того, что они пересылают
+	      информацию чистым текстом. Таким образом, атакующий
+	      прослушивает канал, ловит cookie и читает
+	      информацию. Это означает, что вы никогда не будете
+	      пересылать важную информацию в cookie.
+	    </para>
+
+	    <para>
+	      Существует более хитрая атака, известная как
+	      <emphasis>человек посередине</emphasis>, когда атакующий
+	      перехватывает cookie и использует его, чтобы
+	      представиться вами. Глава 19 FIMXE подробно описывает
+	      такие атаки и методы их предотвращения.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Cookie не защищены даже от того, кому они
+	      отсылаются. Большинство браузеров предоставляют простые
+	      способы изменения содержимого отдельных cookie, а
+	      изобретательные пользователя могут всегда
+	      воспользоваться такими инструментами, как <ulink
+	      url="http://wwwsearch.sourceforge.net/mechanize/">mechanize</ulink>
+	      для ручного создания HTTP запросов.
+	    </para>
+
+	    <para>
+	      Таким образом вы не можете хранить в cookie данные,
+	      которые могут быть чувствительны к взлому. Стандартная
+	      ошибка при работе с cookie &mdash; хранение чего-нибудь
+	      такого <token>IsLogged=1</token> в cookie после
+	      авторизации пользователя. Вы удивились бы количеству
+	      сайтов в которых используется такой механизм при
+	      авторизации пользователей. Нужна только секунда для
+	      взлома таких <quote>защищённых</quote> сайтов.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+  </section>
+  
+  <section id="&BASEID;.session">
+    
+    <title id="&BASEID;.session.title">
+      Сессии
+    </title>
+    
+    <para>
+      Если принять во внимание все эти ограничения и потенциальные
+      дыры в безопасности, становится очевидно, что cookie и
+      постоянные сессии являются <quote>головной болью</quote> веб
+      разработчиков. Цель Django в данном случае &mdash; быть
+      эффективным средством лечения этой боли, таким образом оно
+      поставляется со средой управления сессиями, которая решает эти
+      задачи за вас.
+    </para>
+
+    <para>
+      Среда управления сессиями позволяет вам хранить и получать
+      определённые данные на основе посетителей сайта. Она сохраняет
+      данные на сервере и берёт управление получением и отправлением
+      cookie на себя. Cookie используются только для передачи
+      идентификатора сессии, а не самих данных, это предохраняет вас
+      от большинства проблем с cookie.
+    </para>
+
+    <para>
+      Давайте рассмотрим как активируются сессии и как они
+      используются в функциях представлений.
+    </para>
+
+    <section id="&BASEID;.session.enable">
+      
+      <title id="&BASEID;.session.enable.title">
+	Активация
+      </title>
+      
+      <para>
+	Сессии реализованы с помощью отдельного модуля (см. главу
+	<quote><xref linkend="djangobook.chap15"
+	endterm="djangobook.chap15.title"/></quote>) и моделей
+	Django. Для активации сессий выполните следующие шаги:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Измените параметр <token>MIDDLEWARE_CLASSES</token>,
+	      добавив в него значение
+	      <token>django.contrib.sessions.middleware.SessionMiddleware</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Внесите в параметр <token>INSTALLED_APPS</token>
+	      значение
+	      <token>django.contrib.sessions</token>. Запустите
+	      <command>manage.py syncdb</command> после этого.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+      <para>
+	Стандартный шаблон приложения, созданный с помощью
+	<command>startproject</command> уже имеет все необходимые
+	настройки и если вы ничего не удаляли, то ничего добавлять не
+	понадобится для работы сессий.
+      </para>
+
+      <para>
+	Если вам не требуется использовать сессии, вы можете удалить
+	строку <token>SessionMiddleware</token> из параметра
+	<token>MIDDLEWARE_CLASSES</token> и строку
+	<token>django.contrib.sessions</token> из параметра
+	<token>INSTALLED_APPS</token>. Это позволит вам освободить
+	крайне незначительную часть ресурсов, но из маленьких частей
+	складываются большие.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.session.views">
+      
+      <title id="&BASEID;.session.views.title">
+	Использование в функциях представления
+      </title>
+      
+      <para>
+	После активации <token>SessionMiddleware</token> каждый объект
+	<classname>HttpRequest</classname> &mdash; первый аргумент
+	любой функции представления Django &mdash; будет иметь атрибут
+	<token>session</token> по функциональности аналогичный
+	словарю. Пример:
+	<screen>
+	  <![CDATA[
+# Установим значение ключа в сессии:
+request.session["fav_color"] = "blue"
+
+# Получим значение ключа из сессии -- можно это сделать в 
+# другом представлении или через несколько запросов 
+# (или и то и другое):
+fav_color = request.session["fav_color"]
+
+# Чистим значение ключа в сессии:
+del request.session["fav_color"]
+
+# Проверка наличия ключа в сессии:
+if "fav_color" in request.session:
+    ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Вы также можете использовать другие методы, такие как
+	<function>keys()</function> и <function>items()</function>
+	объекта <classname>request.session</classname>.
+      </para>
+
+      <para>
+	Есть ряд простых правил для эффективного использования сессий
+	в Django:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Используйте для объекта
+	      <classname>request.session</classname> обычные строки
+	      Python в качестве ключей словаря. Это правило служит
+	      больше для удобства, чем для ускорения работы, но оно
+	      стоит того, чтобы ему следовать.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Словарные ключи сессии, которые начинаются с символа
+	      <quote>подчёркивание</quote>, зарезервированы для
+	      внутреннего использования Django. На практике среда
+	      использует небольшой набор зарезервированных переменных
+	      в сессии, но пока вы не знаете об их назначении, не
+	      стоит их трогать.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Не заменяйте <token>request.session</token> новым
+	      объектом и не работайте с его атрибутами. Используйте
+	      его как обычный словарь Python.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Рассмотрим несколько примеров. Нижеприведённая простейшая
+	функция представления устанавливает переменной
+	<varname>has_commented</varname> значение <token>True</token>
+	после того, как пользователь отправляет комментарий. Это
+	простой (но небезопасный) способ предотвращения повторной
+	отправки пользовательского комментария:
+	<screen>
+	  <![CDATA[
+def post_comment(request, new_comment):
+    if request.session.get('has_commented', False):
+        return HttpResponse("Вы уже отправили комментарий")
+    c = comments.Comment(comment=new_comment)
+    c.save()
+    request.session['has_commented'] = True
+    return HttpResponse('Спасибо за ваш комментарий!')
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это простейшее представление аутентифицирует пользователя на
+	сайте:
+	<screen>
+	  <![CDATA[
+def login(request):
+    try:
+        m = Member.objects.get(username__exact=request.POST['username'])
+        if m.password == request.POST['password']:
+            request.session['member_id'] = m.id
+            return HttpResponse("Вы авторизованы.")
+    except Member.DoesNotExist:
+        return HttpResponse("Ваши логин и пароль не соответствуют.")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это представление отключает ранее авторизованного
+	пользователя:
+	<screen>
+	  <![CDATA[
+def logout(request):
+    try:
+        del request.session['member_id']
+    except KeyError:
+        pass
+    return HttpResponse("Вы вышли.")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    В настоящем проекте так не делают. Применение ранее
+	    упомянутой среды аутентификации упрощает решение этой
+	    задачи. Эти примеры были умышленно упрощены для облегчения
+	    их понимания.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.session.cookie">
+      
+      <title id="&BASEID;.session.cookie.title">
+	Установка тестовых cookie
+      </title>
+      
+      <para>
+	Как было сказано ранее, вы не можете полагаться на то, что
+	каждый браузер будет принимать cookie. Таким образом, для
+	удобства, Django предоставляет простой способ проверки
+	возможности приёма браузером отправляемых вами cookie. Вам
+	просто следует вызвать в представлении метод
+	<function>request.session.set_test_cookie()</function> и
+	проверить последующем представление (не в том же самом), что
+	возвращает метод
+	<function>request.session.test_cookie_worked()</function>.
+      </para>
+
+      <para>
+	Это неудобное разделение вызовов методом является необходимым
+	из-за особенностей функционирования cookie. Когда вы
+	устанавливаете cookie, вы не можете проверить, принял ли
+	браузер cookie или нет. Для проверки требуется сделать
+	дополнительный запрос.
+      </para>
+
+      <para>
+	Хорошим тоном является уборка за собой с помощью метода
+	<function>delete_test_cookie()</function>. Выполните уборку
+	после завершения проверки механизма cookie.
+      </para>
+
+      <para>
+	Ниже приведён пример обычного использования этого механизма:
+	<screen>
+	  <![CDATA[
+def login(request):
+
+    # Если мы отправили форму...
+    if request.method == 'POST':
+
+        # Проверить, что браузер принимает cookie:
+        if request.session.test_cookie_worked():
+
+            # Браузер принимает, удаляем тестовый cookie.
+            request.session.delete_test_cookie()
+
+            # На практике нам потребуется некая логика для проверки 
+	    # логина и пароля, но так как это всего лишь пример...
+            return HttpResponse("You're logged in.")
+
+        # Проверка не прошла, отображаем сообщение об ошибке.
+	# На настоящем сайте нам потребуется отображать это покрасивее.
+        else:
+            return HttpResponse("Please enable cookies and try again.")
+
+    # Если мы не отсылали форму, отправляем тестовое cookie 
+    # вместе с формой аутентификации.
+    request.session.set_test_cookie()
+    return render_to_response('foo/login_form.html')
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    И снова, встроенные функции аутентификации выполнят это
+	    проверку за вас.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.session.out-of-views">
+      
+      <title id="&BASEID;.session.out-of-views.title">
+	Использование сессий вне функций представления
+      </title>
+      
+      <para>
+	С точки зрения реализации, каждая сессия является обычной
+	моделью Django, определённой в
+	<token>django.contrib.sessions.models</token>. Каждая сессия
+	идентифицировануется 32-символьным хэшем, который сохраняется
+	в cookie. Раз это обычная модель, вы можете получать доступ к
+	сессиям с помощью стандартного API для доступа к базам данных:
+	<screen>
+	  <![CDATA[
+>>> from django.contrib.sessions.models import Session
+>>> s = Session.objects.get(pk='2b1189a188b44ad18c35e113ac6ceead')
+>>> s.expire_date
+datetime.datetime(2005, 8, 20, 13, 35, 12)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Вам потребуется вызвать метод
+	<function>get_decoded()</function> для получения реальных
+	данных сессии. Этот вызов необходим по причине того, что
+	словарь хранится в закодированном виде:
+	<screen>
+	  <![CDATA[
+>>> s.session_data
+'KGRwMQpTJ19hdXRoX3VzZXJfaWQnCnAyCkkxCnMuMTExY2ZjODI2Yj...'
+>>> s.get_decoded()
+{'user_id': 42}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>	
+	
+    <section id="&BASEID;.session.saving">
+      
+      <title id="&BASEID;.session.saving.title">
+	Когда сессии сохраняются
+      </title>
+      
+      <para>
+	По умолчанию Django сохраняет информацию в базе данных только
+	когда в сессию были внесены изменения, т.е. когда были
+	изменены или удалены значения словаря сессии:
+	<screen>
+	  <![CDATA[
+# Сессия изменена.
+request.session['foo'] = 'bar'
+
+# Сессия изменена.
+del request.session['foo']
+
+# Сессия изменена.
+request.session['foo'] = {}
+
+# Фишка: Сессия НЕ изменена, так как производится изменение
+# request.session['foo'], а не request.session.
+request.session['foo']['bar'] = 'baz'
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Для изменения этого поведения надо назначить параметру
+	<token>SESSION_SAVE_EVERY_REQUEST</token> значение
+	<token>True</token>. В этом случае Django будет сохранять
+	сессию в базе данных на каждый запрос, даже если не было
+	никаких изменений.
+      </para>
+
+      <para>
+	Следует отметить, что cookie сессии отправляется только в
+	случае, когда сессия была создана или изменена. Если параметр
+	<token>SESSION_SAVE_EVERY_REQUEST</token> имеет значение
+	<token>True</token>, cookie сессии будет отправляться при
+	каждом запросе. Аналогично, элемент сессии
+	<token>expires</token> обновляется каждый раз при отправке
+	cookie.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.session.expiration">
+      
+      <title id="&BASEID;.session.expiration.title">
+	Время жизни сессий
+      </title>
+      
+      <para>
+	Вы могли отметить, что cookie, которую нам прислал Google
+	содержала <token>expires=Sun, 17-Jan-2038 19:14:07
+	GMT;</token>. Cookie могут по необходимости содержать дату
+	окончания своей деятельности, которая указывает браузеру,
+	когда надо удалить эту cookie. Если cookie не содержит такой
+	элемент, браузер удалит её после того, как пользователь
+	закроет его. Вы можете контролировать поведение среды
+	управления сессиями с помощью параметра
+	<token>SESSION_EXPIRE_AT_BROWSER_CLOSE</token>.
+      </para>
+
+      <para>
+	По умолчанию параметр
+	<token>SESSION_EXPIRE_AT_BROWSER_CLOSE</token> имеет значение
+	<token>False</token>, которое означает, что cookie сессий
+	будут сохраняться в пользовательском браузере на
+	<token>SESSION_COOKIE_AGE</token> секунд (изначально это
+	значение равно двум неделям или 1'209'600 секунд). Используйте
+	эту возможность, если не требуется постоянно заставлять людей
+	аутентифицироваться при каждом открытии браузера.
+      </para>
+
+      <para>
+	Если параметр <token>SESSION_EXPIRE_AT_BROWSER_CLOSE</token>
+	имеет значение <token>True</token>, Django будет использовать
+	cookie, которые будут <quote>жить</quote> пока пользователь не
+	закроет браузер.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.session.other">
+      
+      <title id="&BASEID;.session.other.title">
+	Другие параметры сессии
+      </title>
+      
+      <para>
+	Кроме уже рассмотренных параметров есть ещё несколько, которые
+	влияют на то как Django работает с сессиями, используя
+	cookie. Они показаны в таблице <quote><xref
+	linkend="&BASEID;.tbl2"
+	endterm="&BASEID;.tbl2.title"/></quote>:
+
+	<table id="&BASEID;.tbl2" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl2.title">
+	    Параметры, влияющие на поведение cookie
+	  </title>
+
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="5cm"/>
+	    <colspec colname="c2" colwidth="2cm"/>
+	    <colspec colname="c3" colwidth="7cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Параметр</entry>
+		<entry>По умолчанию</entry>
+		<entry>Описание</entry>
+	      </row>
+	    </thead>
+	    
+	    <tbody>
+	      <row>
+		<entry><token>SESSION_COOKIE_DOMAIN</token></entry>
+		<entry><token>None</token></entry>
+		<entry>Домен для которого предназначено
+		cookie. Строковое значение, подобное
+		<quote>.lawrence.com</quote> для кроссдоменных cookie
+		или используйте <token>None</token> для текущего
+		домена.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>SESSION_COOKIE_NAME</token></entry>
+		<entry><token>sessionid</token></entry>
+		<entry>Имя для cookie используемого для сессии. Может
+		быть любой строкой.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>SESSION_COOKIE_SECURE</token></entry>
+		<entry><token>False</token></entry>
+		<entry>Определяет надо ли использовать
+		<quote>защищённые</quote> cookie для сессии. Если
+		значение этого параметра установлено в
+		<token>True</token>, cookie будет помечено как
+		<quote>защищённое</quote> и браузеры будут передавать
+		его по только HTTPS.</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+      <para>
+	<note>
+	  <title>
+	    Техническая информация
+	  </title>
+
+	  <para>
+	    Для любопытных читателей здесь приведена техническая
+	    информация по особенностям работы среды управления
+	    сессиями:
+	    <itemizedlist>
+	      <listitem>
+		<para>
+		  Словарь сессии принимает любой объект Python,
+		  который может быть сериализован с помощью модуля
+		  <token>pickle</token>. За подробностями обратитесь к
+		  документации на язык Python к модулю
+		  <token>pickle</token>.
+		</para>
+	      </listitem>
+
+	      <listitem>
+		<para>
+		  Данные сессии хранятся в таблице
+		  <token>django_session</token> базы данных.
+		</para>
+	      </listitem>
+
+	      <listitem>
+		<para>
+		  Данные сессии доступны по требованию. Если вы
+		  никогда не обращаетесь к
+		  <token>request.session</token>, Django не будет
+		  обращаться к этой таблице в базе данных.
+		</para>
+	      </listitem>
+
+	      <listitem>
+		<para>
+		  Django передаёт cookie только когда это надо. Если
+		  вы не назначили данные для сессии, Django не будет
+		  передавать cookie для сессии (если только вы не
+		  активировали
+		  <token>SESSION_SAVE_EVERY_REQUEST</token>).
+		</para>
+	      </listitem>
+
+	      <listitem>
+		<para>
+		  Среда управления сессиями основана на использовании
+		  cookie. Она не будет пытаться размещать
+		  идентификатор сессии в URL, как это делают PHP или
+		  JSP, в случае когда пользователь отключил поддержку
+		  cookie.
+		</para>
+
+		<para>
+		  Такое поведение определено дизайном
+		  Django. Размещение идентификатора сессии в URL не
+		  только уродует последний, но и также делает ваш сайт
+		  беззащитным к определённым формам кражи
+		  идентификатора через заголовок
+		  <token>Referrer</token>.
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+
+	  <para>
+	    Если мы ещё не убили в вас любопытство, дальнейшие шаги
+	    очевидны. Загляните в
+	    <token>django.contrib.sessions</token>, там много
+	    интересного.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.authentication">
+      
+    <title id="&BASEID;.authentication.title">
+      Аутентификация пользователей
+    </title>
+      
+    <para>
+      Сейчас вы находитесь на половине пути, соединяющим браузер с
+      <emphasis>Реальными Людьми</emphasis>&trade;. Сессии
+      предоставляют нам механизм хранения данных между отдельными
+      запросами. Вторая часть уравнения &mdash; использование сессии
+      для авторизации пользователя. Конечно, мы не можем просто
+      доверять, что они те кем представляются. Следовательно, нам
+      потребуется механизм аутентификации.
+    </para>
+
+    <para>
+      Django предоставляет инструменты для решения этой частой задачи
+      (и для многих других). Система аутентификации пользователей
+      Django управляет аккаунтами пользователей, группами, правами и
+      пользовательскими сессиями (с помощью cookie). Эту систему часто
+      называют системой аутентификации и авторизации
+      (<emphasis>auth/auth</emphasis> или система АА). Двойное имя означает, что
+      опознавание пользователей часто состоит из двух шагов. Нам
+      необходимо:
+      <orderedlist>
+	<listitem>
+	  <para>
+	    Проверить (аутентифицировать), кто есть этот пользователь
+	    (обычно, с помощью проверки имени и пароля по базе данных
+	    пользователей).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Проверить, что пользователь
+	    <emphasis>авторизован</emphasis> для выполнения
+	    определённых действия (обычно, с помощью проверки по
+	    таблице прав).
+	  </para>
+	</listitem>
+      </orderedlist>
+    </para>
+
+    <para>
+      Согласно этим нуждам система АА состоит из ряда частей:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <emphasis>Пользователи</emphasis>: Люди,
+	    зарегистрированные на вашем сайте.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Права</emphasis>: Бинарные (да/нет) флаги,
+	    определяющие может данный пользователь выполнять
+	    определённую задачу.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Группы</emphasis>: Общий способ применения меток
+	    и прав на группу пользователей.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Сообщения</emphasis>: Простой способ организации
+	    очереди и отображения системных сообщений пользователям.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Профайлы</emphasis>: Механизм добавления в
+	    объект пользователя определённых полей.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Если вы пользовались интерфейсом администратора (описанном в
+      главе <quote><xref linkend="djangobook.chap06"
+      endterm="djangobook.chap06.title"/></quote>, вы видели многие из
+      этих инструментов. Если вы управляли пользователями и группами
+      через интерфейс администратора, в действительности вы управляли
+      данными в таблицах системы аутентификации.
+    </para>
+
+    <section id="&BASEID;.authentication.enable">
+      
+      <title id="&BASEID;.authentication.enable.title">
+	Активация
+      </title>
+      
+      <para>
+	Подобно среде управления сессиями, поддержка аутентификации
+	поставляется в виде Django приложения в
+	<token>django.contrib</token>, которое необходимо
+	установить. Как и раньше, система АА уже установлена по
+	умолчанию, но если вы её отключали, то необходимо выполнить
+	следующие шаги:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Следует проверить, что среда управления сессиями
+	      установлено, как описано ранее в этой
+	      главе. Отслеживание навигации пользователей требует
+	      установленной среду управления сессиями.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Добавьте в параметр <token>INSTALLED_APPS</token>
+	      значение <token>django.contrib.auth</token> и запустите
+	      <command>manage.py syncdb</command>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Проверьте, что в параметр
+	      <token>MIDDLEWARE_CLASSES</token> добавлено значение
+	      <token>django.contrib.auth.middleware.AuthenticationMiddleware</token>
+	      после <token>SessionMiddleware</token>.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+      <para>
+	После выполнения установки мы готовы работать с пользователями
+	в функциях представлений. Главным интерфейсом, который вы
+	будете использовать для управления пользователями, является
+	<token>request.user</token> &mdash; это объект, который
+	представляет собой текущего авторизованного пользователя. Если
+	пользователь не авторизован, то вместо этого объекта будет
+	<token>AnonymousUser</token> (подробности будут дальше).
+      </para>
+
+      <para>
+	Определить авторизовался ли пользователь можно с помощью
+	метода <function>is_authenticated()</function>:
+	<screen>
+	  <![CDATA[
+if request.user.is_authenticated():
+    # Пользователь авторизован.
+else:
+    # Анонимный пользователь.
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.authentication.users">
+      
+      <title id="&BASEID;.authentication.users.title">
+	Использование объекта User
+      </title>
+      
+      <para>
+	Как только вы получили объект <token>User</token> &mdash; чаще
+	всего от <token>request.user</token>, но возможно и с помощью
+	одного из ранее описанных методов &mdash; у вас появился
+	доступ к полям и методам этого объекта. Объекты
+	<token>AnonymousUser</token> эмулируют
+	<emphasis>часть</emphasis> этого интерфейса, но не всю,
+	поэтому вы всегда должны проверять авторизацию пользователя с
+	помощью метода <function>is_authenticated()</function> перед
+	работой с методами объекта. В таблице <quote><xref
+	linkend="&BASEID;.tbl3"
+	endterm="&BASEID;.tbl3.title"/></quote> приведены поля, а в
+	таблице <quote><xref linkend="&BASEID;.tbl4"
+	endterm="&BASEID;.tbl4.title"/></quote> &mdash; методы
+	объектов <token>User</token>:
+
+	<table id="&BASEID;.tbl3" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl3.title">
+	    Поля объектов <token>User</token>
+	  </title>
+
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+
+	    <colspec colname="c1" colwidth="3cm"/>
+	    <colspec colname="c2" colwidth="12cm"/>
+
+	    <thead>
+	      <row rowsep="1">
+		<entry>Поле</entry>
+		<entry>Описание</entry>
+	      </row>
+	    </thead>
+	    
+	    <tbody>
+	      <row>
+		<entry><token>username</token></entry>
+		<entry>Логин. Обязательное поле. Максимум 30
+		символов. Можно использовать только буквы, цифры и
+		символ подчёркивания.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>first_name</token></entry>
+		<entry>Имя пользователя. Необязательное поле. Максимум
+		30 символов.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>last_name</token></entry>
+		<entry>Фамилия пользователя. Необязательное
+		поле. Максимум 30 символов.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>email</token></entry>
+		<entry>Электронная почта. Необязательное поле.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>password</token></entry>
+		<entry>Пароль. Обязательное поле. Хэш и метаданные
+		пароля (Django не хранит пароль в открытом виде). За
+		подробностями обращайтесь к секции
+		<quote>Пароли</quote> ранее.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>is_staff</token></entry>
+		<entry>Определяет входит ли пользователь в
+		привелигерованную группу. Булево значение.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>is_active</token></entry>
+		<entry>Определяет, активен ли данный аккаунт,
+		т.е. можно ли им пользоваться. Булево
+		значение. Установите в <token>False</token> для
+		блокировки аккаунта.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>is_superuser</token></entry>
+		<entry>Определяет входит ли пользователь в группу
+		администраторов. Булево значение.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>last_login</token></entry>
+		<entry>Дата и время последней аутентификации. По
+		умолчанию устанавливается текущее время.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>date_joined</token></entry>
+		<entry>Дата и время создания аккаунта. По умолчанию
+		указывается дата и время создания аккаунта.</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+
+	<table id="&BASEID;.tbl4" frame="all" pgwide="1">
+	  <title id="&BASEID;.tbl4.title">
+	    Методы объектов <token>User</token>
+	  </title>
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="6cm"/>
+	    <colspec colname="c2" colwidth="9cm"/>
+
+	    <thead>
+	      <row rowsep="1">
+		<entry>Поле</entry>
+		<entry>Описание</entry>
+	      </row>
+	    </thead>
+	    
+	    <tbody>
+	      <row>
+		<entry><token>is_authenticated()</token></entry>
+		<entry>Всегда возвращает <token>True</token> для
+		<quote>настоящих</quote> объектов
+		<token>User</token>. Метод определяет был ли текущий
+		пользователь авторизован. Метод не назначает никаких
+		прав и не проверяет активность пользователя. Он просто
+		является индикатором аутентификации пользователя.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>is_anonymous()</token></entry>
+		<entry>Возвращает <token>True</token> только для
+		объектов <token>AnonymousUser</token> (и
+		<token>False</token> для <quote>настоящих</quote>
+		объектов <token>User</token>). В общем, лучше
+		использовать метод
+		<function>is_authenticated()</function>.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>get_full_name()</token></entry>
+		<entry>Возвращает значения <token>first_name</token> и
+		<token>last_name</token> с пробелом между
+		ними.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>set_password(passwd)</token></entry>
+		<entry>Назначает пароль для пользователя, переданный в
+		виде строки. Метод шифрует пароль. Метод не сохраняет
+		объект <token>User</token>.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>check_password(passwd)</token></entry>
+		<entry>Возвращает <token>True</token> при совпадении
+		переданного пароля с имеющимся.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>get_group_permissions()</token></entry>
+		<entry>Возвращает в виде строк список прав, которыми
+		обладает пользователь благодаря вхождению в
+		группы.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>get_all_permissions()</token></entry>
+		<entry>Возвращает в виде строк список всех прав,
+		которыми обладает пользователь.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>has_perm(perm)</token></entry>
+		<entry>Возвращает <token>True</token>, если
+		пользователь обладает указанным правом, которое
+		представлено в формате
+		<quote><token>package.codename</token></quote>. Если
+		пользователь неактивен, метод будет возвращать
+		<token>False</token>.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>has_perms(perm_list)</token></entry>
+		<entry>Возвращает <token>True</token>, если
+		пользователь обладает <emphasis>всеми</emphasis>
+		правами, указанными в переданном списке. Если
+		пользователь неактивен, метод будет возвращать
+		<token>False</token>.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>has_module_perms(app_label)</token></entry>
+		<entry>Возвращает <token>True</token>, если
+		пользователь обладает любым правом из переданного
+		<token>app_label</token>. Если пользователь неактивен,
+		метод будет возвращать <token>False</token>.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>get_and_delete_messages()</token></entry>
+		<entry>Возвращает список объектов
+		<token>Message</token> из пользовательской очереди и
+		очищает очередь.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>email_user(subj, msg)</token></entry>
+		<entry>Отправляет сообщение пользователю. Сообщение
+		отсылается от значения, указанного в параметре
+		<token>DEFAULT_FROM_EMAIL</token>. Вы можете также
+		передать третий аргумент, <token>from_email</token>,
+		для указания другого адреса электронной почты.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>get_profile()</token></entry>
+		<entry>Возвращает профайл пользователя. Обратитесь к
+		разделу <quote><xref
+		linkend="&BASEID;.other-bits.profiles"
+		endterm="&BASEID;.other-bits.profiles.title"/></quote>
+		для подробностей.</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+      <para>
+	Наконец, объекты <token>User</token> имеют поля
+	<quote>многие-ко-многим</quote>: <token>groups</token> и
+	<token>permissions</token>. Объекты <token>User</token> могут
+	взаимодействовать с другими объектами тем же способом, что и
+	другие поля с такими отношениями:
+	<screen>
+	  <![CDATA[
+# Определим группу для пользователя:
+myuser.groups = group_list
+
+# Добавим пользователя в несколько других групп:
+myuser.groups.add(group1, group2,...)
+
+# Удалим пользователя из этих групп:
+myuser.groups.remove(group1, group2,...)
+
+# Удалим пользователя из всех групп:
+myuser.groups.clear()
+
+# С правами работаем аналогично:
+myuser.permissions = permission_list
+myuser.permissions.add(permission1, permission2, ...)
+myuser.permissions.remove(permission1, permission2, ...)
+myuser.permissions.clear()
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.authentication.log-in-out">
+      
+      <title id="&BASEID;.authentication.log-in-out.title">
+	Авторизация и выход
+      </title>
+      
+      <para>
+	Django предоставляет встроенные функции представления для
+	работы с авторизацией и выходом пользователя (а так же ещё для
+	некоторых вещей), но прежде чем мы начнём их использовать,
+	рассмотрим <quote>вручную</quote> как пользователи
+	авторизуются и выходят. Django предоставляет в
+	<token>django.contrib.auth</token> две функции для выполнения
+	таких действий: <function>authenticate()</function> и
+	<function>login()</function>.
+      </para>
+
+      <para>
+	Для аутентификации пользователя по переданному логину и паролю
+	следует использовать функцию
+	<function>authenticate()</function>. Она принимает два
+	именованных аргумента, <token>username</token> и
+	<token>password</token>, и возвращает объект
+	<token>User</token>, если пароль соответствует логину. В
+	противном случае функция возвращает <token>None</token>:
+	<screen>
+	  <![CDATA[
+>>> from django.contrib import auth
+>>> user = auth.authenticate(username='john', password='secret')
+>>> if user is not None:
+...     print "Правильно!"
+... else:
+...     print "Ой, что-то пошло не так!"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Функция <function>authenticate()</function> только проверяет
+	удостоверение. Для авторизации следует использовать функцию
+	<function>login()</function>. Она принимает объекты
+	<classname>HttpRequest</classname> и
+	<classname>User</classname>, сохраняет идентификатор
+	пользователя в сессии, используя соответствующий механизм.
+      </para>
+
+      <para>
+	Этот пример показывает как можно совместно использовать эти
+	функции в представлении:
+	<screen>
+	  <![CDATA[
+from django.contrib import auth
+
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = auth.authenticate(username=username, password=password)
+    if user is not None and user.is_active:
+        # Правильный пароль и пользователь "активен"
+        auth.login(request, user)
+        # Перенаправление на "правильную" страницу
+        return HttpResponseRedirect("/account/loggedin/")
+    else:
+        # Отображение страницы с ошибкой
+        return HttpResponseRedirect("/account/invalid/")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Для выхода пользователя следует использовать функцию
+	<function>logout()</function>. Она принимает объект
+	<classname>HttpRequest</classname> и не возвращает ничего:
+	<screen>
+	  <![CDATA[
+from django.contrib import auth
+
+def logout(request):
+    auth.logout(request)
+    # Перенаправление на страницу.
+    return HttpResponseRedirect("/account/loggedout/")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить, что функция <function>logout()</function> не
+	вызывает исключений, если пользователь не был авторизован.
+      </para>
+
+      <para>
+	На практике вам обычно не понадобится писать свои функции
+	авторизации и выхода, так как система АА поставляется с
+	набором представления для общей обработки этих процессов.
+      </para>
+
+      <para>
+	Первым шагом для использования представлений аутентификации
+	будет их привязка к URL:
+	<screen>
+	  <![CDATA[
+from django.contrib.auth.views import login, logout
+
+urlpatterns = patterns('',
+    # существующие шаблоны располагаются здесь...
+    (r'^accounts/login/$',  login),
+    (r'^accounts/logout/$', logout),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	URL <token>/accounts/login/</token> и
+	<token>/accounts/logout/</token> являются стандартными для
+	этих представлений.
+      </para>
+
+      <para>
+	По умолчанию, представление <token>login</token> использует
+	шаблон <filename>registration/login.html</filename> (вы можете
+	указать на другой шаблон, передав дополнительный аргумент в
+	представление, <token>template_name</token>). Эта форма нужна
+	для отображения полей <token>username</token> и
+	<token>password</token>. Простой шаблон может выглядеть так:
+	<screen>
+	  <![CDATA[
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% if form.errors %}
+    <p class="error">Сожалеем, вы неправильно ввели логин или пароль</p>
+  {% endif %}
+
+  <form action='.' method='post'>
+    <label for="username">Логин:</label>
+    <input type="text" name="username" value="" id="username">
+    <label for="password">Пароль:</label>
+    <input type="password" name="password" value="" id="password">
+
+    <input type="submit" value="login" />
+    <input type="hidden" name="next" value="{{ next|escape }}" />
+  </form>
+
+{% endblock %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если пользователь ввёл всё правильно, он перенаправляется по
+	умолчанию на страницу <token>/accounts/profile/</token>. Вы
+	можете переопределить это поведение, добавив скрытое поле с
+	именем <token>next</token> к URL для перенаправления на другую
+	страницу. Вы также можете передать это значение в качестве
+	параметра GET запроса в представление авторизации и оно будет
+	автоматически добавлено к контексту в виде переменной
+	<varname>next</varname>, которую вы можете вставить в скрытое
+	поле.
+      </para>
+
+      <para>
+	Представление для выхода работает немного по-другому. По
+	умолчанию, оно использует шаблон
+	<filename>registration/logged_out.html</filename> (которое
+	обычно содержит сообщение <quote>Вы успешно вышли с
+	сайта</quote>). Однако, вы можете вызвать представление с
+	дополнительным аргументом, <token>next_page</token>, который
+	укажет представлению на какую страницу следует перейти после
+	выхода.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.authentication.limits">
+      
+      <title id="&BASEID;.authentication.limits.title">
+	Ограничение доступа авторизованным пользователям
+      </title>
+      
+      <para>
+	Причиной же, ради которой мы прорываемся сквозь лес проблем,
+	является необходимость ограничения доступа к разделам нашего
+	сайта.
+      </para>
+
+      <para>
+	Простой и прямолинейный способ ограничения доступа к страницам
+	&mdash; проверить результат выполнения
+	<function>request.user.is_authenticated()</function> и
+	перенаправить на страницу аутентификации:
+	<screen>
+	  <![CDATA[
+from django.http import HttpResponseRedirect
+
+def my_view(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/?next=%s' % request.path)
+    # ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	или, возможно, отобразить сообщение об ошибке:
+	<screen>
+	  <![CDATA[
+def my_view(request):
+    if not request.user.is_authenticated():
+        return render_to_response('myapp/login_error.html')
+    # ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Для сокращения вы можете использовать удобный декоратор
+	<token>login_required</token>:
+	<screen>
+	  <![CDATA[
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def my_view(request):
+    # ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Декоратор делает следующее:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Если пользователь не авторизован, перенаправить его на
+	      <token>/accounts/login/</token>, передав текущий URL в
+	      строке запроса как параметр
+	      <token>next</token>. Например:
+	      <token>/accounts/login/?next=/polls/3/</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если пользователь авторизован, отобразить
+	      представление. Код функции представление предполагает в
+	      этом случае, что пользователь авторизован.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.authentication.limits-test">
+      
+      <title id="&BASEID;.authentication.limits-test.title">
+	Ограничение доступа определённым пользователям
+      </title>
+      
+      <para>
+	Ограничение доступа основано на определённых правах или
+	какой-то проверке, или на перенаправлении на другой раздел
+	сайта для авторизации работает однообразно.
+      </para>
+
+      <para>
+	Прямолинейным способом является проверка
+	<token>request.user</token> в представлении. Например,
+	нижеприведённое представление проверяет авторизован ли
+	пользователь и обладает ли он правом
+	<token>polls.can_vote</token> (о правах будет рассказано ниже):
+	<screen>
+	  <![CDATA[
+def vote(request):
+    if request.user.is_authenticated() and request.user.has_perm('polls.can_vote')):
+        # Голосуем здесь
+    else:
+        return HttpResponse("Вы не можете голосовать по этому списку избирателей.")
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	И снова Django предоставляет сокращение
+	<token>user_passes_test</token>. Оно принимает аргументы и
+	создаёт специальный декоратор для вашей частной задачи:
+	<screen>
+	  <![CDATA[
+def user_can_vote(user):
+    return user.is_authenticated() and user.has_perm("polls.can_vote")
+
+@user_passes_test(user_can_vote, login_url="/login/")
+def vote(request):
+    # Здесь мы точно уверены, что пользователь авторизован и имеет
+    # необходимы права.
+    ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Сокращение <token>user_passes_test</token> принимает один
+	обязательный аргумент: функцию, которая принимает объект
+	<token>User</token> и возвращает <token>True</token>, если
+	пользователь успешно прошёл проверку. Следует отметить, что
+	<token>user_passes_test</token> не производит автоматически
+	проверку авторизации пользователя, вам следует сделать это
+	самостоятельно.
+      </para>
+
+      <para>
+	В этом примере мы показали второй необязательный аргумент
+	<token>login_url</token>, который позволяет указать URL для
+	страницы аутентификации (по умолчанию,
+	<token>/accounts/login/</token>).
+      </para>
+
+      <para>
+	Так как задача проверки прав пользователя является общей,
+	Django предоставляет сокращение и для этого случая: декоратор
+	<function>permission_required()</function>. Используя этот
+	декоратор, перепишем предыдущий пример так:
+	<screen>
+	  <![CDATA[
+from django.contrib.auth.decorators import permission_required
+
+@permission_required('polls.can_vote', login_url="/login/")
+def vote(request):
+    # ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить, что
+	<function>permission_required()</function> также принимает
+	необязательный параметр <token>login_url</token>, который
+	также, по умолчанию, указывает на
+	<token>/accounts/login/</token>.
+
+	<note>
+	  <title>
+	    Ограничение доступа к базовым представлениям
+	  </title>
+
+	  <para>
+	    Одним из самых популярных вопросов по Django является
+	    ограничение доступа к функциям представления. Для
+	    реализации такого ограничения вам потребуется написать
+	    промежуточный слой для представления и привязать слой к
+	    URL, чтобы вся работа шла через него:
+	    <screen>
+	      <![CDATA[
+from django.contrib.auth.decorators import login_required
+from django.views.generic.date_based import object_detail
+
+@login_required
+def limited_object_detail(*args, **kwargs):
+    return object_detail(*args, **kwargs)
+	      ]]>
+	    </screen>
+	  </para>
+
+	  <para>
+	    Естественно, вы можете заменить
+	    <token>login_required</token> на любой другой декоратор.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.authentication.manage">
+      
+      <title id="&BASEID;.authentication.manage.title">
+	Управление пользователями, правами и группами
+      </title>
+      
+      <para>
+	Самым простым способом управления системой аутентификации
+	является интерфейс администратора. В главе <quote><xref
+	linkend="djangobook.chap06"
+	endterm="djangobook.chap06.title"/></quote> рассматривалось
+	как управлять пользователями, их правами и доступом, большую
+	часть времени для этого использовался интерфейс
+	администратора.
+      </para>
+
+      <para>
+	Тем не менее, существуют API, которые могут предоставить вам
+	абсолютный контроль надо пользователями и мы рассмотрим их
+	далее.
+      </para>
+
+      <section id="&BASEID;.authentication.manage.create">
+      
+	<title id="&BASEID;.authentication.manage.create.title">
+	  Создание пользователей
+	</title>
+	
+	<para>
+	  Создать пользователя можно с помощью функции
+	  <function>create_user()</function>:
+	  <screen>
+	    <![CDATA[
+>>> from django.contrib.auth.models import User
+>>> user = User.objects.create_user(username='john',
+...                                 email='jlennon@beatles.com',
+...                                 password='glass onion')
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  В данном случае <token>user</token> является экземпляром
+	  класса <classname>User</classname>, готовым к хранению в
+	  базе данных. Функция <function>create_user()</function> не
+	  вызывает <function>save()</function>. Вы можете изменять
+	  атрибуты экземпляра до его сохранения:
+	  <screen>
+	    <![CDATA[
+>>> user.is_staff = True
+>>> user.save()
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.authentication.manage.passwd">
+      
+	<title id="&BASEID;.authentication.manage.passwd.title">
+	  Изменение пароля
+	</title>
+	
+	<para>
+	  Изменить пароль пользователя можно с помощью функции
+	  <function>set_password()</function>:
+	  <screen>
+	    <![CDATA[
+>>> user = User.objects.get(username='john')
+>>> user.set_password('goo goo goo joob')
+>>> user.save()
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Не устанавливайте атрибут <token>password</token> напрямую,
+	  если не знаете, что делаете. Пароль хранится в виде
+	  <emphasis>подсоленного хэша FIXME</emphasis> (т.е. хэш с
+	  префиксом) и следовательно его просто так не изменить.
+	</para>
+
+	<para>
+	  Атрибут <token>password</token> объекта
+	  <classname>User</classname> является строкой формата:
+	  <screen>
+	    <![CDATA[
+hashtype$salt$hash
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Здесь представлены тип хэша, соль и сам хэш, разделённые
+	  символами доллара.
+	</para>
+
+	<para>
+	  Тип хэша (<token>hashtype</token>) может быть либо
+	  <token>sha1</token> (по умолчанию), либо <token>md5</token>
+	  и определяет односторонний алгоритм, который используется
+	  для создания хэша для пароля. Соль (<token>salt</token>)
+	  является случайной строкой, используемой для
+	  <emphasis>подсаливания</emphasis> пароля при создании хэша,
+	  например:
+	  <screen>
+	    <![CDATA[
+sha1$a1976$a36cc8cbf81742a8fb52e221aaeab48ed7f58ab4
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Функции <function>User.set_password()</function> и
+	  <function>User.check_password()</function> умеют
+	  устанавливать и проверять эти значения.
+
+	  <note>
+	    <title>
+	      Неужели <quote>подсоленный хэш</quote> имеет отношение к
+	      наркоте?
+	    </title>
+
+	    <para>
+	      Нет, <emphasis>подсоленный хэш</emphasis> не имеет
+	      ничего общего с марихуаной. На самом деле это общий
+	      метод безопасного хранения
+	      паролей. <emphasis>Хэш</emphasis> &mdash; это
+	      односторонняя криптографическая функция. Такую функцию
+	      просто вычислить, но практически невозможно получить
+	      обратно из хэша оригинальное значение.
+	    </para>
+
+	    <para>
+	      Если бы мы хранили пароли в чистом виде, т.е. как текст,
+	      то любой, получивший доступ к базе паролей, мог бы их
+	      прочитать. Хранение паролей в виде хэша затрудняет
+	      получение паролей из украденной базы данных.
+	    </para>
+
+	    <para>
+	      Однако, атакующий может применить к базе паролей
+	      методику перебора паролей, организовав хэширование
+	      миллионов паролей и сравнивая их со значениями,
+	      хранящимися в базе. Это займёт некоторое время, но
+	      гораздо меньшее, чем вы можете подумать &mdash;
+	      компьютеры сейчас невероятно мощны.
+	    </para>
+
+	    <para>
+	      Хуже того, в свободном доступе можно найти
+	      <emphasis>радужные таблицы</emphasis>, т.е. базы данных
+	      заранее просчитанных хэшей для миллионов
+	      паролей. Используя такие таблицы атакующий может
+	      проверять большое количество паролей в секунду.
+	    </para>
+
+	    <para>
+	      С помощью добавления <emphasis>соли</emphasis>,
+	      некоторого случайного значения, к хэшу мы увеличиваем
+	      сложность процесса подбора паролей. Так как соль
+	      отличается от пароля к паролю, это делает невозможным
+	      использование радужных таблиц и отбрасывает атакующего
+	      обратно к обычному методу подбора пароля.
+	    </para>
+
+	    <para>
+	      Несмотря на то, что подсоленные хэши не являются
+	      абсолютно безопасным методом хранения паролей, всё-таки
+	      это приемлемая середина между безопасностью и удобством.
+	    </para>
+	  </note>
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.authentication.manage.registration">
+      
+	<title id="&BASEID;.authentication.manage.registration.title">
+	  Управление регистрацией
+	</title>
+	
+	<para>
+	  Мы можем использовать эти низкоуровневые инструменты для
+	  создания представлений, которые позволяют пользователям
+	  регистрироваться на сайте. Почти каждый разработчик желает
+	  реализовать процедуру регистрации по своему, по этой причине
+	  Django оставляет эту часть работы для вас. К счастью, эта
+	  работа не сложна.
+	</para>
+
+	<para>
+	  Для простейшего случая мы можем создать небольшое
+	  представление которое запрашивает необходимую информацию у
+	  пользователя и создаёт этого пользователя. Django
+	  предоставляет встроенную форму, которую вы можете
+	  использовать для этой задачи, как это сделано в
+	  нижеприведённом примере:
+	  <screen>
+	    <![CDATA[
+from django import oldforms as forms
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.contrib.auth.forms import UserCreationForm
+
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == 'POST':
+        data = request.POST.copy()
+        errors = form.get_validation_errors(data)
+        if not errors:
+            new_user = form.save(data)
+            return HttpResponseRedirect("/books/")
+    else:
+        data, errors = {}, {}
+
+    return render_to_response("registration/register.html", {
+        'form' : forms.FormWrapper(form, data, errors)
+    })
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Эта форма использует шаблон
+	  <filename>registration/register.html</filename>. Ниже
+	  представлен вариант содержимого этого шаблона:
+	  <screen>
+	    <![CDATA[
+{% extends "base.html" %}
+
+{% block title %}Регистрация пользователя{% endblock %}
+
+{% block content %}
+  <h1>Регистрация пользователя</h1>
+  <form action="." method="post">
+    {% if form.error_dict %}
+      <p class="error">Пожалуйста исправьте нижеприведённые ошибки.</p>
+    {% endif %}
+
+    {% if form.username.errors %}
+      {{ form.username.html_error_list }}
+    {% endif %}
+    <label for="id_username">Логин:</label> {{ form.username }}
+
+    {% if form.password1.errors %}
+      {{ form.password1.html_error_list }}
+    {% endif %}
+    <label for="id_password1">Пароль:</label> {{ form.password1 }}
+
+    {% if form.password2.errors %}
+      {{ form.password2.html_error_list }}
+    {% endif %}
+    <label for="id_password2">Пароль (снова):</label> {{ form.password2 }}
+
+    <input type="submit" value="Зарегистрировать" />
+  </form>
+{% endblock %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  <note>
+	    <para>
+	      На время публикации этой книги класс
+	      <token>django.contrib.auth.forms.UserCreationForm</token>
+	      являлся <emphasis>устаревшим</emphasis>. Обратитесь к
+	      документации на <ulink
+	      url="http://www.djangoproject.com/documentation/0.96/forms/"/>
+	      для подробностей. Процесс миграции на новую версию форм,
+	      который описан в главе <quote><xref
+	      linkend="djangobook.chap07"
+	      endterm="djangobook.chap07.title"/></quote>, будет
+	      завершён в ближайшем будущем.
+	    </para>
+	  </note>
+	</para>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.authentication.using-data">
+      
+      <title id="&BASEID;.authentication.using-data.title">
+	Использование данных аутентификации в шаблонах
+      </title>
+      
+      <para>
+	После авторизации пользователя вся информация о нём и о его
+	правах становится доступной в контексте шаблона при
+	использовании <token>RequestContext</token> (см. главу
+	<quote><xref linkend="djangobook.chap10"
+	endterm="djangobook.chap10.title"/></quote>).
+
+	<note>
+	  <para>
+	    Эти переменные становятся доступными в контексте шаблона
+	    только в том случае, если вы используете
+	    <token>RequestContext</token> и <emphasis>ваш</emphasis>
+	    параметр <token>TEMPLATE_CONTEXT_PROCESSORS</token>
+	    содержит значение
+	    <token>django.core.context_processors.auth</token> (по
+	    умолчанию так и есть). И снова, см. подробности в главе
+	    <quote><xref linkend="djangobook.chap10"
+	    endterm="djangobook.chap10.title"/></quote>.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	При использовании <token>RequestContext</token> текущий
+	пользователь (либо экземпляр <classname>User</classname>, либо
+	экземпляр <classname>AnonymousUser</classname>) хранится в
+	переменной шаблона <token>{{ user }}</token>:
+	<screen>
+	  <![CDATA[
+{% if user.is_authenticated %}
+  <p>Добро пожаловать, {{ user.username }}. Спасибо, что не забываете нас.</p>
+{% else %}
+  <p>Добро пожаловать, незнакомец. Кто вы?</p>
+{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Права текущего пользователя хранятся в переменной шаблона
+	<token>{{ perms }}</token>. Технически это не просто
+	переменная, а промежуточный слой между рядом методов проверки
+	прав, описанных ранее.
+      </para>
+
+      <para>
+	Существует два способа использования объекта
+	<token>perm</token>. Вы можете использовать, что-то подобное
+	<token>{{ perms.polls }}</token> для проверки того, имеет ли
+	пользователь <emphasis>вообще</emphasis> права для конкретного
+	приложения. Также вы можете использовать что-то подобное
+	<token>{{ perms.polls.can_vote }}</token> для проверки, имеет
+	ли пользователь конкретное право.
+      </para>
+
+      <para>
+	Следовательно, вы можете проверять права в шаблоне с помощью
+	оператора <token>{% if %}</token>:
+	<screen>
+	  <![CDATA[
+{% if perms.polls %}
+  <p>У вас есть права на работу с приложением голосования.</p>
+  {% if perms.polls.can_vote %}
+    <p>Вы можете голосовать!</p>
+  {% endif %}
+{% else %}
+  <p>У вас нет прав на использование приложения.</p>
+{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+  </section>
+  
+  <section id="&BASEID;.other-bits">
+      
+    <title id="&BASEID;.other-bits.title">
+      Остальное: права, группы, сообщения и профайлы
+    </title>
+    
+    <para>
+      Кое-что о системе аутентификации и авторизации мы ещё не
+      рассказали. Это время пришло.
+    </para>
+
+    <section id="&BASEID;.other-bits.permissions">
+      
+      <title id="&BASEID;.other-bits.permissions.title">
+	Права
+      </title>
+	
+      <para>
+	Права являются простым способом <emphasis>наделения
+	полномочиями</emphasis> пользователей и группы, разрешая им
+	выполнять определённые действия. Права используются на сайте
+	администратора Django, но вы легко сможете применять их и в
+	своём коде.
+      </para>
+
+      <para>
+	Сайт администратора Django использует права так:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Доступ к форме для добавления пользователя. Эта операция
+	      разрешена пользователям, которые обладают правом
+	      <emphasis>добавления</emphasis> для этого типа объектов.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Доступ к списку изменений и к соответствующей
+	      форме. Операция внесения изменения разрешена
+	      пользователям, которые обладают правом
+	      <emphasis>изменения</emphasis> для этого типа объектов.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Операция удаления объекта разрешена пользователям,
+	      которые обладают правом <emphasis>удаления</emphasis>
+	      для этого типа объектов.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Права на тип объекта устанавливаются глобально, а не на каждый
+	экземпляр класса. Например, можно сказать <quote>Маша может
+	изменять новости</quote>, но нельзя сказать <quote>Маша может
+	изменять новости, но только те, которые создала сама</quote>
+	или <quote>Маша может изменять только те новости, которые
+	имеют определённый статус, дату публикации и
+	идентификатор</quote>.
+      </para>
+      
+      <para>
+	Такие три основных права &mdash; добавление, изменение и
+	удаления &mdash; автоматически создаются для каждой модели
+	Django, которая обладает классом
+	<classname>Admin</classname>. Эти права добавляются в таблицу
+	<token>auth_permission</token> в момент, когда вы запускаете
+	<command>manage.py syncdb</command>.
+      </para>
+
+      <para>
+	Формат определения прав &mdash;
+	<token><![CDATA[<app>.<action>_<object_name>]]></token>. Таким
+	образом, если у вас есть приложение <token>polls</token> с
+	моделью <classname>Choice</classname>, то вы будете
+	использовать права так: <token>polls.add_choice</token>,
+	<token>polls.change_choice</token> и
+	<token>polls.delete_choice</token>.
+      </para>
+	
+      <para>
+	Следует отметить, что если ваша модель не имеет класса
+	<classname>Admin</classname> во время запуска
+	<command>manage.py syncdb</command>, эти права не будут
+	созданы. Если вы добавили класс <classname>Admin</classname> к
+	модели после создания базы данных, вам потребуется запустить
+	<command>syncdb</command> для обновления базы данных.
+      </para>
+
+      <para>
+	Вы также можете создать собственные права для определённой
+	модели, используя атрибут <token>permissions</token> для
+	<token>Meta</token>. Нижеприведённый пример модели создаёт три
+	собственных права:
+	<screen>
+	  <![CDATA[
+class USCitizen(models.Model):
+    # ...
+    class Meta:
+        permissions = (
+            # Идентификатор права       Описание права
+            ("can_drive",               "Может водить"),
+            ("can_vote",                "Может голосовать на выборах"),
+            ("can_drink",               "Может пить алкоголь"),
+        )
+	  ]]>
+	</screen>
+      </para>
+      
+      <para>
+	Эти дополнительные права будут созданы только после выполнения
+	команды <command>syncdb</command>, после этого можно проверить
+	их работу в ваших представлениях.
+      </para>
+
+      <para>
+	Аналогично пользователям, права реализованы в виде модели,
+	которая находится в
+	<token>django.contrib.auth.models</token>. Это означает, что
+	вы можете использовать API для работы с базой данных для
+	прямого взаимодействия с необходимыми вам правами.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.other-bits.groups">
+      
+      <title id="&BASEID;.other-bits.groups.title">
+	Группы
+      </title>
+	
+      <para>
+	Группы являются базовым способом категоризации пользователей и
+	могут быть использованы для назначения прав для этих
+	групп. Пользователь может принадлежать любому количеству
+	групп.
+      </para>
+
+      <para>
+	Пользователь, входящий в группу, автоматически получает права
+	назначенные этой группе. Например, если группа
+	<quote>Редакторы сайта</quote> обладает правом
+	<token>can_edit_home_page</token>, любой пользователь входящий
+	в эту группу, получает это право.
+      </para>
+      
+      <para>
+	Группы также являются удобным способом для назначения
+	пользователя некоторой расширенной функциональности. Например,
+	вы можете создать группу <quote>Особые пользователи</quote> и
+	затем написать код, который может давать доступ этим
+	пользователям к закрытой части сайта, или отправлять им
+	электронное сообщение.
+      </para>
+
+      <para>
+	Аналогично пользователям, простейшим способом управления
+	группами является интерфейс администратора. Однако, группы
+	также являются моделью Django, которая находится в
+	<token>django.contrib.auth.models</token>, следовательно вы
+	всегда можете использовать API для работы с базой данных для
+	взаимодействия с группами на на низком уровне.
+      </para>
+      
+    </section>
+    
+    <section id="&BASEID;.other-bits.messages">
+      
+      <title id="&BASEID;.other-bits.messages.title">
+	Сообщения
+      </title>
+	
+      <para>
+	Система сообщений &mdash; это простой способ организации
+	очереди сообщений для определённых пользователей. Сообщение
+	ассоциировано с классом <classname>User</classname>. Нет
+	никаких ограничение на время жизни сообщения.
+      </para>
+
+      <para>
+	Сообщения используются интерфейсом администратора Django после
+	успешного выполнения действий. Например, при создании объекта
+	вы получите сообщение <quote>Объект успешно создан &mdash; The
+	object was created successfully</quote> на верху страницы.
+      </para>
+
+      <para>
+	Вы можете использовать этот API для организации очереди и
+	вывода сообщений в вашем приложении. API прост:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Для создания нового сообщения используйте
+	      <screen>
+		<![CDATA[
+user.message_set.create(message='message_text')
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Для получения и удаления сообщения используйте
+	      <token>user.get_and_delete_messages()</token>, которая
+	      возвращает список объектов
+	      <classname>Message</classname> из пользовательской
+	      очереди (если такая есть) и удаляет сообщения из
+	      очереди.
+	    </para>
+	  </listitem>
+	  </itemizedlist>
+      </para>
+
+      <para>
+	В представлении, приведённом ниже, система сохраняет сообщение
+	для пользователя после создания списка проигрывания:
+	<screen>
+	  <![CDATA[
+def create_playlist(request, songs):
+    # Создаём список проигрывания с определёнными треками.
+    # ...
+    request.user.message_set.create(
+        message="Ваш список проигрывания был успешно добавлен."
+    )
+    return render_to_response("playlists/create.html",
+        context_instance=RequestContext(request))
+	  ]]>
+	</screen>
+      </para>
+      
+      <para>
+	При использовании <token>RequestContext</token> информация об
+	авторизованном пользователе и его сообщениях становятся
+	доступны для контекста шаблона в виде переменной <token>{{
+	messages }}</token>. Ниже показа пример кода шаблона, который
+	отображает сообщения:
+	<screen>
+	  <![CDATA[
+{% if messages %}
+<ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить, что <token>RequestContext</token> вызывает
+	<function>get_and_delete_messages()</function>, таким образом
+	любой сообщение будет удалено, даже если вы не отобразили его.
+      </para>
+
+      <para>
+	Наконец, надо помнить, что среда обработки сообщений работает
+	только с пользователями из пользовательской базы данных. Для
+	того, чтобы отправить сообщения анонимным пользователям,
+	следует напрямую использовать среду управления сессиями.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.other-bits.profiles">
+      
+      <title id="&BASEID;.other-bits.profiles.title">
+	Профайлы
+      </title>
+	
+      <para>
+	Последним элементом головоломки является система
+	профайлов. Для того, чтобы понять, что такое профайл, следует
+	рассмотреть такую задачу.
+      </para>
+
+      <para>
+	Множество сайтов нуждаются в хранении большего количество
+	информации, чем позволяет стандартный объект
+	<classname>User</classname>. Для решения этой задачи такие
+	сайты имеют разные <quote>дополнительные</quote> поля. Таким
+	образом, Django предоставляет простой способ определения
+	объекта <quote>профайл</quote>, который подключен к
+	пользователю. Этот объект может меняться от проекта к проекту
+	и даже может управлять различными профайлами для разных
+	сайтов, работающих с использованием одной базы данных.
+      </para>
+
+      <para>
+	Первым шагом для создания профайла будет определение модели,
+	которая будет хранить информацию профайла. Единственное
+	требование Django к такой модели &mdash; она должна иметь
+	уникальный <token>ForeignKey</token> к модели
+	<classname>User</classname>. Это поле должно иметь имя
+	<token>user</token>. Кроме данного поля вы можете добавлять
+	любые необходимые вам поля. Ниже представлена крайне
+	произвольная модель профайла:
+	<screen>
+	  <![CDATA[
+from django.db import models
+from django.contrib.auth.models import User
+
+class MySiteProfile(models.Model):
+    # This is the only required field
+    user = models.ForeignKey(User, unique=True)
+
+    # The rest is completely up to you...
+    favorite_band = models.CharField(max_length=100, blank=True)
+    favorite_cheese = models.CharField(max_length=100, blank=True)
+    lucky_number = models.IntegerField()
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Затем потребуется, чтобы вы указали Django где искать этот
+	объект. Это делается с помощью параметра
+	<token>AUTH_PROFILE_MODULE</token>, надо вписать в него
+	идентификатор вашей модели. Таким образом, если ваша модель
+	определена в приложении <token>myapp</token>, то вам
+	потребуется сделать следующее:
+	<screen>
+	  <![CDATA[
+AUTH_PROFILE_MODULE = "myapp.mysiteprofile"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	После этого вы можете получить доступ к профайлу пользователя
+	с помощью <token>user.get_profile()</token>. Эта функция может
+	вызвать исключение <token>SiteProfileNotAvailable</token>,
+	если параметр <token>AUTH_PROFILE_MODULE</token> не определён;
+	или исключение <token>DoesNotExist</token>, если пользователь
+	ещё не имеет профайла (обычно такие исключения перехватывают и
+	на лету создают новый профайл).
+      </para>
+
+    </section>
+    
+  </section>
+
+</chapter>

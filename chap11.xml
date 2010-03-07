@@ -1,0 +1,1889 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap11">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Генерация данных, отличных от HTML
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Обычно, говоря о разработке веб сайтов, мы имеем в виду генерацию
+    HTML. Конечно, кроме HTML в сфере веба существует ещё много
+    чего. Мы используем веб для распространения информации во всех
+    форматах: RSS, PDF, изображения и так далее.
+  </para>
+
+  <para>
+    До сих пор мы рассматривали общий случай создания HTML, но в этой
+    главе мы пойдём другим путём и рассмотрим возможности Django для
+    генерации других видов контента.
+  </para>
+
+  <para>
+    Django обладает удобными встроенными инструментами, которые можно
+    использовать для создания контента, отличного от HTML:
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Рассылки RSS/Atom.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Карты сайтов (в XML формате, разработанном Google, который
+	  очень помогает поисковым машинам).
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    Мы исследуем каждый из этих инструментов немного позже, сначала
+    рассмотрим основные принципы.
+  </para>
+
+  <section id="&BASEID;.basics">
+
+    <title id="&BASEID;.basics.title">
+      Основы: представление и MIME-типы
+    </title>
+
+    <para>
+      Помните из главы <quote><xref linkend="djangobook.chap03"
+      endterm="djangobook.chap03.title"/></quote> это:
+    </para>
+
+    <para>
+      <emphasis>Функция представления, или просто представление,
+      является функцией языка Python, которая принимает запрос и
+      возвращает отклик. Этим откликом может быть HTML контент веб
+      страницы, перенаправление на другую страницу, ошибка 404, XML
+      документ, изображение или что-нибудь ещё.</emphasis>
+    </para>
+
+    <para>
+      Более формально, функция представления Django должна:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Принимать экземпляр класса
+	    <classname>HttpRequest</classname> в качестве первого
+	    аргумента.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Возвращать экземпляр класса
+	    <classname>HttpResponse</classname>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Возможность возвращать из представление не-HTML данные лежит в
+      классе <classname>HttpResponse</classname>, а точнее в аргументе
+      конструктора <varname>mimetype</varname>. Определяя MIME-тип, мы
+      можем указывать браузеру формат возвращаемых данных.
+    </para>
+
+    <para>
+      Например, рассмотрим представление, которое возвращает
+      изображение в формате PNG. Для простоты мы просто читаем файл с
+      диска:
+      <screen>
+	<![CDATA[
+from django.http import HttpResponse
+
+def my_image(request):
+    image_data = open("/path/to/my/image.png", "rb").read()
+    return HttpResponse(image_data, mimetype="image/png")
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Вот так! Если вы замените путь до файла в вызове функции
+      <function>open()</function> на путь до реального изображения, вы
+      можете использовать это очень простое представление для
+      обработки изображений, а броузер будет отображает их корректно.
+    </para>
+
+    <para>
+      Ещё следует помнить о том, что объекты
+      <classname>HttpResponse</classname> работают через стандартный
+      API для работы с файлами. Это означает, что вы можете
+      использовать <classname>HttpResponse</classname> в любом месте,
+      где требуется обработать файл.
+    </para>
+
+    <para>
+      Для того, чтобы увидеть как всё это работает, давайте рассмотрим
+      как Django генерирует CSV.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.csv">
+
+    <title id="&BASEID;.csv.title">
+      Генерация CSV
+    </title>
+
+    <para>
+      CSV является простым форматом данных, который обычно
+      используется программным обеспечением для работы с электронными
+      таблицами. Формат описывает набор записей таблицы, в котором
+      каждая ячейка ряда отделена друг от друга запятой (CSV &mdash;
+      это аббревиатура для <emphasis>comma-separated
+      values</emphasis>). Например, ниже представлены некоторые данные
+      на "недисциплинированных" пассажиров авиакомпании в формате CSV:
+      <screen>
+	<![CDATA[
+Year,Unruly Airline Passengers
+1995,146
+1996,184
+1997,235
+1998,200
+1999,226
+2000,251
+2001,299
+2002,273
+2003,281
+2004,304
+2005,203
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      <note>
+	<para>
+	  Вышеприведённый пример содержит реальные числа. Они были
+	  любезно предоставлены Федеральным Управлением Авиации
+	  США. См. <ulink
+	  url="http://www.faa.gov/data_statistics/passengers_cargo/unruly_passengers/"/>.
+	</para>
+      </note>
+    </para>
+
+    <para>
+      Несмотря на то, что CSV выглядит просто, он не является форматом
+      как таковым. Разные программные продукты создают и используют
+      различные варианты CSV, делая непростым его использование. К
+      счастью, Python поставляется со стандартной библиотекой для
+      работы с CSV.
+    </para>
+
+    <para>
+      По причине того, что модуль <token>csv</token> работает как
+      файлоподобные объекты, его можно использовать вместе с
+      <classname>HttpResponse</classname>:
+      <screen>
+	<![CDATA[
+import csv
+from django.http import HttpResponse
+
+# Количество недисциплинированных пассажиров за каждый год диапазона 1995 - 2005.
+# В реальном приложении эта информация будет получена из базы данных.
+UNRULY_PASSENGERS = [146,184,235,200,226,251,299,273,281,304,203]
+
+def unruly_passengers_csv(request):
+    # Создаём объект HttpResponse с соответствующим CSV заголовком.
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=unruly.csv'
+
+    # Создаём объект для записи CSV, используя HttpResponse как "файл"
+    writer = csv.writer(response)
+    writer.writerow(['Year', 'Unruly Airline Passengers'])
+    for (year, num) in zip(range(1995, 2006), UNRULY_PASSENGERS):
+        writer.writerow([year, num])
+
+    return response
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Код и комментарии должны быть достаточно очевидными, но
+      некоторые моменты требует особого упоминания:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Отклик имеет отличный от <token>text/html</token> MIME-тип
+	    &mdash; <token>text/csv</token>. Это указывает браузерам,
+	    что передаваемый документ является CSV файлом.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Отклик получает дополнительный заголовок
+	    <quote>Content-Disposition</quote>, который содержит имя
+	    CSV файла. Этот заголовок, а точнее часть вложения,
+	    указывает браузеру, что необходимо запросить у
+	    пользователя место куда надо сохранить файл, а не
+	    отображать его на экране. Имя файла может быть
+	    произвольным, назовите его как пожелаете с помощью
+	    диалогового окна <quote>Сохранить как ...</quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Подключение к API генерации CSV несложно: просто передайте
+	    <token>response</token> в качестве первого аргумента для
+	    <function>csv.writer</function>. Функция
+	    <function>csv.writer</function> ожидает файлоподобный
+	    объект и объекты <classname>HttpResponse</classname>
+	    соответствуют этому требованию.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Для каждой записи в вашем CVS файле требуется вызывать
+	    функцию <function>writer.writerow</function>, передавая ей
+	    итерационный объект, подобный списку или кортежу.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Модуль <token>csv</token> заботится об экранировании
+	    данных. Просто передавайте информацию в функцию
+	    <function>writerow()</function> и она сделает всё
+	    правильно.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Это основной шаблон поведения в случае когда вам требуется
+      вернуть информацию отличную от HTML: создайте объект
+      <classname>HttpResponse</classname> (с определённым MIME-типом),
+      передайте его чему-нибудь, ожидающему файл и затем возвратите
+      отклик.
+    </para>
+
+    <para>
+      Давайте рассмотрим ещё несколько примеров.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.pdf">
+
+    <title id="&BASEID;.pdf.title">
+      Генерация PDF
+    </title>
+
+    <para>
+      Формат PDF, разработанный компанией Adobe, используется для
+      отображения печатных документов с полным попиксельным
+      форматированием, встроенными шрифтами и двумерной векторной
+      графикой. Вы можете рассматривать PDF документ в качестве
+      электронного эквивалента напечатанного документа. В реальности,
+      PDF документ довольно часто используется для передачи
+      информации, которую затем требуется напечатать.
+    </para>
+
+    <para>
+      Вы можете легко создавать PDF документы с помощью Python и
+      Django благодаря отличной открытой библиотеке <ulink
+      url="http://www.reportlab.org/rl_toolkit.html">ReportLab</ulink>. Преимущество
+      динамического создания PDF документов заключается в том, что вы
+      можете изменять его различными способами, например, разная
+      информация для разных пользователей.
+    </para>
+
+    <para>
+      Например, мы используем Django и ReportLab на сайте <ulink
+      url="KUSports.com"/> для генерации NCAA программ соревнований.
+    </para>
+
+    <section id="&BASEID;.pdf.install-reportlab">
+
+      <title id="&BASEID;.pdf.install-reportlab.title">
+	Установка ReportLab
+      </title>
+
+      <para>
+	Однако перед тем как сгенерировать PDF документ вам
+	потребуется установить ReportLab. Это несложно: просто
+	скачайте и установите библиотеку с <ulink
+	url="http://www.reportlab.org/downloads.html"/>.
+      </para>
+
+      <para>
+	Руководство пользователя (доступное только в виде PDF) на
+	<ulink url="http://www.reportlab.org/rsrc/userguide.pdf"/>
+	содержит дополнительные инструкции по установке.
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    При использовании современного дистрибутива Linux, вы
+	    можете проверить наличие этой библиотеки в репозиториях
+	    операционной системы. Большинство репозиториев содержит
+	    данную библиотеку.
+	  </para>
+
+	  <para>
+	    Например, если вы используете (обалденный) дистрибутив
+	    Ubuntu, установка библиотеки крайне проста:
+	    <screen>
+apt-get install python-reportlab
+	    </screen>
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Проверьте установку с помощью импортирования библиотеки в
+	интерактивном интерпретаторе Python:
+	<screen>
+	  <![CDATA[
+>>> import reportlab
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если эта команда не вызывает никаких ошибок, значит установка
+	библиотеки прошла успешно.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.pdf.writing-view">
+
+      <title id="&BASEID;.pdf.writing-view.title">
+	Создание представления
+      </title>
+
+      <para>
+	Аналогично случаю с CSV, динамическое создание PDF объектов с
+	помощью Django является несложным, по причине того, что API
+	библиотеки ReportLab работает как файлоподобный объект.
+      </para>
+
+      <para>
+	Ниже представлен пример <quote>Hello World</quote>:
+	<screen>
+	  <![CDATA[
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+
+def hello_pdf(request):
+    # Создаём объект HttpResponse с соответствующим PDF заголовком.
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=hello.pdf'
+
+    # Создаём объект PDF, используя объект HttpResponse как файл.
+    p = canvas.Canvas(response)
+
+    # Выводим в PDF необходимую информацию. Вот так создаются PDF.
+    # Обратитесь к документации на ReportLab для подробностей.
+    p.drawString(100, 100, "Hello world.")
+
+    # Явно закрываем объект PDF.
+    p.showPage()
+    p.save()
+    return response
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	А теперь несколько замечаний:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      В данном случае мы используем
+	      <token>application/pdf</token> в качестве MIME-типа. Это
+	      указывает браузеру, что документ является PDF файлом, а
+	      не HTML. Если вы забудете указать эту информацию,
+	      браузер проинтерпретирует документ как HTML файл и
+	      вывалит кучу мусора на экран.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Подключение к ReportLab API несложно: просто передайте
+	      <token>response</token> в качестве первого аргумента для
+	      <function>canvas.Canvas</function>. Объект
+	      <classname>Canvas</classname> ожидает файлоподобный
+	      объект и объекты <classname>HttpResponse</classname>
+	      соответствуют этому требованию.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Все вызовы дополнительных методов для создания PDF
+	      документа производятся от PDF объекта
+	      (см. <token>p</token> в коде), а не от
+	      <token>response</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Наконец надо вызвать функции
+	      <function>showPage()</function> и
+	      <function>save()</function> для PDF файла, иначе вы
+	      получите испорченный PDF документ.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+      
+    </section>
+	    
+    <section id="&BASEID;.pdf.complex">
+
+      <title id="&BASEID;.pdf.complex.title">
+	Сложные PDF документы
+      </title>
+
+      <para>
+	Если вы создаёте сложный PDF документ (или любой большой объём
+	данных), рассмотрите возможность использования библиотеки
+	<token>cStringIO</token> в качестве временного хранилища для
+	вашего PDF файла. Библиотека <token>cStringIO</token>
+	предоставляет файлоподобный интерфейс, который написан на
+	языке C для достижения максимальной эффективности.
+      </para>
+
+      <para>
+	Перепишем предыдущий <quote>Hello World</quote> пример,
+	используя библиотеку <token>cStringIO</token>:
+	<screen>
+	  <![CDATA[
+from cStringIO import StringIO
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+
+def hello_pdf(request):
+    # Создаём объект HttpResponse с соответствующим PDF заголовком.
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=hello.pdf'
+
+    temp = StringIO()
+
+    # Создаём объект PDF, используя объект StringIO как файл.
+    p = canvas.Canvas(temp)
+
+    # Выводим в PDF необходимую информацию. Здесь генерируется содержимое PDF.
+    # Обратитесь к документации на ReportLab для подробностей.
+    p.drawString(100, 100, "Hello world.")
+
+    # Явно закрываем объект PDF.
+    p.showPage()
+    p.save()
+
+    # Получаем данные из буфера StringIO и пишем отклик.
+    response.write(temp.getvalue())
+    return response
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.other">
+
+    <title id="&BASEID;.other.title">
+      Другие возможности
+    </title>
+
+    <para>
+      Существует целый набор других типов данных, которые вы можете
+      генерировать с помощью Python. Ниже представлены некоторые идеи
+      и ссылки на библиотеки, которые вы можете использовать для их
+      реализации:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <emphasis>ZIP файлы</emphasis>: Стандартная библиотека
+	    Python поставляется с модулем <token>zipfile</token>,
+	    который может читать и писать сжатые ZIP файлы. Вы можете
+	    использовать этот модуль для предоставления по требованию
+	    архивов с набором файлов или, возможно, сжимать большие
+	    документы, когда это необходимо. Аналогично вы можете
+	    предоставлять TAR файлы с помощью модуля
+	    <token>tarfile</token> стандартной библиотеки.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Динамические изображения</emphasis>: графическая
+	    библиотека Python, <ulink
+	    url="http://www.pythonware.com/products/pil/">PIL</ulink>
+	    &mdash; это фантастический набор инструментов для создания
+	    изображений (в таких форматах как <token>PNG</token>,
+	    <token>JPEG</token>, <token>GIF</token> и многих
+	    других). Вы можете использовать её для автоматического
+	    создания миниатюр изображений, объединения нескольких
+	    изображений в единое или даже для онлайновой обработки
+	    изображений.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Графики и диаграммы</emphasis>: Существует ряд
+	    невероятно мощных библиотек Python для создания графиков и
+	    диаграмм, которые вы можете использовать для генерации по
+	    запросу различной графической информации. Мы не имеем
+	    возможности привести здесь их список, укажем лишь
+	    несколько:
+
+	    <itemizedlist>
+	      <listitem>
+		<para>
+		  Библиотека <token>matplotlib</token> (<ulink
+		  url="http://matplotlib.sourceforge.net/"/>) может
+		  быть использована для создания высококачественных
+		  графиков, аналогичных графиком из MatLab или
+		  Methematica.
+		</para>
+	      </listitem>
+
+	      <listitem>
+		<para>
+		  Библиотека <token>pygraphviz</token> (<ulink
+		  url="https://networkx.lanl.gov/wiki/pygraphviz"/>),
+		  которая является интерфейсом к <ulink
+		  url="http://graphviz.org/">GraphViz</ulink>, может
+		  быть использована для создания структурных диаграмм
+		  графов и сетей
+		</para>
+	      </listitem>
+	    </itemizedlist>
+
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      В общем, любая библиотека языка Python, имеющая возможность
+      записи в файл может быть подключена к Django. Возможности при
+      этом бесконечны.
+    </para>
+
+    <para>
+      Мы рассмотрели основы создание отличной от HTML информации,
+      перейдём на другой уровень абстракции. Django поставляется с
+      некоторыми прикольными инструментами для генерации общих типов
+      не-HTML информации.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.rss">
+
+    <title id="&BASEID;.rss.title">
+      Средства трансляции
+    </title>
+
+    <para>
+      Django поставляется со средствами высокого уровня для трансляции
+      данных, что позволяет легко создавать потоки RSS или Atom.
+    </para>
+
+    <para>
+      <note>
+	<title>
+	  Что такое RSS? Что такое Atom?
+	</title>
+
+	<para>
+	  RSS и Atom оба являются форматами, базирующимися на XML,
+	  которые вы можете использовать для рассылки автоматически
+	  обновляемого <quote>содержания</quote> для вашего
+	  сайта. Более подробно об RSS можно узнать на <ulink
+	  url="http://www.whatisrss.com/"/>, об Atom &mdash; на <ulink
+	  url="http://www.atomenabled.org/"/>.
+	</para>
+
+	<para>
+	  Здесь и далее мы будем использовать термин
+	  <quote>трансляция</quote> для английской фразы
+	  <quote>syndication feed</quote>.
+	</para>
+      </note>
+    </para>
+
+    <para>
+      Для создания любой трансляции вам понадобится только написать
+      короткий класс на языке Python. Вы можете создавать столько
+      трансляций, сколько требуется.
+    </para>
+
+    <para>
+      Средой высокого уровня для генерации трансляций является
+      представление, которое по договорённости подключено к
+      <token>/feeds/</token>. Django использует хвостовую часть URL
+      (то, что идёт после <token>/feeds/</token>) для определения
+      того, какую именно трансляцию следует вернуть.
+    </para>
+
+    <para>
+      Для создания трансляции, вам потребуется написать класс
+      <classname>Feed</classname> и указать на него в вашем файле
+      привязок URL (обратитесь к главам <quote><xref
+      linkend="djangobook.chap03"
+      endterm="djangobook.chap03.title"/></quote> и <quote><xref
+      linkend="djangobook.chap08"
+      endterm="djangobook.chap08.title"/></quote> для подробностей).
+    </para>
+
+    <section id="&BASEID;.rss.init">
+
+      <title id="&BASEID;.rss.init.title">
+	Инициализация
+      </title>
+      
+      <para>
+	Чтобы активировать трансляции на вашем сайте, добавьте
+	следующее в файл привязок:
+	<screen>
+	  <![CDATA[
+(r'^feeds/(?P<url>.*)/$',
+ 'django.contrib.syndication.views.feed',
+ {'feed_dict': feeds}
+),
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Этот код указывает Django, что следует использовать RSS среду
+	для обработки всех URL, которые начинаются с
+	<token>feeds/</token>. (Вы можете изменить этот префикс
+	<token>feeds/</token> на любой необходимый.)
+      </para>
+
+      <para>
+	Следует отметить, что параметр <varname>feed_dict</varname>
+	должен быть словарём, который совпадает с сокращением для
+	трансляции (метка для короткого URL). Вы можете определить
+	этот параметр в файле привязок. Ниже дан полный пример:
+	<screen>
+	  <![CDATA[
+from django.conf.urls.defaults import *
+from myproject.feeds import LatestEntries, LatestEntriesByCategory
+
+feeds = {
+    'latest': LatestEntries,
+    'categories': LatestEntriesByCategory,
+}
+
+urlpatterns = patterns('',
+    # ...
+    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
+        {'feed_dict': feeds}),
+    # ...
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Вышеприведённый пример регистрирует две трансляции:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Трансляция, представленная <token>LatestEntries</token>,
+	      будет жить на <token>feeds/latest/</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Трансляция, представленная
+	      <token>LatestEntriesByCategory</token>, будет жить на
+	      <token>feeds/categories/</token>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Теперь надо определить сами классы
+	<classname>Feed</classname>.
+      </para>
+
+      <para>
+	Класс <classname>Feed</classname> является обычным классом
+	Python и представляет собой класс трансляции. Трансляция может
+	быть простой (т.е. отображающей новости сайта или последние
+	записи блога) или более сложной (т.е. отображающей все записи
+	блога в определённой категории, где категория является
+	переменной).
+      </para>
+
+      <para>
+	Вы должны подключать в код представления класс
+	<token>django.contrib.syndication.feeds.Feed</token>. Классы
+	<classname>Feed</classname> могут располагаться в любой точке
+	вашего кода.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.simple">
+
+      <title id="&BASEID;.rss.simple.title">
+	Простая трансляция
+      </title>
+      
+      <para>
+	Этот простой пример, взятый с <ulink
+	url="http://chicagocrime.org/"/>, описывает трансляцию,
+	которая возвращает пять свежих новостей:
+	<screen>
+	  <![CDATA[
+from django.contrib.syndication.feeds import Feed
+from chicagocrime.models import NewsItem
+
+class LatestEntries(Feed):
+    title = "Chicagocrime.org site news"
+    link = "/sitenews/"
+    description = "Updates on changes and additions to chicagocrime.org."
+
+    def items(self):
+        return NewsItem.objects.order_by('-pub_date')[:5]
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Отметим важные аспекты этого кода:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Класс подключает
+	      <token>django.contrib.syndication.feeds.Feed</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Атрибуты <token>title</token>, <token>link</token> и
+	      <token>description</token> соответствуют стандартным
+	      элементам RSS: &lt;title&gt;, &lt;link&gt; и
+	      &lt;description&gt;.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Метод <function>items()</function> возвращает список
+	      объектов, которые должны быть включены в трансляцию в
+	      виде элементов <![CDATA[<item>]]>. Несмотря на то, что
+	      этот пример возвращает объекты
+	      <classname>NewsItem</classname> с помощью API для работы
+	      с базой данных, метод <function>items()</function> не
+	      обязан возвращать экземпляры модели.
+	    </para>
+
+	    <para>
+	      Вы <quote>бесплатно</quote> получаете некоторую
+	      функциональность, используя модели Django, но метод
+	      <function>items()</function> может вернут любой тип
+	      объекта.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Надо сделать ещё кое-что. В RSS-потоке каждый элемент
+	<![CDATA[<item>]]> имеет элементы <![CDATA[<title>]]>,
+	<![CDATA[<link>]]> и <![CDATA[<description>]]>. Необходимо
+	указать среде какие именно данные следует помещать в эти
+	элементы.
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Чтобы указать содержимое для <![CDATA[<title>]]> и
+	      <![CDATA[<description>]]>, создайте шаблоны (см. главу
+	      <quote><xref linkend="djangobook.chap04"
+	      endterm="djangobook.chap04.title"/></quote>) с именами
+	      <filename>feeds/latest_title.html</filename> и
+	      <filename>feeds/latest_description.html</filename>, где
+	      <token>latest</token> является сокращением, которое
+	      указано в файле привязки для конкретной
+	      трансляции. Следует отметить, что наличие расширения
+	      <token>.html</token> обязательно.
+	    </para>
+
+	    <para>
+	      Система RSS обрабатывает этот шаблон для каждого
+	      элемента, передавая ему две контекстные переменные:
+	      <itemizedlist>
+		<listitem>
+		  <para>
+		    <varname>obj</varname>: текущий объект (один из
+		    объектов полученных от метода
+		    <function>items()</function>).
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    <varname>site</varname>: Объект класса
+		    <token>django.models.core.sites.Site</token>,
+		    представляющий текущий сайт. Полезен для <token>{{
+		    site.domain }}</token> или <token>{{ site.name
+		    }}</token>.
+		  </para>
+		</listitem>
+	      </itemizedlist>
+	    </para>
+
+	    <para>
+	      Если вы не создадите шаблон хотя бы для одного элемента,
+	      среда будет использовать шаблон <token>{{ obj }}</token>
+	      по умолчанию, т.е. обычное текстовое представление
+	      объекта.
+	    </para>
+
+	    <para>
+	      Также вы можете поменять имена этих двух шаблонов,
+	      определив атрибуты <varname>title_template</varname> и
+	      <varname>description_template</varname> для класса
+	      <classname>Feed</classname>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      При определении содержимого для <![CDATA[<link>]]> у вас
+	      есть две опции. Для каждого элемента, возвращённого
+	      методом <function>items()</function>, Django сначала
+	      пытается выполнить его метод
+	      <function>get_absolute_url()</function>. Если такого
+	      метода нет у объекта, Django пытается вызвать метод
+	      <function>item_link()</function> для класса
+	      <classname>Feed</classname>, передавая ему один параметр
+	      <varname>item</varname>, который является этим объектом.
+	    </para>
+
+	    <para>
+	      Оба метода, <function>get_absolute_url()</function> и
+	      <function>item_link()</function>, должны возвращать URL
+	      элемента в виде обычной строки Python.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Для показанного ранее примера
+	      <token>LatestEntries</token> мы можем создать очень
+	      простые шаблоны:
+	      <screen>
+# latest_title.html
+{{ obj.title }}
+
+#latest_description.html
+{{ obj.description }}
+	      </screen>
+	      Это всегда <emphasis>слишком</emphasis> просто ...
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.complex">
+
+      <title id="&BASEID;.rss.complex.title">
+	Более сложная трансляция
+      </title>
+      
+      <para>
+	Сайт <ulink url="http://chicagocrime.org"/> предоставляет
+	RSS-потоки по последним преступлениям для каждого полицейского
+	участка в Чикаго. Можно устать, создавая классы
+	<classname>Feed</classname> для каждого участка. Это нарушит
+	принцип DRY и приведёт к размещению данных в логике программы.
+      </para>
+
+      <para>
+	Вместо этого, среда трансляций позволяет вам создать базовые
+	трансляции, которые возвращают элементы в зависимости от URL.
+      </para>
+
+      <para>
+	На нашем сайте трансляции для полицейских участков доступны
+	через URL, подобные этим:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <ulink
+	      url="http://www.chicagocrime.org/rss/beats/0613/"/>:
+	      возвращает данные о последних преступлениях на участке
+	      0613.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <ulink
+	      url="http://www.chicagocrime.org/rss/beats/1424/"/>:
+	      возвращает данные о последних преступлениях на участке
+	      1424.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Здесь сокращением является <token>beats</token>. Среда
+	трансляций обнаруживает хвостовую часть URL после
+	<token>beats</token> &mdash; <token>0613</token> и
+	<token>1424</token> &mdash; и предоставляет вам возможность
+	указать ей, что означает эта дополнительная часть URL и как
+	она влияет на транслируемые данные.
+      </para>
+
+      <para>
+	Пример должен всё прояснить. Ниже представлен код для таких
+	трансляций:
+	<screen>
+	  <![CDATA[
+from django.core.exceptions import ObjectDoesNotExist
+
+class BeatFeed(Feed):
+    def get_object(self, bits):
+        # In case of "/rss/beats/0613/foo/bar/baz/", or other such
+        # clutter, check that bits has only one member.
+        if len(bits) != 1:
+            raise ObjectDoesNotExist
+        return Beat.objects.get(beat__exact=bits[0])
+
+    def title(self, obj):
+        return "Chicagocrime.org: Crimes for beat %s" % obj.beat
+
+    def link(self, obj):
+        return obj.get_absolute_url()
+
+    def description(self, obj):
+        return "Crimes recently reported in police beat %s" % obj.beat
+
+    def items(self, obj):
+        crimes =  Crime.objects.filter(beat__id__exact=obj.id)
+        return crimes.order_by('-crime_date')[:30]
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Здесь представлен базовый алгоритм среды RSS-потоков. Берём
+	данный класс и обрабатываем URL
+	<token>/rss/beats/0613/</token>:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Среда трансляций получает URL
+	      <token>/rss/beats/0613/</token> и отмечает, что
+	      существует дополнительная часть данных в URL. Среда
+	      отделяет эту часть по символу <token>/</token> и
+	      вызывает у класса <classname>Feed</classname> метод
+	      <function>get_object()</function>, передавая ему эту
+	      часть URL.
+	    </para>
+
+	    <para>
+	      В данном случае, такой частью будет
+	      <token>['0613']</token>. Для запроса
+	      <token>/rss/beats/0613/foo/bar/'</token> &mdash;
+	      <token>['0613', 'foo', 'bar']</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Метод <function>get_object()</function> отвечает за
+	      получение соответствующего участка из полученного
+	      набора.
+	    </para>
+
+	    <para>
+	      В данном случае, среда трансляций использует API для
+	      работы с базой данных для получения информации по
+	      указанному полицейскому участку. Следует отметить, что
+	      метод <function>get_object()</function> должен вызывать
+	      исключение
+	      <token>django.core.exceptions.ObjectDoesNotExist</token>
+	      в случае получения неверного параметра. Здесь не
+	      использована связка <token>try / except</token> для
+	      вызова <function>Beat.objects.get()</function>, т.к. в
+	      этом нет необходимости. В случае неудачи данный метод
+	      вызывает исключение <token>Beat.DoesNotExist</token>,
+	      которое является подклассом
+	      <token>ObjectDoesNotExist</token>. Вызов исключения
+	      <token>ObjectDoesNotExist</token> в
+	      <function>get_object()</function> указывает Django, что
+	      необходимы выдать страницу с ошибкой 404 на
+	      обрабатываемый запрос.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Для генерации элементов <![CDATA[<title>]]>,
+	      <![CDATA[<link>]]> и <![CDATA[<description>]]> Django
+	      использует методы <function>title()</function>,
+	      <function>link()</function> и
+	      <function>description()</function>. В предыдущем примере
+	      они были простыми строковыми атрибутами класса, но
+	      данный пример иллюстрирует, что они могут быть строками
+	      <emphasis>или</emphasis> методами. Для каждого элемента
+	      <token>title</token>, <token>link</token> и
+	      <token>description</token> Django следует
+	      нижеприведённому алгоритму:
+	      
+	      <orderedlist>
+		<listitem>
+		  <para>
+		    Производится вызов метода с передачей ему
+		    аргумента <varname>obj</varname>, где
+		    <token>obj</token> является объектом, возвращённым
+		    методом <function>get_object()</function>.
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    В случае неудачи, производится вызов метода без
+		    аргументов.
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    В случае неудачи, используется атрибут класса.
+		  </para>
+		</listitem>
+	      </orderedlist>
+
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    Следует отметить, что <function>items()</function> в
+	    данном примере также принимает аргумент
+	    <token>obj</token>. Алгоритм для <token>items</token>
+	    полностью совпадает с предыдущим пунктом &mdash; сначала
+	    производится вызов <function>items(obj)</function>, затем
+	    <function>items()</function> и наконец используется
+	    атрибут класса <classname>items</classname> (который должен
+	    быть списком).
+	  </listitem>
+	</orderedlist>
+      </para>
+
+      <para>
+	Полная документация по всем методам и атрибутам классов
+	<classname>Feed</classname> доступна на официальном сайте
+	Django (<ulink
+	url="http://www.djangoproject.com/documentation/0.96/syndication_feeds/"/>).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.type">
+
+      <title id="&BASEID;.rss.type.title">
+	Указание типа трансляции
+      </title>
+      
+      <para>
+	По умолчанию среда трансляций генерирует RSS 2.0. Для
+	изменения этого поведения надо добавить атрибут
+	<token>feed_type</token> в ваш класс
+	<classname>Feed</classname>:
+	<screen>
+	  <![CDATA[
+from django.utils.feedgenerator import Atom1Feed
+
+class MyFeed(Feed):
+    feed_type = Atom1Feed
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить то, что вы устанавливаете этот атрибут для
+	класса, а не для экземпляра. Доступные типы трансляций
+	показаны в таблице <quote><xref linkend="&BASEID;.tbl1"
+	endterm="&BASEID;.tbl1.title"/></quote>:
+
+	<table id="&BASEID;.tbl1" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl1.title">
+	    Типы трансляций
+	  </title>
+
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+
+	    <colspec colname="c1" colwidth="10cm"/>
+	    <colspec colname="c2" colwidth="4cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Класс трансляции</entry>
+		<entry>Формат</entry>
+	      </row>
+	    </thead>
+	    
+	    <tbody>
+	      <row>
+		<entry>
+		  <token>django.utils.feedgenerator.Rss201rev2Feed</token>
+		</entry>
+		<entry>RSS 2.01 (по умолчанию)</entry>
+	      </row>
+	      
+	      <row>
+		<entry>
+		  <token>django.utils.feedgenerator.RssUserland091Feed</token>
+		</entry>
+		<entry>RSS 0.91</entry>
+	      </row>
+
+	      <row>
+		<entry>
+		  <token>django.utils.feedgenerator.Atom1Feed</token>
+		</entry>
+		<entry>Atom 1.0</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.enclosures">
+
+      <title id="&BASEID;.rss.enclosures.title">
+	Вложения
+      </title>
+      
+      <para>
+	Для того, чтобы указать вложения (т.е. медиа ресурсы
+	ассоциированные с элементами трансляции, такими как MP3
+	подкасты), используйте обработчики
+	<token>item_enclosure_url</token>,
+	<token>item_enclosure_length</token> и
+	<token>item_enclosure_mime_type</token>, например:
+	<screen>
+	  <![CDATA[
+from myproject.models import Song
+
+class MyFeedWithEnclosures(Feed):
+    title = "Example feed with enclosures"
+    link = "/feeds/example-with-enclosures/"
+
+    def items(self):
+        return Song.objects.all()[:30]
+
+    def item_enclosure_url(self, item):
+        return item.song_url
+
+    def item_enclosure_length(self, item):
+        return item.song_length
+
+    item_enclosure_mime_type = "audio/mpeg"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это предполагает, что вы уже создали объект
+	<classname>Song</classname> с полями <token>song_url</token> и
+	<token>song_length</token> (размер в байтах).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.language">
+
+      <title id="&BASEID;.rss.language.title">
+	Язык
+      </title>
+      
+      <para>
+	Трансляции создаваемые средой автоматически получают
+	соответствующий тэг <![CDATA[<language>]]> (RSS 2.0) или
+	атрибут <token>xml:lang</token> (Atom). Значение этого тэга
+	зависит от параметра конфигурации
+	<token>LANGUAGE_CODE</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.urls">
+
+      <title id="&BASEID;.rss.urls.title">
+	URL
+      </title>
+      
+      <para>
+	Атрибут/метод <token>link</token> может возвращать как
+	абсолютный URL (т.е. <token>/blog/</token>), так и полный URL
+	(т.е. <token>http://www.example.com/blog/</token>). Если
+	<token>link</token> не возвратил домен, то среда трансляций
+	добавит домен текущего сайта в соответствии с параметром
+	конфигурации <token>SITE_ID</token>.
+      </para>
+
+      <para>
+	Трансляции Atom требуют наличия <![CDATA[<link rel="self">]]>,
+	который определяет место расположения трансляции. Среда
+	трансляций создаёт его автоматически, используя домен текущего
+	сайта в соответствии с параметром конфигурации
+	<token>SITE_ID</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.rss.tandem">
+
+      <title id="&BASEID;.rss.tandem.title">
+	Одновременная трансляция Atom и RSS
+      </title>
+      
+      <para>
+	Некоторые разработчики предпочитают предоставлять трансляции в
+	обоих видах: RSS и Atom. С помощью Django это несложно
+	сделать: просто создайте подкласс для вашего класса
+	<classname>feed</classname> и установите
+	<token>feed_type</token> в что-нибудь отличное. Затем добавьте
+	его вызов в ваш файл привязок. Вот полный пример:
+	<screen>
+	  <![CDATA[
+from django.contrib.syndication.feeds import Feed
+from chicagocrime.models import NewsItem
+from django.utils.feedgenerator import Atom1Feed
+
+class RssSiteNewsFeed(Feed):
+    title = "Chicagocrime.org site news"
+    link = "/sitenews/"
+    description = "Updates on changes and additions to chicagocrime.org."
+
+    def items(self):
+        return NewsItem.objects.order_by('-pub_date')[:5]
+
+class AtomSiteNewsFeed(RssSiteNewsFeed):
+    feed_type = Atom1Feed
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	А здесь соответствующий файл привязок:
+	<screen>
+	  <![CDATA[
+from django.conf.urls.defaults import *
+from myproject.feeds import RssSiteNewsFeed, AtomSiteNewsFeed
+
+feeds = {
+    'rss': RssSiteNewsFeed,
+    'atom': AtomSiteNewsFeed,
+}
+
+urlpatterns = patterns('',
+    # ...
+    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
+        {'feed_dict': feeds}),
+    # ...
+)
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.sitemap">
+
+    <title id="&BASEID;.sitemap.title">
+      Среда генерации карты сайта
+    </title>
+      
+    <para>
+      <emphasis>Карта сайта</emphasis> представляет собой XML файл,
+      который располагается на вашем веб сервере и сообщает поисковым
+      движкам как часто изменяются ваши страницы и как
+      <quote>важны</quote> определённые страницы по отношению к другим
+      страницам вашего сайта. Эта информация помогает поисковым
+      движкам индексировать ваш сайт.
+    </para>
+
+    <para>
+      Например, ниже представлена карта сайта Django (<ulink
+      url="http://www.djangoproject.com/sitemap.xml"/>):
+      <screen>
+	<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://www.djangoproject.com/documentation/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://www.djangoproject.com/documentation/0_90/</loc>
+    <changefreq>never</changefreq>
+    <priority>0.1</priority>
+  </url>
+  ...
+</urlset>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Для получения более подробной информации по картам сайтов
+      обратитесь к <ulink url="http://www.sitemaps.org/"/>.
+    </para>
+
+    <para>
+      Среда Django для генерации карты сайта автоматизирует создание
+      такого XML файла, позволяя вам выражать эту информацию в коде на
+      языке Python. Для того, чтобы создать карту сайта вам лишь надо
+      написать класс <classname>Sitemap</classname> и указать на него
+      в файле привязок URL.
+    </para>
+
+    <section id="&BASEID;.sitemap.install">
+
+      <title id="&BASEID;.sitemap.install.title">
+	Установка
+      </title>
+      
+      <para>
+	Для того, чтобы установить карту сайта в ваше приложение,
+	следуйте нижеприведённой инструкции:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Добавьте <token>django.contrib.sitemaps</token> в
+	      параметр конфигурации <token>INSTALLED_APPS</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Удостоверьтесь, что
+	      <token>django.template.loaders.app_directories.load_template_source</token>
+	      указан в параметре конфигурации
+	      <token>TEMPLATE_LOADERS</token>. По умолчанию он должен
+	      там быть, только если вы его сами оттуда не убрали.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Удостоверьтесь, что вы установили sites framework FIXME
+	      (см. главу <quote><xref linkend="djangobook.chap14"
+	      endterm="djangobook.chap14.title"/></quote>).
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    Приложение для генерации карты сайта не создаёт ни одной
+	    таблицы в базе данных. Единственная причина, по которое её
+	    требуется указывать в <token>INSTALLED_APPS</token>
+	    &mdash; так загрузчик шаблонов
+	    <token>load_template_source</token> может найти
+	    стандартные шаблоны.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.sitemap.init">
+
+      <title id="&BASEID;.sitemap.init.title">
+	Активация
+      </title>
+      
+      <para>
+	Для активации генератора карты сайта добавьте следующую строку
+	в файл привязок URL:
+	<screen>
+	  <![CDATA[
+ (r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps})
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Эта строка указывает Django, что необходимо построить карту
+	сайта, когда клиент запросит <token>/sitemap.xml</token>.
+      </para>
+
+      <para>
+	Имя для файла содержащего карту сайта не имеет значения, но
+	вот расположение этого файла имеет. Поисковые движки всегда
+	индексируют ссылки в вашей карте относительно текущего уровня
+	URL и ниже. Например, если <token>sitemap.xml</token>
+	находится в корневом каталоге сайта, он может ссылаться на
+	любой URL вашего сайта. Однако, если карта сайта находится по
+	URL <token>/content/sitemap.xml</token>, он может ссылаться на
+	URL, начинающийся с <token>/content/</token>.
+      </para>
+
+      <para>
+	Представление для карты сайта принимает дополнительный
+	обязательный аргумент: <token>{'sitemaps':
+	sitemaps}</token>. Значение <token>sitemaps</token> должно
+	быть словарём, который совпадает с сокращённой меткой
+	(т.е. <token>blog</token> или <token>news</token>) для своего
+	класса <classname>Sitemap</classname>
+	(т.е. <token>BlogSitemap</token> или
+	<token>NewsSitemap</token>). Значение может также совпадать с
+	<emphasis>экземпляром</emphasis> класса
+	<classname>Sitemap</classname> (т.е., с
+	<token>BlogSitemap(some_var)</token>).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.sitemap.classes">
+
+      <title id="&BASEID;.sitemap.classes.title">
+	Классы
+      </title>
+      
+      <para>
+	Класс <classname>Sitemap</classname> &mdash; это обычный
+	Python класс, который представляет <quote>раздел</quote>
+	элементов вашей карты сайта. Например, один класс
+	<classname>Sitemap</classname> может представлять все записи
+	вашего блога, в то время как другой класс представляет все
+	события вашего календаря.
+      </para>
+
+      <para>
+	В простейшем случае все эти разделы объединяются в единый
+	<token>sitemap.xml</token>. Также есть возможность
+	использовать среду для генерации индекса карты сайта, который
+	будет ссылаться на отдельные файлы карт, один файл на карту.
+      </para>
+
+      <para>
+	Классы <classname>Sitemap</classname> должны подключать
+	<token>django.contrib.sitemaps.Sitemap</token> и могут
+	располагаться в любом месте вашего кода.
+      </para>
+
+      <para>
+	Например, предположим, что у вас есть система ведения блогов,
+	использующая модель <token>Entry</token>. И вы желаете, чтобы
+	карта сайта включала все ссылки на каждую запись блога. Вот
+	так может выглядеть ваш класс <classname>Sitemap</classname>:
+	<screen>
+	  <![CDATA[
+from django.contrib.sitemaps import Sitemap
+from mysite.blog.models import Entry
+
+class BlogSitemap(Sitemap):
+    changefreq = "never"
+    priority = 0.5
+
+    def items(self):
+        return Entry.objects.filter(is_draft=False)
+
+    def lastmod(self, obj):
+        return obj.pub_date
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Объявление <classname>Sitemap</classname> должна выглядеть
+	подобно декларации класса <classname>Feed</classname>, таков
+	дизайн Django.
+      </para>
+
+      <para>
+	Подобно классам <classname>Feed</classname>, члены класса
+	<classname>Sitemap</classname> могут быть как методами, так и
+	атрибутами. Подробности были описаны в разделе <quote><xref
+	linkend="&BASEID;.rss.complex"
+	endterm="&BASEID;.rss.complex.title"/></quote>.
+      </para>
+
+      <para>
+	Класс <classname>Sitemap</classname> может определять
+	следующие методы или атрибуты:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Обязательный метод <token>items</token> предоставляет
+	      список объектов. Среда не заботится о
+	      <emphasis>типах</emphasis> объектов. Имеет значение
+	      только то, что эти объекты передаются в методы
+	      <function>location()</function>,
+	      <function>lastmod()</function>,
+	      <function>changefreq()</function> и
+	      <function>priority()</function>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Необязательный метод <token>location</token>
+	      предоставляет абсолютный URL для текущего объекта. В
+	      данном случае <quote>абсолютный URL</quote> означает
+	      URL, который не включает протокол и домен. Вот несколько
+	      примеров:
+
+	      <itemizedlist>
+		<listitem>
+		  <para>
+		    Хороший: <token>/foo/var/</token>.
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Плохой: <token>example.com/foo/bar/</token>.
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Плохой: <token>http://example.com/foo/bar/</token>.
+		  </para>
+		</listitem>
+	      </itemizedlist>
+
+	    </para>
+
+	    <para>
+	      Если <token>location</token> отсутствует, среда будет
+	      использовать метод
+	      <function>get_absolute_url()</function> для каждого
+	      объекта, возвращённого методом
+	      <function>items()</function>.
+	    </para>
+  	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Необязательный метод <token>lastmod</token> возвращает
+	      дату последнего изменения объекта в виде стандартного
+	      объекта <token>datetime</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Необязательный метод <token>changefreq</token>
+	      возвращает информацию о том, как часто изменяется
+	      объект. Возможные значения, определённые спецификацией
+	      на карты сайтов, представлены ниже:
+
+	      <itemizedlist>
+		<listitem><para>always</para></listitem>
+		<listitem><para>hourly</para></listitem>
+		<listitem><para>daily</para></listitem>
+		<listitem><para>weekly</para></listitem>
+		<listitem><para>monthly</para></listitem>
+		<listitem><para>yearly</para></listitem>
+		<listitem><para>never</para></listitem>
+	      </itemizedlist>
+
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Необязательный метод <token>priority</token> возвращает
+	      приоритет между <token>0.0</token> и
+	      <token>1.0</token>. Стандартный приоритет для страницы
+	      <token>0.5</token>. О том как работают приоритеты можно
+	      узнать в документации на <ulink
+	      url="http://sitemaps.org/"/>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+		    
+    <section id="&BASEID;.sitemap.shortcuts">
+
+      <title id="&BASEID;.sitemap.shortcuts.title">
+	Полезное
+      </title>
+      
+      <para>
+	Среда генерации карты сайта поставляется с рядом удобных
+	классов пригодных для решения общих задач. Они будут описаны
+	дальше в этой главе.
+      </para>
+
+      <section id="&BASEID;.sitemap.shortcuts.flatpage">
+
+	<title id="&BASEID;.sitemap.shortcuts.flatpage.title">
+	  FlatPageSitemap
+	</title>
+      
+	<para>
+	  Класс <token>django.contrib.sitemaps.FlatPageSitemap</token>
+	  просматривает все плоские, страницы определённые для
+	  текущего сайта и создаёт запись в карте сайта. Эти записи
+	  включают в себя только атрибут <token>location</token>.
+	</para>
+
+	<para>
+	  Подробности о плоских страницах приведены в главе
+	  <quote><xref linkend="djangobook.chap14"
+	  endterm="djangobook.chap14.title"/></quote>.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.sitemap.shortcuts.generic">
+
+	<title id="&BASEID;.sitemap.shortcuts.generic.title">
+	  GenericSitemap
+	</title>
+      
+	<para>
+	  Класс <classname>GenericSitemap</classname> работает с любым
+	  базовым представлением (см. главу <quote><xref
+	  linkend="djangobook.chap09"
+	  endterm="djangobook.chap09.title"/></quote>), которое у вас
+	  есть.
+	</para>
+
+	<para>
+	  Для использования этого класса, создайте его экземпляр,
+	  передав ему такой же <token>info_dict</token>, какой вы
+	  передаёте базовым представлениям. Единственное требование
+	  заключается в том, что словарь должен иметь запись
+	  <token>queryset</token>. Он также может иметь запись
+	  <token>date_field</token>, которая определяет поле даты для
+	  объектов получаемых из <token>queryset</token>. Дата будет
+	  использована для атрибута <token>lastmod</token> при
+	  создании карты сайта. Вы также можете передать именованные
+	  аргументы <token>priority</token> и
+	  <token>changefreq</token> в конструктор
+	  <classname>GenericSitemap</classname>, для внесения этой
+	  информации во все URL.
+	</para>
+
+	<para>
+	  Ниже представлен пример файла привязок, в котором
+	  использованы <token>FlatPageSitemap</token> и
+	  <token>GenericSitemap</token> (с гипотетическим объектом
+	  <token>Entry</token>, о котором мы говорили ранее):
+	  <screen>
+	    <![CDATA[
+from django.conf.urls.defaults import *
+from django.contrib.sitemaps import FlatPageSitemap, GenericSitemap
+from mysite.blog.models import Entry
+
+info_dict = {
+    'queryset': Entry.objects.all(),
+    'date_field': 'pub_date',
+}
+
+sitemaps = {
+    'flatpages': FlatPageSitemap,
+    'blog': GenericSitemap(info_dict, priority=0.6),
+}
+
+urlpatterns = patterns('',
+    # some generic view using info_dict
+    # ...
+
+    # the sitemap
+    (r'^sitemap.xml$',
+     'django.contrib.sitemaps.views.sitemap',
+     {'sitemaps': sitemaps})
+)
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.sitemap.index">
+
+      <title id="&BASEID;.sitemap.index.title">
+	Создание индекса для карты сайта
+      </title>
+      
+      <para>
+	Среда генерации карты сайта также имеет возможность создавать
+	индекс для карты сайта, который ссылается на отдельные файлы с
+	картами сайта, по одному на каждую секцию определённою в
+	словаре <token>sitemaps</token>. Отличия:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Вы используете два представления в вашем файле привязки:
+	      <token>django.contrib.sitemaps.views.index</token> и
+	      <token>django.contrib.sitemaps.views.sitemap</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Представление
+	      <token>django.contrib.sitemaps.views.sitemap</token>
+	      должно принимать именованный аргумент
+	      <token>section</token>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Вот так изменится предыдущий пример:
+	<screen>
+	  <![CDATA[
+(r'^sitemap.xml$',
+ 'django.contrib.sitemaps.views.index',
+ {'sitemaps': sitemaps}),
+
+(r'^sitemap-(?P<section>.+).xml$',
+ 'django.contrib.sitemaps.views.sitemap',
+ {'sitemaps': sitemaps})
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это автоматически создаст файл
+	<filename>sitemap.xml</filename>, который будет ссылаться на
+	<filename>sitemap-flatpages.xml</filename> и
+	<filename>sitemap-blog.xml</filename>. Классы
+	<classname>Sitemap</classname> и словарь
+	<token>sitemaps</token> не изменятся.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.sitemap.google">
+
+      <title id="&BASEID;.sitemap.google.title">
+	Уведомление Google
+      </title>
+      
+      <para>
+	Вы можете организовать уведомление Google об изменениях в
+	карте сайта, чтобы они знали, что надо произвести повторную
+	индексацию вашего сайта. Среда предоставляет функцию для этого
+	&mdash;
+	<function>django.contrib.sitemaps.ping_google()</function>.
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    Во время работы над этой книгой только Google откликался
+	    на уведомления. Тем не менее, есть вероятность, что Yahoo
+	    и/или MSD скоро добавят поддержку уведомлений.
+	  </para>
+
+	  <para>
+	    В этом случае, мы наверное изменим имя функции
+	    <function>ping_google()</function> на что-нибудь подобное
+	    <function>ping_search_engines()</function>. Рекомендуем
+	    периодически проверять документацию на <ulink
+	    url="http://www.djangoproject.com/documentation/0.96/sitemaps/"/>.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Функция <function>ping_google()</function> принимает
+	необязательный аргумент <token>sitemap_url</token>, который
+	должен содержать абсолютный URL для карты сайта
+	(т.е. <token>/sitemap.xml</token>). Если этот аргумент опущен,
+	функция попытается найти карту сайта через файл привязок.
+      </para>
+
+      <para>
+	Функция <function>ping_google()</function> вызывает исключение
+	<token>django.contrib.sitemaps.SitemapNotFound</token>, если
+	она не может определить URL для карты сайта.
+      </para>
+
+      <para>
+	Ниже показан полезный способ вызова
+	<function>ping_google()</function> из метода
+	<function>save()</function> модели:
+	<screen>
+	  <![CDATA[
+from django.contrib.sitemaps import ping_google
+
+class Entry(models.Model):
+    # ...
+    def save(self):
+        super(Entry, self).save()
+        try:
+            ping_google()
+        except Exception:
+            # Простое исключение, так как мы можем получить целый
+	    # набор исключений, относящихся к HTTP.
+            pass
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Однако, более эффективным решением будет вызов
+	<function>ping_google()</function> из скрипта
+	<token>cron</token> или из другого периодического
+	процесса. Функция выполняет HTTP запрос к серверам Google и
+	вам может не понравится расход пропускной способности сети при
+	каждом вызове <function>save()</function>.
+      </para>
+
+    </section>
+
+  </section>
+
+</chapter>

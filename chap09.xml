@@ -1,0 +1,781 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap09">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Базовые представления
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    И снова повторимся: со своей худшей стороны веб разработка
+    является нудным и монотонным процессом. Также мы рассказывали, что
+    Django пытается избавить вас от этой монотонности на уровнях
+    моделей и шаблонов, но остаётся ещё уровень представлений.
+  </para>
+
+  <para>
+    <emphasis>Базовые представления</emphasis> Django были разработаны
+    для облегчения решения этой проблемы. Они следуют общим
+    определённым идиомам и шаблонам, которые были найдены во время
+    разработки представлений, и позволяют быстро создавать общие
+    представления на основе минимума кода. Действительно, почти каждый
+    пример представления в предыдущих главах может быть переписан с
+    использованием базовых представлений.
+  </para>
+
+  <para>
+    Глава <quote><xref linkend="djangobook.chap08"
+    endterm="djangobook.chap08.title"/></quote> кратко касалась
+    вопроса как можно сделать представление
+    <quote>базовым</quote>. При решении этой задачи мы можем выделить
+    общие шаги, такие как отображение списка объектов, создание кода,
+    который может выводить список <emphasis>любых</emphasis>
+    объектов. Тогда рассматриваемую модель можно передать в виде
+    дополнительного параметра в файл со схемой URL.
+  </para>
+
+  <para>
+    Django поставляется с базовыми представлениями:
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Выполнение общих <quote>простых</quote> задач:
+	  перенаправление на другую страницу и обработка шаблона
+	  страницы.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Отображение списка и подробной страницы для одного
+	  объекта. Представления <token>event_list</token> и
+	  <token>entry_list</token> из главы <quote><xref
+	  linkend="djangobook.chap08"
+	  endterm="djangobook.chap08.title"/></quote> являются
+	  примерами представлений, которые отображают списки. Страница
+	  для одного события является примером, который мы называем
+	  <quote>детальным</quote> представлением.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Отображение объектов для работы с датой на архивных
+	  страницах, ассоциированных подробностей и страниц с
+	  <quote>свежей</quote> информации. Архивы блогов о Django
+	  (<ulink url="http://www.djangoproject.com/weblog/"/>) с
+	  доступом по годам, месяцам и дням созданы на этой основе.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Позволяет пользователям создавать, изменять и удалять
+	  объекты &mdash; с и без авторизации.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    Объединённые вместе, эти представления предоставляют простой
+    интерфейс для решения наиболее общих задач с которыми сталкиваются
+    разработчики.
+  </para>
+
+  <section id="&BASEID;.using">
+
+    <title id="&BASEID;.using.title">
+      Использование базовых представлений
+    </title>
+
+    <para>
+      Все эти представления используются с помощью создания
+      конфигурационных словарей в ваших файлах со схемой URL и
+      передачи этих словарей в качестве третьего аргумента кортежа для
+      определённого шаблона.
+    </para>
+
+    <para>
+      Ниже представлен простой файл со схемой URL, который можно
+      использовать для представления статичной страницы
+      <quote>Информация о</quote>:
+      <screen>
+from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
+
+urlpatterns = patterns('',
+    ('^about/$', direct_to_template, {
+        'template': 'about.html'
+    })
+)
+      </screen>
+    </para>
+
+    <para>
+      Несмотря на то, что на первый взгляд здесь есть нечто
+      <quote>магическое</quote> &mdash; посмотрите, представление без
+      кода! &mdash; это то же, что и примеры из главы <quote><xref
+      linkend="djangobook.chap08"
+      endterm="djangobook.chap08.title"/></quote>: представление
+      <token>direct_to_template</token> просто получает информацию из
+      словаря дополнительных параметров и использует эту информацию
+      при отображении представления.
+    </para>
+
+    <para>
+      Так как это базовое представление, и все остальные, является
+      обычным представлением, которое функционирует подобно другим, мы
+      можем использовать его внутри наших собственных представлений. В
+      качестве примера, давайте улучшим наш пример <quote>Информация
+      о</quote> для вывода для URL вида <token>/about/что-то/</token>
+      статических страниц <token>about/что-то.html</token>. Мы сделаем
+      это сначала изменив привязку:
+      <screen>
+from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
+from mysite.books.views import about_pages
+
+urlpatterns = patterns('',
+    ('^about/$', direct_to_template, {
+        'template': 'about.html'
+    }),
+    ('^about/(\w+)/$', about_pages),
+)
+      </screen>
+    </para>
+
+    <para>
+      Затем мы напишем представление <token>about_pages</token>:
+      <screen>
+from django.http import Http404
+from django.template import TemplateDoesNotExist
+from django.views.generic.simple import direct_to_template
+
+def about_pages(request, page):
+    try:
+        return direct_to_template(request, template="about/%s.html" % page)
+    except TemplateDoesNotExist:
+        raise Http404()
+      </screen>
+    </para>
+
+    <para>
+      Здесь мы рассматриваем <token>direct_to_template</token> как
+      любую другую функцию. Так как она возвращает
+      <classname>HttpResponse</classname>, мы можем отдавать его без
+      обработки. Есть только одна хитрость &mdash; работа при
+      отсутствии шаблонов. Нам не нужна ошибка, которая при этом
+      возникнет, следовательно мы ловим исключения
+      <token>TemplateDoesNotExist</token> и возвращаем вместо этого
+      ошибку 404.
+    </para>
+
+    <para>
+      <note>
+	<title>
+	  Есть ли проблемы с безопасностью?
+	</title>
+
+	<para>
+	  Внимательные читатели могли отметить возможную дыру в
+	  безопасности: мы создаём имя шаблона, используя информацию
+	  от браузера (<token>template="about/%s.html" %
+	  page</token>). На первый взгляд, это похоже на уязвимость
+	  <emphasis>выход из каталога (directory traversal)</emphasis>
+	  (обратитесь за подробностями к главе <quote><xref
+	  linkend="djangobook.chap19"
+	  endterm="djangobook.chap19.title"/></quote>). Но так ли это?
+	</para>
+
+	<para>
+	  Не совсем. Специально подобранное значение параметра
+	  <varname>page</varname> может привести к выходу из каталога,
+	  но несмотря на то, что <varname>page</varname>
+	  <emphasis>получается</emphasis> из URL, не каждое значение
+	  будет обработано. Вся хитрость в шаблоне URL: мы используем
+	  регулярное выражение <token>\w+</token> для совпадения с
+	  <varname>page</varname> частью URL, а <token>\w</token>
+	  принимает только буквы и числа. Следовательно, любые
+	  вредоносные символы (такие как точки и слэши) будут
+	  отброшены в момент поиска функции представления для
+	  обработки переданного URL.
+	</para>
+      </note>
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.objects">
+
+    <title id="&BASEID;.objects.title">
+      Базовые представления объектов
+    </title>
+
+    <para>
+      Функция <function>direct_to_template</function> полезна, но
+      базовые представления Django показывают все свои возможности при
+      отображении информации из базы данных. Так как это является
+      частой задачей, Django поставляется с встроенными базовыми
+      представлениями, которые значительно упрощают генерацию списка
+      или страниц с детальной информацией.
+    </para>
+
+    <para>
+      Давайте взглянем на одно из этих базовых представлений:
+      представление <quote>список объектов</quote>. Мы используем
+      объект <classname>Publisher</classname> из главы <quote><xref
+      linkend="djangobook.chap05"
+      endterm="djangobook.chap05.title"/></quote>:
+      <screen>
+class Publisher(models.Model):
+    name = models.CharField(max_length=30)
+    address = models.CharField(max_length=50)
+    city = models.CharField(max_length=60)
+    state_province = models.CharField(max_length=30)
+    country = models.CharField(max_length=50)
+    website = models.URLField()
+
+    class Meta:
+        ordering = ["-name"]
+
+    class Admin:
+        pass
+
+    def __unicode__(self):
+        return self.name
+      </screen>
+    </para>
+
+    <para>
+      Чтобы создать страницу со списком всех
+      издателей<footnote><para>В оригинальной книге, здесь они создают
+      страницу со списком всех книг. Хотя, судя по коду, книги тут ни
+      при чём.</para></footnote> мы использовали такой файл со схемой
+      URL:
+      <screen>
+from django.conf.urls.defaults import *
+from django.views.generic import list_detail
+from mysite.books.models import Publisher
+
+publisher_info = {
+    "queryset" : Publisher.objects.all(),
+}
+
+urlpatterns = patterns('',
+    (r'^publishers/$', list_detail.object_list, publisher_info)
+)
+      </screen>
+    </para>
+
+    <para>
+      Это весь код на языке Python, который нам потребуется
+      написать. Однако, нам ещё надо создать шаблон. Мы можем явно
+      указать представлению <token>object_list</token> какой шаблон
+      надо использовать, добавив параметр
+      <varname>template_name</varname> в словарь дополнительных
+      параметров. Но в случае отсутствия явного указания шаблона
+      Django будет искать шаблон, соответствующий имени объекта. В
+      этом случае, таким шаблоном будет
+      <filename>books/publisher_list.html</filename> &mdash; часть
+      <token>books</token> идёт от имени приложения, которое
+      определяет модель, а <token>publisher</token> является именем
+      модели приведённым к нижнему регистру.
+    </para>
+
+    <para>
+      Этот шаблон будет обработан с учётом контекста, содержащего
+      переменную <varname>object_list</varname> со списком всех
+      объектов <classname>Book</classname>. Очень простой шаблон может
+      выглядеть так:
+      <screen>
+	<![CDATA[
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Publishers</h2>
+    <ul>
+        {% for publisher in object_list %}
+            <li>{{ publisher.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Вот всё что надо. Все преимущества базовых представления идут от
+      изменения словаря с информацией, который передаётся такому
+      представлению. Приложение <quote><xref
+      linkend="djangobook.appendix_d"
+      endterm="djangobook.appendix_d.title"/></quote> документирует
+      все базовые представления и все их параметры. Остальная часть
+      главы описывает общие способы работы и настройки базовых
+      представлений.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.extending">
+
+    <title id="&BASEID;.extending.title">
+      Расширение базовых представлений
+    </title>
+
+    <para>
+      Не существует задач, для которых базовые представления не могут
+      существенно ускорить разработку. Тем не менее, в большинстве
+      проектов наступает момент когда базовые представления перестают
+      удовлетворять текущим требованиям. Действительно, наиболее общим
+      вопросом, задаваемым новыми адептами Django, является <quote>как
+      заставить базовые представления обрабатывать широкий спектр
+      ситуаций</quote>.
+    </para>
+
+    <para>
+      К счастью почти в каждом из этих случаев существуют способы
+      простого расширения функциональности базовых представлений для
+      обработки различных ситуаций. Эти ситуации обычно попадают под
+      шаблоны, которые мы рассмотрим далее в этой главе.
+    </para>
+
+    <section id="&BASEID;.extending.context">
+      
+      <title id="&BASEID;.extending.context.title">
+	Создаём дружественные контексты для шаблонов
+      </title>
+
+      <para>
+	Вы могли отметить, что тестовый шаблон списка издателей хранит
+	все книги в переменной <varname>object_list</varname>. Пока
+	всё работает прекрасно, не всё так <quote>дружественно</quote>
+	по отношению к авторам шаблона: они должны <quote>просто
+	знать</quote>, что в данном случае они работают с
+	книгами. Лучшим именем для этой переменной будет
+	<varname>publisher_list</varname>, тогда содержимое переменной
+	более очевидно.
+      </para>
+
+      <para>
+	Мы можем легко изменить имя этой переменной с помощью
+	аргумента <varname>template_object_name</varname>:
+	<screen>
+publisher_info = {
+    "queryset" : Publisher.objects.all(),
+    "template_object_name" : "publisher",
+}
+
+urlpatterns = patterns('',
+    (r'^publishers/$', list_detail.object_list, publisher_info)
+)
+	</screen>
+      </para>
+
+      <para>
+	Предоставлять эту полезную переменную всегда является хорошей
+	идеей. Ваши коллеги, которые занимаются разработкой шаблонов,
+	будут вам благодарны.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.extending.extra-context">
+      
+      <title id="&BASEID;.extending.extra-context.title">
+	Добавление дополнительного контекста
+      </title>
+
+      <para>
+	Часто вам просто требуется предоставить немного больше
+	информации, чем это позволяет базовое представление. Например,
+	подумайте об отображении списка всех других издателей на
+	каждой странице определённого издателя. Базовое представление
+	<token>object_detail</token> предоставляет имя издателя для
+	контекста, но кажется, что нет способа для этого шаблона
+	получить список <emphasis>всех</emphasis> издателей.
+      </para>
+
+      <para>
+	Но это не так: все базовые представления могут принимать
+	дополнительный параметр &mdash;
+	<token>extra_context</token>. Этим параметром является словарь
+	дополнительных объектов, которые будет добавлен в контекст
+	шаблона. Таким образом, для передачи списка всех издателей в
+	представление мы должны использовать словарь, подобный этому:
+	<screen>
+publisher_info = {
+    "queryset" : Publisher.objects.all(),
+    "template_object_name" : "publisher",
+    "extra_context" : {"book_list" : Book.objects.all()}
+}
+	</screen>
+      </para>
+
+      <para>
+	Этот код заполнит переменную <varname>{{ book_list
+	}}</varname> в контексте шаблона. Этот способ может быть
+	использован для передачи любой информации в шаблон базового
+	представления. Это очень удобно.
+      </para>
+
+      <para>
+	Тем не менее, здесь есть малозаметная ошибка &mdash; можете её
+	найти?
+      </para>
+
+      <para>
+	Проблема проявляется в момент вычисления запросов в
+	<token>extra_context</token>. Так как этот пример является
+	фрагментом файла со схемой URL, то
+	<token>Book.objects.all()</token><footnote><para>В
+	оригинальной книге тут конкретно гонят. Пришлось писать этот
+	кусок самому.</para></footnote> будет вычислен только однажды,
+	при первой загрузке данного файла. После того, как вы добавите
+	или удалите издателя, вы обнаружите, что базовое представление
+	не отражает эти изменения до момента перезагрузки веб сервера
+	(см. "Caching and QuerySets" в приложении <quote><xref
+	linkend="djangobook.appendix_c"
+	endterm="djangobook.appendix_c.title"/></quote> для получения
+	большего объёма информации по вопросам кэширования и
+	вычисления QuerySet).
+
+	<note>
+	  <para>
+	    Эта проблема не затрагивает аргумент
+	    <token>queryset</token> базового представления. Так как
+	    Django знает, что этот набор данных
+	    <emphasis>никогда</emphasis> не должен подвергаться
+	    кэшированию, базовое представление берёт на себя задачу
+	    очистки кэша после каждого использования представления.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Решение заключается в использовании обработчика (callback) в
+	<token>extra_context</token> вместо значения. Любая функция,
+	передаваемая <token>extra_context</token>, будет вычислена при
+	каждом вызове представления, а не один раз. Вы можете сделать
+	это с помощью явно определённой функции:
+	<screen>
+	  <![CDATA[
+def get_books():
+    return Book.objects.all()
+
+publisher_info = {
+    "queryset" : Publisher.objects.all(),
+    "template_object_name" : "publisher",
+    "extra_context" : {"book_list" : get_books}
+}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	или можно использовать менее очевидную, но более краткую
+	версию, которая использует факт того, что
+	<token>Book.objects.all</token> сам является функцией:
+	<screen>
+	  <![CDATA[
+publisher_info = {
+    "queryset" : Publisher.objects.all(),
+    "template_object_name" : "publisher",
+    "extra_context" : {"book_list" : Book.objects.all}
+}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить отсутствие скобок после
+	<token>Book.objects.all</token>. Таким образом мы ссылаемся на
+	функцию, не производя её вызов (вызов делает базовое
+	представление позже).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.extending.viewing-subsets">
+      
+      <title id="&BASEID;.extending.viewing-subsets.title">
+	Просмотр поднабора объектов
+      </title>
+
+      <para>
+	Пришло время рассмотреть этот <token>queryset</token>, который
+	мы используем уже давно. Большинство базовых представлений
+	принимают такой аргумент &mdash; именно так представление
+	узнает, какой набор объектов надо отобразить (определение
+	наборов данных было дано в главе <quote><xref
+	linkend="djangobook.chap05.select"
+	endterm="djangobook.chap05.select.title"/></quote>, а в
+	приложении <quote><xref linkend="djangobook.appendix_c"
+	endterm="djangobook.appendix_c.title"/></quote> приведены все
+	подробности).
+      </para>
+
+      <para>
+	В качестве примера получим список книг отсортированный по дате
+	издания, самые новые книги должны быть сначала списка:
+	<screen>
+	  <![CDATA[
+book_info = {
+    "queryset" : Book.objects.all().order_by("-publication_date"),
+}
+
+urlpatterns = patterns('',
+    (r'^publishers/$', list_detail.object_list, publisher_info),
+    (r'^books/$', list_detail.object_list, book_info),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это достаточно простой пример, но отлично иллюстрирует
+	идею. Естественно, что вам обычно потребуется нечто большее,
+	чем просто сортировка объектов. Если вам нужно отобразить
+	список книг, отсортировав их по определённому издателю, вы
+	можете использовать такую же методику:
+	<screen>
+	  <![CDATA[
+apress_books = {
+    "queryset": Book.objects.filter(publisher__name="Apress Publishing"),
+    "template_name" : "books/apress_list.html"
+}
+
+urlpatterns = patterns('',
+    (r'^publishers/$', list_detail.object_list, publisher_info),
+    (r'^books/apress/$', list_detail.object_list, apress_books),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Следует отметить, что совместно с отсортированным
+	<token>queryset</token> мы также используем своё имя для
+	шаблона. Если мы не будем так делать, то базовое представление
+	будет использовать тот же шаблон как <quote>vanilla
+	FIXME</quote> список объектов, что может не совпадать с вашими
+	желаниями.
+      </para>
+
+      <para>
+	Также следует отметить, что это не самый элегантный способ
+	получения списка книг, отсортированных по издателю. Если нам
+	потребуется добавить другую страницу для издателя, то придётся
+	добавить ещё одну привязку URL, а если издателей будет гораздо
+	больше? Мы рассмотрим эту задачу в следующей секции.
+
+	<note>
+	  <para>
+	    Если вы получите ошибку 404 при обращении к
+	    <token>books/apress/</token>, удостоверьтесь, что у вас
+	    действительно есть издатель с именем <quote>Apress
+	    Publishing</quote>. Базовые представления имеют параметр
+	    <token>allow_empty</token> как раз для этого
+	    случая. Подробности смотрите в приложении <quote><xref
+	    linkend="djangobook.appendix_d"
+	    endterm="djangobook.appendix_d.title"/></quote>.
+	  </para>
+	</note>
+      </para>
+
+    </section>	
+
+    <section id="&BASEID;.extending.wrapper-filtering">
+      
+      <title id="&BASEID;.extending.wrapper-filtering.title">
+	Сложная фильтрация с помощью функций-обработчиков
+      </title>
+
+      <para>
+	Часто бывает необходимо реализовать фильтрацию объектов по
+	какому-либо ключу из URL. Ранее мы жёстко прописывали имя
+	издателя в привязку URL, но что делать если нам требуется
+	создать представление, которое отображает все книги одного
+	определённого издателя? Мы можем <quote>обернуть</quote>
+	базовое представление <token>object_list</token> для того,
+	чтобы не писать много кода вручную. Как обычно, мы начнём с
+	файла привязок:
+	<screen>
+	  <![CDATA[
+urlpatterns = patterns('',
+    (r'^publishers/$', list_detail.object_list, publisher_info),
+    (r'^books/(\w+)/$', books_by_publisher),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Затем, следует написать представление
+	<token>books_by_publisher</token>:
+	<screen>
+	  <![CDATA[
+from django.http import Http404
+from django.views.generic import list_detail
+from mysite.books.models import Book, Publisher
+
+def books_by_publisher(request, name):
+
+    # Ищем издателя (и вызываем 404, если ничего не нашли).
+    try:
+        publisher = Publisher.objects.get(name__iexact=name)
+    except Publisher.DoesNotExist:
+        raise Http404
+
+    # Используем представление object_list view.
+    return list_detail.object_list(
+        request,
+        queryset = Book.objects.filter(publisher=publisher),
+        template_name = "books/books_by_publisher.html",
+        template_object_name = "books",
+        extra_context = {"publisher" : publisher}
+    )
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это работает потому что в базовых представлениях нет ничего
+	особенного &mdash; это простые функции языка Python. Подобно
+	любой другой функции представления, базовые представления
+	принимают определённый набор аргументов и возвращают объекты
+	<classname>HttpResponse</classname>. Следовательно, невероятно
+	просто оборачивать небольшие функции вокруг базового
+	представления, которые выполняют дополнительную работу перед
+	(или после, см. следующую секцию) передачи управления базовому
+	представлению.
+
+	<note>
+	  <para>
+	    Следует отметить, что в предыдущем примере мы передавали
+	    текущего издателя, который был указан в
+	    <token>extra_context</token>. Это положительный аспект
+	    поведения обёрток. Они позволяют шаблонам знать о
+	    родительском объекте.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.extending.extra-work">
+      
+      <title id="&BASEID;.extending.extra-work.title">
+	Выполнение дополнительной работы
+      </title>
+
+      <para>
+	Последняя задача, которую мы рассмотрим в этой главе, &mdash;
+	как выполнять некоторую обработку данных до или после вызова
+	базового представления.
+      </para>
+
+      <para>
+	Представьте, что у нас есть поле <token>last_accessed</token>
+	в объекте <classname>Author</classname>, которое мы используем
+	для хранения информации о времени последнего доступа к
+	информации об авторе. Базовое представление
+	<token>object_detail</token>, естественно, ничего не знает об
+	этом поле, но как и раньше мы можем легко создать отдельное
+	представление для обработки этого поля.
+      </para>
+
+      <para>
+	Сначала, нам надо добавить соответствующую привязку URL,
+	которая будет указывать на наше представление:
+	<screen>
+	  <![CDATA[
+from mysite.books.views import author_detail
+
+urlpatterns = patterns('',
+    #...
+    (r'^authors/(?P<author_id>\d+)/$', author_detail),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Затем, пишем обработчик:
+	<screen>
+	  <![CDATA[
+import datetime
+from mysite.books.models import Author
+from django.views.generic import list_detail
+from django.shortcuts import get_object_or_404
+
+def author_detail(request, author_id):
+    # Получаем объект или вызываем ошибку 404.
+    author = get_object_or_404(Author, pk=author_id)
+
+    # Записываем текущую дату.
+    author.last_accessed = datetime.datetime.now()
+    author.save()
+
+    # Отображаем страницу.
+    return list_detail.object_detail(
+        request,
+        queryset = Author.objects.all(),
+        object_id = author_id,
+    )
+	  ]]>
+	</screen>
+
+	<note>
+	  <para>
+	    Этот код не будет работать пока вы не добавите поле
+	    <token>last_accessed</token> к модели
+	    <classname>Author</classname> и не создадите шаблон
+	    <filename>books/author_detail.html</filename>.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Мы можем использовать аналогичный подход для изменения
+	отклика, который возвращён базовым представлением. Если нам
+	потребуется предоставить скачиваемую текстовую версию списка
+	авторов, мы можем использовать такое представление:
+	<screen>
+	  <![CDATA[
+def author_list_plaintext(request):
+    response = list_detail.object_list(
+        request,
+        queryset = Author.objects.all(),
+        mimetype = "text/plain",
+        template_name = "books/author_list.txt"
+    )
+    response["Content-Disposition"] = "attachment; filename=authors.txt"
+    return response
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это работает, потому что базовое представление возвращает
+	простые объекты <classname>HttpResponse</classname>, которые
+	могут рассматриваться как словари при установке HTTP
+	заголовков. Заголовок <token>Content-Disposition</token>,
+	между прочим, указывает браузеру, что поток данных следует
+	скачать и сохранить, вместо отображения в окне браузера.
+      </para>
+
+    </section>
+
+  </section>
+      
+</chapter>

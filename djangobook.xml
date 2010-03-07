@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY % local.common.attrib "xml:base  CDATA  #IMPLIED">
+<!ENTITY BASEID "djangobook">
+]>
+
+<!-- $Id& -->
+
+<book lang="ru" >
+  <title>DjangoBook</title>
+  
+  <bookinfo>
+    <corpname>Руслан Попов</corpname>
+    <date>2008</date>
+  </bookinfo>
+
+  <para>
+    Оригинальный документ находится на <ulink
+    url="http://www.djangobook.com/"/>. Так как он устарел, данный
+    перевод сконцентрирован на разрабатываемой версии Django и
+    постоянно обновляется. Замеченные неточности перевода или
+    терминологии прошу высылать мне.
+  </para>
+
+  <para>
+    Информация об авторах оригинальной книги, лицензировании и обо
+    всём остальном расположена там же.
+  </para>
+
+  <para>
+    Последнее обновление произведено в __LAST_UPDATE__.
+  </para>
+  
+  <toc/>
+  
+  <glossentry/>
+
+  <xi:include
+      href="chap01.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap02.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap03.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap04.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap05.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap06.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap07.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap08.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap09.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap10.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap11.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap12.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap13.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap14.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap15.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap16.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap17.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap18.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap19.xml"  
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap20.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="chap21.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_a.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_b.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_c.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_d.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_e.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_f.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_g.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include
+      href="appendix_h.xml"
+      parse="xml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+</book>
+
+

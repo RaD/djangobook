@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap02">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Начинаем
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Мы считаем, что лучше всего сразу начинать работу. Подробности по
+    среде Django будут изложены в деталях в последующих главах, а
+    пока, поверьте нам, будет весело.
+  </para>
+
+  <para>
+    Установка Django проста. Так как Django работает везде, где есть
+    Python, среду разработки можно настроить множеством способов. В
+    этой главе мы рассмотрим стандартные сценарии установки
+    Django. Глава <quote><xref linkend="djangobook.chap20"
+    endterm="djangobook.chap20.title"/></quote> описывает процесс
+    развёртывания Django.
+  </para>
+
+  <section id="&BASEID;.installpython">
+
+    <title id="&BASEID;.installpython.title">
+      Установка Python
+    </title>
+
+    <para>
+      Django написан на чистом Python, следовательно, сначала
+      необходимо установить интерпретатор Python на вашу операционную
+      систему. Django требует для своей работы Python версии 2.3 и
+      выше.
+    </para>
+
+    <para>
+      Если вы используете Linux или Mac OS X, вероятно у вас уже
+      установлен Python. Наберите <token>python</token> в командной
+      строке (или в терминале на OS X). Если вы увидите нечто
+      подобное, значит Python установлен:
+      <screen>
+	<![CDATA[
+Python 2.4.1 (#2, Mar 31 2005, 00:05:10)
+[GCC 3.3 20030304 (Apple Computer, Inc. build 1666)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      В противном случае вы увидите сообщение подобное <quote>command
+      not found</quote>, вам потребуется скачать и установить
+      Python. Обратитесь к <ulink
+      url="http://www.python.org/download/"/>. Установка быстра и
+      несложна.
+    </para>
+
+  </section>
+      
+  <section id="&BASEID;.installdjango">
+
+    <title id="&BASEID;.installdjango.title">
+      Установка Django
+    </title>
+
+    <para>
+      В данном разделе мы опишем два варианта установки: установка
+      официального релиза и установка из Subversion.
+    </para>
+
+    <section id="&BASEID;.installdjangorelease">
+
+      <title id="&BASEID;.installdjangorelease.title">
+	Установка официального релиза
+      </title>
+
+      <para>
+	Большинство людей пожелает установить свежий официальный релиз
+	с <ulink
+	url="http://www.djangoproject.com/download/"/>. Django
+	использует стандартный для Python метод установки через
+	<token>distutils</token>, который на Linux выглядит следующим
+	образом:
+	<orderedlist>
+	  <listitem><para>Скачать архив с именем подобным
+	  <filename>Django-0.96.tar.gz</filename>.</para></listitem>
+
+	  <listitem><para><command>tar xzvf
+	  Django-*.tar.gz</command>.</para></listitem>
+
+	  <listitem><para><command>cd
+	  Django-*</command>.</para></listitem>
+
+	  <listitem><para><command>sudo python setup.py
+	  install</command>.</para></listitem>
+	</orderedlist>
+      </para>
+
+      <para>
+	На Windows мы рекомендуем использовать 7-Zip для работы с
+	заархивированными файлами, включая
+	<filename>.tar.gz</filename>. Вы можете скачать 7-Zip с <ulink
+	url="http://www.djangoproject.com/r/7zip/"/>.
+      </para>
+
+      <para>
+	Перейдите в какой-нибудь другой каталог и запустите
+	интерпретатор Python. Если всё работает, вы должны иметь
+	возможность импортировать модуль <token>django</token>:
+	<screen>
+	  <![CDATA[
+>>> import django
+>>> django.VERSION
+(0, 96, None)
+	  ]]>
+	</screen>
+	<note>
+	  <para>
+	    Интерактивный интерпретатор языка Python является
+	    программой командной строки, которая позволяет вам
+	    выполнять программы. Для запуска интерпретатора просто
+	    выполните в командной строке команду
+	    <command>python</command>.
+	  </para>
+
+	  <para>
+	    Во всей книге мы будем приводить код на языке Python как
+	    если бы он вводился в интерактивный интерпретатор. Три
+	    знака <quote>больше</quote> (<![CDATA[>>>]]>) являются
+	    приглашением интерпретатора.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.installdjangosvn">
+
+      <title id="&BASEID;.installdjangosvn.title">
+	Установка из Subversion
+      </title>
+
+      <para>
+	Если вы желаете работать на самом краю разработки или если вы
+	желаете добавить код в Django, вам потребуется поставить среду
+	разработки из репозитория Subversion.
+      </para>
+
+      <para>
+	Subversion &mdash; это свободная система управления версиями с
+	открытым исходным кодом, подобная CVS. Команда разработчиков
+	Django использует её для управления базой разрабатываемого
+	кода. Вы можете использовать клиент Subversion для получения
+	свежего исходного кода Django и в любое время вы можете
+	обновлять свою версию кода для получения свежих обновлений от
+	других разработчиков.
+      </para>
+
+      <para>
+	Самый свежий код Django называется стволом (trunk). Команда
+	разработчиков использует ствол для работы своих сайтов и
+	борется за их стабильную работу.
+      </para>
+
+      <para>
+	Для получения кода со ствола делайте так:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Удостоверьтесь, что у вас установлен клиент
+	      Subversion. Вы можете свободно получить его на <ulink
+	      url="http://subversion.tigris.org/"/> и вы можете найти
+	      отличную документацию на <ulink
+	      url="http://svnbook.red-bean.com/"/>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Получите код с помощью команды:
+	      <screen>
+svn co http://code.djangoproject.com/svn/django/trunk djtrunk
+	      </screen>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Создайте файл
+	      <filename>site-packages/django.pth</filename> и добавьте
+	      в него каталог <token>djtrunk</token> или обновите ваш
+	      <varname>PYTHONPATH</varname>, чтобы он указывал на
+	      <filename>djtrunk</filename>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Поместите путь <filename>djtrunk/django/bin</filename> в
+	      ваш системный <varname>PATH</varname>. Этот каталог
+	      содержит утилиты управления, такие как
+	      <filename>django-admin.py</filename>.
+	  </para>
+	  </listitem>
+	</orderedlist>
+	<note>
+	  <title>
+	    Совет
+	  </title>
+
+	  <para>
+	    Если вы не знакомы с файлами <filename>.pth</filename>, вы
+	    можете почитать о них на <ulink
+	    url="http://www.djangoproject.com/r/python/site-module/"/>.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	После получения кода и выполнения вышеприведённых шагов нет
+	никакой необходимости выполнять команду:
+	<screen>
+python setup.py install
+	</screen>
+	Все необходимые действия вы уже проделали вручную!
+      </para>
+
+      <para>
+	Из-за того, что ствол Django обновляется часто, для
+	исправления ошибок и добавления новых возможностей, вероятно
+	вы пожелаете обновлять его на регулярной основе. Для
+	обновления исходного кода надо просто в каталоге
+	<filename>djtrunk</filename> выполнить команду:
+	<screen>
+svn update
+	</screen>
+      </para>
+
+      <para>
+	При выполнении этой команды, Subversion подключается к <ulink
+	url="http://code.djangoproject.com"/>, определяет наличие
+	изменений кода и обновляет вашу локальную версию кода,
+	скачивая только изменения. Это достаточно быстро.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.setdb">
+
+    <title id="&BASEID;.setdb.title">
+      Настройка базы данных
+    </title>
+
+    <para>
+      Единственное требование Django &mdash; работающий экземпляр
+      интерпретатора Python. Тем не менее, эта книга сфокусирована на
+      одной из возможностей среды разработки, а именно на разработке
+      сайтов с поддержкой базы данных. Следовательно, вам потребуется
+      установить сервер базы данных, который будет хранить ваши
+      данные.
+    </para>
+
+    <para>
+      Если вы просто желаете посмотреть Django, пропустите всё до
+      раздела <quote><xref linkend="&BASEID;.startproject"
+      endterm="&BASEID;.startproject.title"/></quote>. Но поверьте
+      нам, скоро вам захочется установить базу данных. Все примеры в
+      книге предполагают, что у вас есть база данных.
+    </para>
+
+    <para>
+      На время написания данной главы Django поддерживал три базы данных:
+      <itemizedlist>
+	<listitem><para>PostgreSQL (<ulink
+	url="http://www.postgresql.org/"/>).</para></listitem>
+
+	<listitem><para>SQLite 3 (<ulink
+	url="http://www.sqlite.org/"/>).</para></listitem>
+
+	<listitem><para>MySQL (<ulink
+	url="http://www.mysql.com/"/>).</para></listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Также шла работа по поддержке Microsoft SQL Server и
+      Oracle. Официальный сайт Django всегда содержит свежую
+      информацию о поддерживаемых базах данных.
+    </para>
+
+    <para>
+      Мы предпочитаем PostgreSQL по причинам выходящим за рамки этой
+      книги, поэтому мы упомянули его первым. Тем не менее, все СУБД
+      перечисленные выше будут работать аналогично хорошо с Django.
+    </para>
+
+    <para>
+      SQLite заслуживает отдельного упоминания в качестве инструмента
+      разработки. Это очень простой в использовании сервер базы
+      данных, которые не требует никакой настройки. Безусловно, это
+      самое простое средство для начала работы с Django, тем более что
+      его поддержка включена в стандартную библиотеку Python версии
+      2.5.
+    </para>
+
+    <para>
+      На Windows получение драйвера для работы с базой данных является
+      не таким простым процессом. Таким образом, мы рекомендуем
+      начинать работу с Django, используя Python версии 2.5 и его
+      поддержку SQLite. О сборке исполняемых файлов драйвера чуть
+      ниже.
+    </para>
+    
+    <section id="&BASEID;.setdb.pgsql">
+
+      <title id="&BASEID;.setdb.pgsql.title">
+	Использование Django с PostgreSQL
+      </title>
+
+      <para>
+	Если вы планируете использовать PostgreSQL, вам потребуется
+	пакет <token>psycopg</token>, который можно получить с <ulink
+	url="http://www.djangoproject.com/r/python-pgsql/"/>. Следует
+	запомнить, какую версию вы используете, 1-ую или 2-ую,
+	информация об этом потребуется далее.
+      </para>
+
+      <para>
+	Если вы используете PostgreSQL на Windows, вы можете найти
+	собранную версию пакета <token>psycopg</token> на <ulink
+	url="http://www.djangoproject.com/r/python-pgsql/windows/"/>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.setdb.sqlite3">
+
+      <title id="&BASEID;.setdb.sqlite3.title">
+	Использование Django с SQLite 3
+      </title>
+
+      <para>
+	Если вы используете интерпретатор Python версии 2.5, у вас уже
+	есть SQLite. Если же вы работаете с более старой версией, вам
+	потребуется SQLite версии 3 (не 2-ой) с <ulink
+	url="http://www.djangoproject.com/r/sqlite/"/> и пакет
+	<token>pysqlite</token> с <ulink
+	url="http://www.djangoproject.com/r/python-sqlite/"/>. Удостоверьтесь,
+	что у вас установлен пакет <token>pysqlite</token> версии не
+	ниже 2.0.3.
+      </para>
+
+      <para>
+	Например, на Debian Linux, Ubuntu и т.д. этот пакет можно
+	поставить так:
+	<screen>
+	  <![CDATA[
+apt-get install python-pysqlite2
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	На Windows вы можете пропустить установку отдельных
+	исполняемых файлов SQLite, так как они статически слинкованы с
+	<token>pysqlite</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.setdb.mysql">
+
+      <title id="&BASEID;.setdb.mysql.title">
+	Использование Django с MySQL
+      </title>
+
+      <para>
+	Django работает с MySQL, начиная с версии 4.0. Версии MySQL
+	ниже 4.0 не поддерживают вложенные запросы и некоторые
+	стандартные SQL операторы. Вы так же можете найти пакет
+	<token>MySQLdb</token> на <ulink
+	url="http://www.djangoproject.com/r/python-mysql/"/>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.setdb.nodb">
+
+      <title id="&BASEID;.setdb.nodb.title">
+	Использование Django без базы данных
+      </title>
+
+      <para>
+	Как упоминалось ранее, Django не требует наличия базы
+	данных. Если вы просто желаете обрабатывать динамические
+	страницы, которые не обращаются к базе данных, всё это
+	реально.
+      </para>
+
+      <para>
+	Следует принять во внимание, что некоторые дополнительные
+	инструменты поставляемые с Django <emphasis>требуют</emphasis>
+	наличия базы данных. Соответственно, если вы отказываетесь от
+	использования базы данных, вы также отказываетесь от
+	использования этих инструментов. Мы отдельно выделим их в
+	книге.
+      </para>
+
+    </section>
+
+  </section>
+      
+  <section id="&BASEID;.startproject">
+
+    <title id="&BASEID;.startproject.title">
+      Новый проект
+    </title>
+    
+    <para>
+      <emphasis>Проектом</emphasis> является набор настроек для
+      экземпляра Django, включая конфигурацию базы данных, параметров
+      для Django и настроек приложения.
+    </para>
+
+    <para>
+      Если вы используете Django в первый раз, вам потребуется
+      позаботиться об инициализации проекта. Создайте новый каталог в
+      котором вы будете работать, например,
+      <filename>/home/username/djcode/</filename>, и перейдите в него.
+    </para>
+
+    <para>
+      <note>
+	<para>
+	  Скрипт <filename>django-admin.py</filename> должен быть в
+	  вашем системном пути, если вы устанавливали Django с помощью
+	  утилиты <filename>setup.py</filename>. Если же вы
+	  устанавливались через Subversion, то он должен быть в
+	  каталоге <filename>djtrunk/django/bin</filename>. Так как вы
+	  часто будете использовать скрипт
+	  <filename>django-admin.py</filename>, рассмотрите его
+	  добавление в системный путь. На Unix вы можете
+	  воспользоваться символической ссылкой, например:
+	  <screen>
+sudo ln -s /path/to/django/bin/django-admin.py \
+           /usr/local/bin/django-admin.py
+	  </screen>
+	  На Windows вам потребуется внести изменение в переменную
+	  среды <varname>PATH</varname>.
+	</para>
+      </note>
+    </para>
+
+    <para>
+      Для создания проекта <token>mysite</token> выполните команду:
+      <screen>
+django-admin.py startproject mysite
+      </screen>
+    </para>
+
+    <para>
+      Посмотрим на результаты работы команды:
+      <screen>
+mysite/
+    __init__.py
+    manage.py
+    settings.py
+    urls.py
+      </screen>
+    </para>
+
+    <para>
+      Опишем назначение каждого файла:
+      <itemizedlist>
+	<listitem><para><filename>__init__.py</filename>: Файл
+	необходим для того, чтобы Python рассматривал данный каталог
+	как пакет, т.е., как группу модулей.</para></listitem>
+
+	<listitem><para><filename>manage.py</filename>: Это утилита
+	командной строки, которая позволяет вам взаимодействовать с
+	проектом различными методами.</para></listitem>
+
+	<listitem><para><filename>settings.py</filename>: Настройки
+	для текущего проекта Django.</para></listitem>
+
+	<listitem><para><filename>urls.py</filename>: Описания URL для
+	текущего проекта Django, так сказать <quote>оглавление</quote>
+	для вашего сайта.</para></listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      <note>
+	<title>Где должен находиться этот каталог?</title>
+	<para>
+	  Если вы раньше вели разработку на PHP, вы вероятно размещали
+	  код в корне веб сервера (например, в каталоге
+	  <filename>/var/www</filename>). Используя Django, вам не
+	  потребуется этого делать. Размещение любого кода на языке
+	  Python в корне веб сервера является не очень хорошей идеей,
+	  так как есть вероятность, что люди могут получить к нему
+	  доступ на просмотр. Это плохо с точки зрения безопасности.
+	</para>
+
+	<para>
+	  Размещайте свой код в каталоге вне корня веб сервера.
+	</para>
+      </note>
+    </para>
+
+    <section id="&BASEID;.devserver">
+
+      <title id="&BASEID;.devserver.title">
+	Сервер разработки
+      </title>
+      
+      <para>
+	Django включает в себя встроенный лёгкий веб сервер, который
+	вы можете использовать в процессе разработки вашего сайта. Мы
+	включили этот сервер для того, чтобы вы могли быстро
+	приступить к разработке вашего сайта без траты времени на
+	конфигурирование вашего боевого веб сервера (т.е., Apache)
+	раньше времени. Этот сервер разработки отслеживает изменения в
+	вашем коде и автоматически перезагружает его, помогая видеть
+	вносимые вами изменения без перезагрузки веб сервера.
+      </para>
+
+      <para>
+	Перейдите в каталог <filename>mysite</filename>, если вы ещё
+	не сделали этого, и выполните команду:
+	<screen>
+python manage.py runserver
+	</screen>
+      </para>
+
+      <para>
+	Вы увидите нечто подобное этому:
+	<screen>
+Validating models...
+0 errors found.
+
+Django version 1.0, using settings 'mysite.settings'
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+	</screen>
+      </para>
+
+      <para>
+	Несмотря на то, что сервер разработки очень хорош во время
+	разработки, сопротивляйтесь искушению использовать этот сервер
+	в боевом режиме. Этот сервер может обрабатывать только один
+	запрос в единицу времени и он не проходил никакого аудита на
+	предмет безопасности. Когда придёт время поднять ваш сайт,
+	обратитесь к главе <quote><xref linkend="djangobook.chap20"
+	endterm="djangobook.chap20.title"/></quote> для информации о
+	том, как установить туда проект Django.
+      </para>
+
+      <para>
+	<note>
+	  <title>
+	    Как изменить адрес и порт на котором работает сервер
+	  </title>
+	  <para>
+	    По умолчанию, команда <command>runserver</command>
+	    запускает сервер разработки на порту 8000, принимая только
+	    локальные соединения. Если требуется изменить порт, его
+	    можно указать в аргументах командной строки:
+	    <screen>
+python manage.py runserver 8080
+	    </screen>
+	    Вы также можете изменить IP адрес к которому подключается
+	    сервер. Это особенно полезно, если требуется разделить
+	    разрабатываемый сайт с другими членами команды. Например:
+	    <screen>
+python manage.py runserver 0.0.0.0:8080
+	    </screen>
+	    Эта команда заставит Django подключиться ко всем имеющимся
+	    сетевым интерфейсам, что позволит другим компьютерам
+	    подключиться к серверу разработки.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	После запуска сервера, посетите <ulink
+	url="http://127.0.0.1:8000/"/> с помощью вашего веб
+	браузера. Вы увидите страницу <quote>Welcome to
+	Django</quote>. Оно работает!
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.debugging">
+
+    <title id="&BASEID;.debugging.title">
+      Отладка
+    </title>
+    
+    <para>
+      По материалам сайта <ulink
+      url="http://simonwillison.net/2008/May/22/debugging/"/>.
+    </para>
+    
+    <para>
+      Стандартная страница ошибки Django &mdash; великолепна. Она
+      предоставляет детальную трассировку, предоставляя локальные
+      переменные, позволяет вам разворачивать строки кода вокруг
+      строки с ошибкой, предоставляет текстовое описание исключения,
+      удобное для отправке по почте коллегам и даже возможность
+      отправить одной кнопкой детали ошибки на <ulink
+      url="http://dpaste.com/"/>, чтобы вы могли обсудить её на IRC
+      канале. Страница предоставляет информацию о настройках
+      приложения, о содержимом переменных запроса <token>GET</token>,
+      <token>POST</token> и <token>COOKIE</token> и о всех
+      значительных полях <token>META</token> собранных из среды HTTP
+      сервера (отличный метод вспомнить, как правильно писать
+      <token>HTTP_REFERER</token>).
+    </para>
+
+    <para>
+      Первым полезным советом будет то, что вы можете всегда вызвать
+      отображение страницы с ошибкой при обработке любого
+      представления, просто добавив строку:
+      <screen>
+	<![CDATA[
+assert False
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Вы можете указать выражение, которое будет отображено в начале
+      страницы:
+      <screen>
+	<![CDATA[
+assert False, request.GET
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Одним из стандартных мест для использования такого подхода
+      является сложная форма. Если вам требуется увидеть данные,
+      которые были переданы пользователем, вставьте <command>assert
+      False</command> в представление, на которое указывает форма и
+      используйте полученную страницу с ошибкой для исследования
+      данных.
+    </para>
+
+    <section id="&BASEID;.debugging.console">
+      
+      <title id="&BASEID;.debugging.console.title">
+	Журналирование на консоль сервера разработки
+      </title>
+    
+      <para>
+	Если необходимо иметь информацию о том, что происходит при
+	выполнении функции представления, самым быстрым способом будет
+	поместить в представление оператор
+	<token>print</token>. Сервер разработки выводит результат
+	обработки оператора <token>print</token> напрямую на
+	терминал. Это альтернатива со стороны сервера JavaScript
+	функции <function>alert()</function>.
+      </para>
+
+      <para>
+	Если требуется более сложный подход к журналированию, лучше
+	использовать соответствующий модуль языка Python, который
+	является частью стандартной библиотеки. Вы можете настроить
+	его в файле настроек проекта &mdash;
+	<filename>settings.py</filename>:
+	<screen>
+	  <![CDATA[
+import logging
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Затем можно осуществлять журналирование из любой функции
+	представления:
+	<screen>
+	  <![CDATA[
+def my_view(request):
+    import logging
+    logging.debug("A log message")
+    ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	И снова, этот метод приведёт к выводу отладочных сообщений на
+	терминал сервера разработки. Если требуется выводить сообщения
+	в файл, вы можете это реализовать, немного усовершенствовав
+	метод:
+	<screen>
+	  <![CDATA[
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+    filename = '/tmp/myapp.log',
+    filemode = 'w'
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	После этого вы можете использовать <command>tail -f
+	/tmp/myapp.log</command> для отслеживания отладочной
+	информации в реальном времени. Этот способ может
+	использоваться как во время отладки приложения, так и в боевом
+	режиме.
+      </para>
+
+      <para>
+	Всё, описанное выше, лишь слегка затрагивает возможности
+	стандартного модуля журналирования языка Python. Если немного
+	<ulink
+	url="http://docs.python.org/lib/module-logging.html">покопаться
+	в документации</ulink>, вы сможете использовать этот модуль
+	для ротации журнальных файлов, для отправки сообщений по сети и
+	даже отправлять их методом <token>POST</token> на сторонний
+	веб-сервер.
+      </para>
+
+      <para>
+	Довольно часто приходится иметь дело с ошибкой, которая
+	проявляется только в определённых ситуациях, ведь функция
+	может вызываться из дюжины различных мест вашей программы, но
+	ошибка происходит только в одном, очень особом, случае. Вы
+	можете использовать <ulink
+	url="http://docs.python.org/lib/module-traceback.html">модуль
+	трассировки</ulink> для сохранения состояния стека, это
+	позволит вам понять как была вызвана проблемная функция:
+	<screen>
+	  <![CDATA[
+import logging, traceback, pprint
+
+def my_buggy_function(arg):
+    ...
+    if error_condition:
+        stack = pprint.pformat(traceback.extract_stack())
+        logging.debug('An error occurred: %s' % stack)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Кортеж, полученный в результате выполнения
+	<function>traceback.extract_stack()</function>, включает в
+	себя номера строк, имена функций и пути к файлам Python,
+	т.е. вы можете реконструировать достаточный объём информации о
+	работе своей программы.
+      </para>
+
+    </section>
+    
+    <section id="&BASEID;.debugging.debugger">
+      
+      <title id="&BASEID;.debugging.debugger.title">
+	Использование отладчика
+      </title>
+    
+      <para>
+	Наиболее мощным оружием в процессе отладке является
+	соответствующий отладчик &mdash; <ulink
+	url="http://docs.python.org/lib/module-pdb.html">pdb</ulink>. Он
+	поставляется в стандартной библиотеке языка Python и является
+	отладчиком командной строки. Существует множество способов
+	активации отладчика, но наиболее прямым способом является
+	добавление нижеприведённой строки в функцию представления:
+	<screen>
+	  <![CDATA[
+import pdb; pdb.set_trace()
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	При посещении соответствующей страницы браузером, последний
+	<quote>подвиснет</quote> &mdash; будет казаться, что страница
+	загружается крайне медленно. На самом деле сервер разработки
+	прекратит выполнение функции представления и передаст
+	управление отладчику, вы получаете к нему доступ на консоли и
+	можете взаимодействовать с кодом представления.
+      </para>
+
+      <para>
+	Я упомянул, что вы никогда, ещё раз, никогда не должны
+	оставлять эту строчку при установке проекта на боевой сервер?
+      </para>
+
+      <para>
+	Таким образом, вы получили подвисший сервер разработки и
+	приглашение отладчика на консоли. Что же со всем этим делать?
+	Да всё, что угодно. Сначала следовало бы <ulink
+	url="http://www.onlamp.com/pub/a/python/2005/09/01/debugger.html">почитать
+	документацию</ulink> на отладчик, но далее приведены несколько
+	полезных команд:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <command>list</command> &mdash; Отображает строки
+	      исходного кода вокруг текущей точки выполнения. Вы
+	      можете выполнять эту команду многократно для увеличения
+	      объёма отображаемого кода.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <command>n</command> &mdash; Выполняет следующую строку.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <command>s</command> &mdash; Аналогично предыдущей
+	      команде, но заходит в любую вызываемую функцию.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <command>r</command> &mdash; Выполняет текущуюфункцию до
+	      конца.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <command>u</command> &mdash; Переходит на один уровень
+	      вверх по стеку, т.е., можно перейти в родительскую
+	      функцию.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <command>locals()</command> &mdash; Это не команда
+	      отладчика, но очень полезна для получения текущей
+	      области видимости.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	При использовании отладчика вы не только можете просматривать
+	содержимое переменных, но и свободно менять их, вызывать
+	функции и всячески взаимодействовать с приложением во время
+	его работы.
+      </para>
+
+      <para>
+	Но следует помнить, что всё это время браузер будет пытаться
+	получить страницу. Если вы нажмёте <command>c</command>, то
+	ваше приложение продолжит работу, запрос будет обработан и ваш
+	браузер вздохнёт с облегчением.
+      </para>
+
+      <para>
+	К счастью, нет необходимости в <quote>замораживании</quote>
+	сервера разработки во время работы с отладчиком. Отладчик
+	отлично работает в интерактивной оболочке Django. Просто
+	запустите проблемную функцию и затем делайте так:
+	<screen>
+	  <![CDATA[
+>>> def function_that_raises_an_exception():
+...   assert False
+... 
+>>> function_that_raises_an_exception()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 2, in function_that_raises_an_exception
+AssertionError
+>>> import pdb; pdb.pm()
+> <stdin>(2)function_that_raises_an_exception()
+(Pdb)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Метод <function>pdb.pm()</function> позволяет вам вернуться
+	для отладки самого последнего исключения, даже если вы ещё не
+	произвели импорт модуля отладчика на время вызова исключения.
+      </para>
+
+      <para>
+	И последний совет по использованию отладчика: вы можете
+	использовать его для отладки скриптов командной строки,
+	подобных <filename>./manage.py</filename>. Запустите его так:
+	<screen>
+	  <![CDATA[
+python -i manage.py buggy_command
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Аргумент <token>-i</token> указывает интерпретатору, что надо
+	перейти в интерактивный режим после запуска скрипта. Если
+	скрипт вызывает исключение, вы можете использовать метод
+	<function>pdb.pm()</function> для отладки.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.debugging.production">
+      
+      <title id="&BASEID;.debugging.production.title">
+	Обработка ошибок в <quote>боевом</quote> режиме
+      </title>
+    
+      <para>
+	Стандартным поведением Django в <quote>боевом</quote> режиме
+	(т.е., когда параметр <token>DEBUG</token> установлен в
+	<token>False</token>) является отправка на почту отчёта о
+	вызванном исключении всем, кто перечислен в секции
+	<token>ADMINS</token>. Также можно включить отправку отчётов
+	на каждую ошибку 404 с помощью параметра
+	<token>SEND_BROKEN_LINK_EMAILS</token>, отправка будет
+	осуществлена всем, кто перечислен в секции
+	<token>MANAGERS</token>. Больше эти настройки ничего не делают
+	&mdash; это древний кусочек Django.
+      </para>
+
+      <para>
+	При работе сайта под высокой нагрузкой, вероятно, вам
+	пригодится решение <ulink
+	url="http://code.google.com/p/django-db-log/">django-db-log</ulink>
+	от Дэвида Крамера (David Cramer), которое записывает
+	исключения в таблицу базы данных. Оно по-хитрому использует
+	MD5 хэш от трассировки для объединения множества сообщений об
+	одной ошибке. Так же оно является отличным примером того, как
+	использовать обработчик <token>process_exception</token>
+	Django для своих целей.  
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.debugging.middleware">
+      
+      <title id="&BASEID;.debugging.middleware.title">
+	Ещё о полезном ПО
+      </title>
+    
+      <para>
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <ulink
+	      url="http://www.djangosnippets.org/snippets/727/">ProfilerMiddleware</ulink>
+	      &mdash; позволяет получить вывод <ulink
+	      url="http://docs.python.org/lib/module-profile.html">модуля
+	      cProfile</ulink> для конкретного URL, если добавить к
+	      нему <token>?prof</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <ulink
+	      url="http://www.djangosnippets.org/snippets/766/">DebugFooter</ulink>
+	      &mdash; добавляет снизу страницы информацию о
+	      загруженных шаблонах и о выполненных SQL запросах.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.debugging.test-client">
+      
+      <title id="&BASEID;.debugging.test-client.title">
+	Тестовый клиент
+      </title>
+    
+      <para>
+	Завершим этот раздел по интерактивному исследованию вашего
+	приложения советом изучить использование <ulink
+	url="http://www.djangoproject.com/documentation/testing/">TestClient</ulink>. Несмотря
+	на то, что он был разработан для юнит-тестов Django, он
+	подойдёт и для нашей цели. Этот инструмент позволяет
+	имитировать запрос к вашему приложению из вашего кода. Пример:
+	<screen>
+	  <![CDATA[
+>>> from django.test.client import Client
+>>> c = Client()
+>>> response = c.get("/") # The homepage
+>>> response
+<django.http.HttpResponse object at 0x2300470>
+>>> print response
+Vary: Cookie
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В ответ вы получите объект
+	<classname>HttpResponse</classname>, который можно
+	интерактивно исследовать.
+      </para>
+
+      <para>
+	Существует ещё одна функция, которая может помочь в
+	интерактивной отладке приложения &mdash;
+	<function>setup_test_environment()</function>. Пример:
+	<screen>
+	  <![CDATA[
+>>> from django.test.utils import setup_test_environment
+>>> setup_test_environment()
+>>> from django.test.client import Client
+>>> c = Client()
+>>> response = c.get("/")
+>>> response.template
+[<django.template.Template object at 0x2723dd0>,
+ <django.template.Template object at 0x2723f30>,
+ <django.template.Template object at 0x273ee10>]
+>>> response.context
+[ list of Context objects ]
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это позволяет вам исследовать не только HTML, возвращённый
+	функцией представления, но также шаблоны и контексты, которые
+	были использованы для его рендеринга.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.faststart">
+
+    <title id="&BASEID;.faststart.title">
+      Быстрый старт
+    </title>
+    
+    <para>
+      Каждый проект начинается с создания каталога:
+      <screen>
+	<![CDATA[
+django-admin.py startproject megaproject
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Планируется, что проект должен работать с базой
+      данных. Подразумевается, что база данных уже создана в
+      соответствии с разделом <quote><xref
+      linkend="djangobook.chap05.dbconfig"
+      endterm="djangobook.chap05.dbconfig.title"/></quote>. Для работы
+      с базой данных необходимо создать в проекте приложение, причины
+      этого описаны в разделе <quote><xref
+      linkend="djangobook.chap05.firstapp"
+      endterm="djangobook.chap05.firstapp.title"/></quote>. Переходим
+      в каталог <filename>./megaproject</filename> и приступаем к
+      созданию:
+      <screen>
+	<![CDATA[
+python manage.py startapp gigaapp
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Переходим в каталог <filename>./gigaapp</filename> и принимаемся
+      за наполнение файла <filename>models.py</filename>, в
+      соответствии с разделом <quote><xref
+      linkend="djangobook.chap05.firstmodel"
+      endterm="djangobook.chap05.firstmodel.title"/></quote>.
+    </para>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </section>
+
+</chapter>

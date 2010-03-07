@@ -1,0 +1,1523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap18">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Интернационализация
+  </title>
+
+  <para>
+    Перевод &copy; Кравцов Даниил &lt;danilaru &bull; ms &bull; tusur &bull; ru&gt;
+  </para>
+
+  <para>
+    Редактирование &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Django изначально разрабатывался в центре США (буквально: Лоуренс,
+    штат Канзас, это в 65 км от географического центра
+    континентального США). Несмотря на это, подобно большинству
+    проектов с открытыми исходными текстами сообщество Django включает
+    людей со всего мира. По мере того как это сообщество охватывало
+    разных людей, аспекты <emphasis>интернационализации</emphasis> и
+    <emphasis>локализации</emphasis> становились чрезвычайно важными.
+    Так как множество разработчиков имеют в лучшем случае нечёткое
+    понимание этих терминов, мы кратко их рассмотрим.
+  </para>
+
+  <para>
+    <emphasis>Интернационализация</emphasis> относится к процессу
+    проектирования программ для потенциального использования с любым
+    языком. Это включает в себя выделение текста (как элементы
+    интерфейса, так и сообщения об ошибках) для будущего перевода,
+    абстракцию даты и времени для вывода в различных стандартах,
+    предоставляя поддержку для различных временных зон, а самое
+    главное &mdash; уверенность, что код не содержит предположений о
+    стране проживания пользователей.  Вы часто видите термин
+    <quote>internationalization</quote> сокращённый как
+    <emphasis>I18N</emphasis> (число 18 &mdash; это количество букв
+    между первой <quote>I</quote> и последней <quote>N</quote>).
+  </para>
+
+  <para>
+    <emphasis>Локализация</emphasis> относится к процессу фактического
+    перевода программ подвергшихся интернационализации для
+    использования в конкретной локали. Вы иногда будете встречать
+    аббревиатуру <emphasis>L10N</emphasis> для обозначения термина
+    <quote>локализация</quote>.
+  </para>
+
+  <para>
+    Сам Django полностью интернационализирован. Все строки готовы для
+    перевода, а настройки управляют отображением значений, зависимых
+    от локали, таких как время и дата. С Django поставляется более чем
+    40 различных файлов локализации. Если английский язык не является
+    для вас родным, очень вероятно, что Django уже переведён на ваш
+    язык.
+  </para>
+
+  <para>
+    Та же среда интернационализации, использованная для осуществления
+    такого перевода, доступна вам для перевода вашего приложения.
+  </para>
+
+  <para>
+    С точки зрения разработчика, вам потребуется добавить минимальное
+    количество обработчиков в ваш исходный код и в шаблоны. Такие
+    обработчики называются <emphasis>строками перевода</emphasis>. Они
+    указывают Django, что <quote>Этот текст нужно переводить на язык
+    пользователя, если перевод этого текста доступен для данного
+    языка.</quote>
+  </para>
+
+  <para>
+    Django принимает во внимание эти обработчики при переводе
+    приложений на лету, с учётом пользовательских настроек.
+  </para>
+
+  <para>
+    По существу: Django делает две вещи:
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Позволяет разработчикам и авторам шаблонов указывать какие
+	  именно части приложений нуждаются в переводе.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Использует эту информацию для перевода приложений для
+	  определённого пользователя, согласно его языковым
+	  настройкам.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    <note>
+      <title>
+	Замечание
+      </title>
+
+      <para>
+	Механизм переводов Django использует GNU gettext (<ulink
+	url="http://www.gnu.org/software/gettext/"/>) через
+	стандартный модуль gettext, поставляемый с интерпретатором
+	Python.
+      </para>
+    </note>
+  </para>
+
+  <para>
+    <note>
+      <title>
+	Если вам не требуется интернационализация
+      </title>
+
+      <para>
+	Обработчики интернационализации Django включены по умолчанию,
+	что приводит к небольшому повышению расходования
+	ресурсов. Если вы не желаете использовать интернационализацию,
+	вам нужно назначить параметру <token>USE_I18N</token> значение
+	<token>False</token> в вашем файле настроек. В этом случае
+	Django применит некоторую оптимизацию и не будет загружать
+	механизм интернационализации.
+      </para>
+
+      <para>
+	Возможно вы также пожелаете удалить
+	<token>django.core.context_processors.i18n</token> из
+	параметра <token>TEMPLATE_CONTEXT_PROCESSORS</token>.
+      </para>
+    </note>
+  </para>
+
+  <section id="&BASEID;.specifying-in-code">
+
+    <title id="&BASEID;.specifying-in-code.title">
+      Определение переводимых строк в коде
+    </title>
+
+    <para>
+      Строки перевода указывают, что <quote>Этот текст надо
+      перевести</quote>. Эти строки могут использоваться в коде и в
+      шаблонах. Вашей задачей будет выделение таких строк, а система
+      будет переводить выделенные вами строки и только их.
+    </para>
+
+    <section id="&BASEID;.specifying-in-code.standard-functions">
+    
+      <title id="&BASEID;.specifying-in-code.standard-functions.title">
+	Стандартные функции для перевода
+      </title>
+
+      <para>
+	Помечайте строки для перевода, используя функцию
+	<function>_()</function>. (Да, имя функции &mdash; символ
+	нижнего подчеркивания). Для подключения этой функции
+	используйте:
+	<screen>
+	  <![CDATA[
+from django.utils.translation import gettext_lazy as _
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В этом примере, текст, <quote>Welcome to my site.</quote>
+	помечен для перевода:
+	<screen>
+	  <![CDATA[
+def my_view(request):
+    output = _("Welcome to my site.")
+    return HttpResponse(output)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Функция
+	<token>django.utils.translation.</token><function>gettext()</function>
+	идентична <function>_()</function>. Этот пример эквивалентен
+	предыдущему:
+	<screen>
+	  <![CDATA[
+from django.utils.translation import gettext
+def my_view(request):
+    output = gettext("Welcome to my site.")
+    return HttpResponse(output)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Большинство разработчиков используют <function>_()</function>,
+	так как она короче.
+      </para>
+
+      <para>
+	Механизм переводов работает и для вычисляемых значений. Этот
+	пример идентичен двум предыдущим:
+	<screen>
+	  <![CDATA[
+def my_view(request):
+    words = ['Welcome', 'to', 'my', 'site.']
+    output = _(' '.join(words))
+    return HttpResponse(output)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Механизм переводов работает и для переменных. И снова
+	идентичный пример:
+	<screen>
+	  <![CDATA[
+def my_view(request):
+    sentence = 'Welcome to my site.'
+    output = _(sentence)
+    return HttpResponse(output)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	(Недостаток использования переменных или вычисляемых значений,
+	как показано в предыдущих двух примерах, в том, что
+	стандартная утилита поиска текста подлежащего переводу,
+	<command>make-messages.py</command>, не сможет найти такие
+	строки. Подробности по этой утилите будут дальше.)
+      </para>
+
+      <para>
+	Строки, передаваемые в <function>_()</function> или
+	<function>gettext()</function>, могут содержать символы
+	подстановки, указанные в соответствии со стандартом языка
+	Python, например:
+	<screen>
+	  <![CDATA[
+def my_view(request, n):
+    output = _('%(name)s is my name.') % {'name': n}
+    return HttpResponse(output)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Эта технология позволяет осуществлять перевод, привязанный к
+	особенностям языка, перемещая символы подстановки в тексте. На
+	пример, строка на английском <quote>Adrian is my
+	name.</quote>, может переведена на испанский как <quote>Me
+	llamo Adrian.</quote>, используя символ подстановки
+	установленный после переводимого текста, а не перед ним.
+      </para>
+
+      <para>
+	По этой причине, вы должны использовать именованную
+	подстановку вместо позиционной (<token>%s</token> или
+	<token>%d</token>). Если вы используете позиционную
+	подстановку, переводчик не сможет поменять местами
+	подстановки.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.specifying-in-code.no-op">
+    
+      <title id="&BASEID;.specifying-in-code.no-op.title">
+	Пометка строк для позднего перевода
+      </title>
+
+      <para>
+	Используйте функцию
+	<token>django.utils.translation.</token><function>gettext_noop()</function>
+	для того, чтобы отметить строки для перевода, но без
+	осуществления перевода в данный момент. Строки помеченный
+	таким образом не переводятся до самого последнего момента.
+      </para>
+
+      <para>
+	Используйте этот подход, если у вас есть неизменные строки,
+	которые должны быть сохранены на оригинальном языке &mdash;
+	такие как строки в базе данных &mdash; но которые должны быть
+	переведены в последний момент, например, когда строка
+	показывается пользователю.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.specifying-in-code.lazy">
+    
+      <title id="&BASEID;.specifying-in-code.lazy.title">
+	Отложенный перевод
+      </title>
+
+      <para>
+	Используйте функцию
+	<token>django.utils.translation.</token><function>gettext_lazy()</function>
+	для отложенного перевода строк &mdash; это когда значение
+	получают до того, как будет вызвана функция.
+      </para>
+
+      <para>
+	Например, для пометки атрибута поля <token>help_text</token>
+	как подлежащего переводу сделайте следующее:
+	<screen>
+	  <![CDATA[
+from django.utils.translation import gettext_lazy
+
+class MyThing(models.Model):
+    name = models.CharField(help_text=gettext_lazy('This is the help text'))
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В данном примере функция <function>gettext_lazy()</function>
+	сохраняет отложенную ссылку на строку, а не её перевод. Сам
+	перевод будет выполнен в момент использования строки,
+	например, при обработке шаблона на сайте администратора
+	Django.
+      </para>
+
+      <para>
+	Если вам не нравится длинное имя функции, вы можете
+	использовать <token>_</token> (символ подчёркивания), вот так:
+	<screen>
+	  <![CDATA[
+from django.utils.translation import gettext_lazy as _
+
+class MyThing(models.Model):
+    name = models.CharField(help_text=_('This is the help text'))
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Всегда используйте отложенные переводы в моделях (иначе они не
+	будут переведены корректно для каждого отдельного
+	пользователя). Будет хорошей идеей добавлять перевод к именам
+	полей и таблиц тоже. Это означает, что необходимо явно
+	указывать опции <token>verbose_name</token> и
+	<token>verbose_name_plural</token> в классе
+	<classname>Meta</classname>:
+	<screen>
+	  <![CDATA[
+from django.utils.translation import gettext_lazy as _
+
+class MyThing(models.Model):
+    name = models.CharField(_('name'), help_text=_('This is the help text'))
+    class Meta:
+        verbose_name = _('my thing')
+        verbose_name_plural = _('mythings')
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.specifying-in-code.pluralization">
+    
+      <title id="&BASEID;.specifying-in-code.pluralization.title">
+	Образование множественного числа
+      </title>
+
+      <para>
+	Используйте функцию
+	<token>django.utils.translation.</token><function>ngettext()</function>
+	для определения сообщений, которые имеют различные формы
+	единственного и множественного числа, например:
+	<screen>
+	  <![CDATA[
+from django.utils.translation import ngettext
+def hello_world(request, count):
+    page = ngettext(
+        'there is %(count)d object',
+        'there are %(count)d objects', count
+    ) % {'count': count}
+    return HttpResponse(page)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Функция <function>ngettext()</function> принимает три
+	аргумента: строку для единственного числа, строку для
+	множественного числа и количество объектов (которые передаются
+	языку перевода в виде переменной <varname>count</varname>.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.specifying-in-template">
+    
+    <title id="&BASEID;.specifying-in-template.title">
+      Определение переводимых строк в шаблоне
+    </title>
+
+    <para>
+      Для использования переводов в шаблонах Django применяются два
+      шаблонных и немного отличный от Python синтаксис. Чтобы получить
+      доступ к этим тэгам, поместите <token>{% load i18n %}</token> в
+      начале вашего шаблона.
+    </para>
+
+    <para>
+      Тэг <token>{% trans %}</token> помечает строку для перевода:
+      <screen>
+	<![CDATA[
+<title>{% trans "This is the title." %}</title>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Если вы желаете только пометить значение для перевода, но
+      перевести его позже, используйте опцию <token>noop</token>:
+      <screen>
+	<![CDATA[
+<title>{% trans "value" noop %}</title>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Нельзя использовать шаблонные переменные в тэге <token>{% trans
+      %}</token> &mdash; разрешены только строковые константы, в
+      одиночных или двойных кавычках.  Если ваш перевод требует
+      использования переменных (символов подстановки), используйте
+      <token>{% blocktrans %}</token>, например:
+      <screen>
+	<![CDATA[
+{% blocktrans %}This will have {{ value }} inside.{% endblocktrans %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Для перевода шаблонного выражения &mdash; скажем, использование
+      шаблонного фильтра &mdash; следует связать выражение с локальной
+      переменной для использования внутри блока перевода:
+      <screen>
+	<![CDATA[
+{% blocktrans with value|filter as myvar %}
+  This will have {{ myvar }} inside.
+{% endblocktrans %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Если вам необходимо связать более одного выражения внутри тэга
+      <token>{% blocktrans %}</token>, объедините выражения с помощью
+      <token>and</token>:
+      <screen>
+	<![CDATA[
+{% blocktrans with book|title as book_t and author|title as author_t %}
+  This is {{ book_t }} by {{ author_t }}
+{% endblocktrans %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Для множественного числа, укажите обе, единственную и
+      множественную, формы с помощью тэга <token>{% plural %}</token>,
+      который используется внутри <token>{% blocktrans %}</token> и
+      <token>{% endblocktrans %}</token>, например:
+      <screen>
+	<![CDATA[
+{% blocktrans count list|length as counter %}
+  There is only one {{ name }} object.
+{% plural %}
+  There are {{ counter }} {{ name }} objects.
+{% endblocktrans %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      С технической точки зрения все блоки и встроенные переводы
+      используют соответствующие функции
+      <function>gettext()</function> и
+      <function>ngettext()</function>.
+    </para>
+
+    <para>
+      Когда вы используете <token>RequestContext</token> (см. главу
+      <quote><xref linkend="djangobook.chap10"
+      endterm="djangobook.chap10.title"/></quote>), ваш шаблон
+      получает доступ к 3 переменным режима перевода:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <token>{{ LANGUAGES }}</token> &mdash; это список
+	    кортежей, в котором первый элемент является
+	    идентификатором языка, а второй &mdash; названием этого
+	    языка (родное название).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>{{ LANGUAGE_CODE }}</token> &mdash; это текущий,
+	    предпочитаемый пользователем, язык (т.е.,
+	    <token>en-us</token>). Подробности далее в разделе
+	    <quote>How Django Discovers Language Preference</quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>{{ LANGUAGE_BIDI }}</token> &mdash; это текущей
+	    метод записи языка. Если <token>True</token>, значит пишут
+	    справа налево (иврит, арабский язык). Если
+	    <token>False</token>, значит слева направо (английский,
+	    французский, русский).
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Вы также можете подгрузить эти значения с помощью шаблонных
+      тэгов:
+      <screen>
+	<![CDATA[
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Обработчики механизма переводов также доступны внутри любого
+      блочного шаблонного тэга, который работает с неизменными
+      строками. В таких случаях используйте синтаксис
+      <function>_()</function>, чтобы пометить строку для перевода,
+      например:
+      <screen>
+	<![CDATA[
+{% some_special_tag _("Page not found") value|yesno:_("yes,no") %}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      В этом примере, тэг и фильтр увидят уже переведённую строку
+      (т.е., строка будет переведена <emphasis>до</emphasis> передачи
+      шаблонной функции), поэтому им не надо знать о переводе.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.language-file">
+    
+    <title id="&BASEID;.language-file.title">
+      Создание файлов с переводами
+    </title>
+
+    <para>
+      После того как вы пометили строки подлежащие переводу, вам
+      следует написать (или получить) перевод для этих строк. В этом
+      разделе мы расскажем как это делается.
+    </para>
+
+    <section id="&BASEID;.language-file.message-file">
+    
+      <title id="&BASEID;.language-file.message-file.title">
+	Создание файлов с сообщениями
+      </title>
+
+      <para>
+	Первый шагом будет создание <emphasis>файла
+	сообщений</emphasis> для нового языка. Файл сообщений &mdash;
+	это обычный текстовый файл для одного языка, который содержит
+	информацию обо всех доступных вариантах перевода строк и о том
+	как они должны быть представлены для данного языка. Такие
+	файлы должны иметь расширение <token>.po</token>.
+      </para>
+
+      <para>
+	Django поставляется с утилитой,
+	<filename>bin/make-messages.py</filename>, которая
+	автоматизирует создание и управление такими файлами.
+      </para>
+
+      <para>
+	Для создания или обновления файла сообщений выполните команду
+	<command>bin/make-messages.py -l de</command>, где
+	<token>de</token> &mdash; это идентификатор языка для которого
+	создаётся файл. В данном случае, идентификатор языка указан в
+	формате локали. Например, <token>pt_BR</token> используется
+	для бразильского варианта португальского языка, а
+	<token>at</token> &mdash; для австрийского варианта немецкого
+	языка. Взгляните на идентификаторы языков в каталоге
+	<filename>django/conf/locale/</filename>, чтобы получить
+	информацию о поддерживаемых.
+      </para>
+
+      <para>
+	Скрипт должен быть запущен из одного из трёх мест:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Корневой каталог <filename>django</filename> (но не тот
+	      который получен из Subversion, а тот который указан в
+	      <token>$PYTHONPATH</token>).
+	    </para>
+	  </listitem>
+	  
+	  <listitem>
+	    <para>
+	      Корневой каталог вашего проекта.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Корневой каталог вашего приложения.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Скрипт обрабатывает целое дерево, над которым он был запущен,
+	и получает все строки, помеченные для перевода. Он создаёт
+	(или обновляет) файл сообщений в каталоге
+	<filename>conf/locale</filename>. В примере для немецкого
+	языка, файл будет создан так:
+	<filename>conf/locale/de/LC_MESSAGES/django.po</filename>.
+      </para>
+
+      <para>
+	Если скрипт был запущен над деревом проекта или приложения, он
+	сделает то же самое, но каталог будет другим:
+	<filename>locale/LANG/LC_MESSAGES</filename> (следует отметить
+	отсутствие префикса <token>conf</token>). Перед первым
+	применением скрипта следует создать каталог
+	<filename>locale</filename>.
+	
+	<note>
+	  <title>
+	    Нет утилиты <command>gettext</command>?
+	  </title>
+
+	  <para>
+	    Если у вас нет установленной утилиты
+	    <command>gettext</command>, то
+	    <command>bin/make-messages.py</command> создаст пустые
+	    файлы. В этом случае следует либо установить утилиту или
+	    просто скопировать файл сообщений для английского языка
+	    (<filename>conf/locale/en/LC_MESSAGES/django.po</filename>)
+	    и использовать его в качестве отправной точки. Это просто
+	    пустой файл с переводами строк.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Формат <token>.po</token> файлов прямолинеен. Каждый
+	<token>.po</token> файл содержит небольшой кусок метаданных,
+	таких как контактная информация сопровождающего данный
+	перевод, остальное место в файле занимает список
+	<emphasis>сообщений</emphasis> &mdash; простое соответствие
+	между переводимыми строками и собственно переводами для этих
+	строк.
+      </para>
+
+      <para>
+	Например, если ваше приложение содержит строку <quote>Welcome
+	to my site.</quote>, в таком виде:
+	<screen>
+_("Welcome to my site.")
+	</screen>
+      </para>
+
+      <para>
+	то утилита <command>bin/make-messages.py</command> создаст
+	<token>.po</token> файл, который будет содержать кусок &mdash;
+	сообщение:
+	<screen>
+	  <![CDATA[
+#: path/to/python/module.py:23
+msgid "Welcome to my site."
+msgstr ""
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Кратко рассмотрим этот кусок:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>msgid</token> является переводимой строкой,
+	      которая определена в исходном коде. Не изменяйте её.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>msgstr</token> является переводом для
+	      строки. Изначально это поле пустое. Это ваша задача
+	      заполнить его. Не забывайте о необходимости сохранять
+	      кавычки вокруг текста.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Для удобства каждое сообщение включает в себя имя файла
+	      и номер строки откуда была получена для перевода данная
+	      строка.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Длинные сообщения являются особым случаем. Сразу после
+	<token>msgstr</token> (или <token>msgid</token>) указывается
+	пустая строка. Затем содержимое строки записывается на
+	следущей линии или линиях. Такие строки впоследствии
+	объединяются. Не забывайте оставлять завершающие пробелы в
+	конце линий, иначе строка будет объединена без этих пробелов!
+      </para>
+
+      <para>
+	Например, ниже представлен многострочный перевод (взято из
+	испанской локализации, которая поставляется с Django):
+	<screen>
+	  <![CDATA[
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+"Ha ocurrido un error. Se ha informado a los administradores del sitio "
+"mediante correo electrónico y debería arreglarse en breve. Gracias por su "
+"paciencia."
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Не забывайте о завершающих пробелах.
+
+	<note>
+	  <title>
+	    Помните о своей кодировке
+	  </title>
+
+	  <para>
+	    При создании <token>.po</token> файлов в вашем текстовом
+	    редакторе, сначала исправьте строку с указанием кодировки
+	    (произведите поиск по <token>CHARSET</token>) и установите
+	    правильное значение кодировки. Обычно UTF-8 подходит для
+	    большинства языков, но <command>gettext</command> должна
+	    обработать любую кодировку, которую вы укажете.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Для повторного получения строк из исходного кода и шаблонов
+	для перевода новых строк и обновления всех файлов сообщений
+	для <emphasis>всех</emphasis> языков, выполните это:
+	<screen>
+make-messages.py -a
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.language-file.compiling">
+    
+      <title id="&BASEID;.language-file.compiling.title">
+	Компилирования файлов сообщений
+      </title>
+
+      <para>
+	После того как вы создали файл сообщений и после каждого
+	изменения его содержимого вам потребуется компилировать его в
+	более эффективную форму с помощью
+	<command>gettext</command>. Для этого следует применять
+	утилиту <command>bin/make-messages.py</command>.
+      </para>
+
+      <para>
+	Эта утилита <quote>пробегает</quote> по всем доступным
+	<token>.po</token> файлам и создаёт <token>.mo</token> файлы,
+	которые являются бинарным представлением первых. В том же
+	каталоге из которого вы запускали
+	<command>bin/make-messages.py</command> выполните это:
+	<screen>
+bin/compile-messages.py
+	</screen>
+      </para>
+
+      <para>
+	И всё. Ваш перевод готов для использования.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.language-preference">
+    
+    <title id="&BASEID;.language-preference.title">
+      Как Django получает языковые настройки
+    </title>
+      
+    <para>
+      После того как вы подготовили перевод, или вы просто желаете
+      использовать переводы, которые уже включены в Django, следует
+      активировать механизм переводов для вашего приложения.
+    </para>
+
+    <para>
+      С точки зрения разработчика Django имеет очень гибкую модель
+      принятия решения о том, какой язык следует использовать: для
+      всего проекта, для отдельного пользователя или для обоих
+      случаев.
+    </para>
+
+    <para>
+      Для определения языковой настройки на уровне всего проекта
+      установите <token>LANGUAGE_CODE</token> в вашем файле
+      настроек. Django использует эту настройку в случае, если никаких
+      других переводов не найдено.
+    </para>
+
+    <para>
+      Если требуется запустить Django так, чтобы он использовал ваш
+      родной язык и для этого языка есть файл переводов, просто
+      установите <token>LANGUAGE_CODE</token>.
+    </para>
+
+    <para>
+      Если вы хотите позволить каждому отдельному пользователю
+      указывать его собственные языковые настройки, используйте
+      <token>LocaleMiddleware</token>. Пакет
+      <token>LocaleMiddleware</token> позволяет осуществлять выбор
+      языка, основываясь на данных из запроса. Он настраивает
+      содержимое страницы для каждого пользователя.
+    </para>
+
+    <para>
+      Для использования <token>LocaleMiddleware</token> добавьте
+      <token>django.middleware.locale.LocaleMiddleware</token> в
+      параметр <token>MIDDLEWARE_CLASSES</token>. Так как порядок
+      объявления пакетов в этом параметре имеет значение, вы должны
+      руководствоваться следующими правилами:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Удостоверьтесь, что этот пакет находится среди главных
+	    пакетов.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Пакет должен идти после <token>SessionMiddleware</token>,
+	    потому что <token>LocaleMiddleware</token> использует
+	    данные из сессии.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если вы используете <token>CacheMiddleware</token>,
+	    поместите <token>LocaleMiddleware</token> после него
+	    (иначе пользователи смогут получить закэшированные данные
+	    в неправильной локали).
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Например, ваш параметр <token>MIDDLEWARE_CLASSES</token> может
+      выглядеть так:
+      <screen>
+MIDDLEWARE_CLASSES = (
+   'django.middleware.common.CommonMiddleware',
+   'django.contrib.sessions.middleware.SessionMiddleware',
+   'django.middleware.locale.LocaleMiddleware'
+)
+      </screen>
+    </para>
+
+    <para>
+      Пакет <token>LocaleMiddleware</token> пытается определить
+      языковую настройку пользователя по следующему алгоритму:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Сначала проверяется содержимое
+	    <token>django_language</token> из сессии пользователя.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если не удалось, проверяется cookie
+	    <token>django_language</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если не удалось, проверяется HTTP заголовок
+	    <token>Accept-Language</token>. Этот заголовок
+	    отправляется браузером и указывает серверу какой именно
+	    язык вы предпочитаете, в порядке приоритета. Django
+	    перебирает все указанные в заголовки языки пока не найдёт
+	    первый для которого есть перевод.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если не удалось, Django использует значение глобального
+	    параметра <token>LANGUAGE_CODE</token>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      В каждом из шагов ожидается, что языковая настройка будет
+      указана в стандартном формате в виде строки. Например,
+      бразильский вариант португальского языка имеет обозначение
+      <token>pt-br</token>. Если базовый язык доступен, а вариант нет,
+      Django использует базовый язык. Например, если пользователь
+      указал <token>de-at</token> (австрийский вариант немецкого
+      языка), но для Django доступен только немецкий, значит будет
+      использован немецкий язык.
+    </para>
+
+    <para>
+      Могут быть выбраны только те языки, которые указаны в параметре
+      <token>LANGUAGES</token>. Таким образом, с помощью этого
+      параметра можно ограничивать набор языков, поддерживаемых
+      приложением:
+      <screen>
+LANGUAGES = (
+    ('de', _('German')),
+    ('en', _('English')),
+)
+      </screen>
+    </para>
+
+    <para>
+      Данный пример ограничивает набор языков доступный для
+      автоматического выбора немецким и английским языками (а также
+      любыми их вариантами, такими как <token>de-ch</token> или
+      <token>en-us</token>).
+    </para>
+
+    <para>
+      Если вы определяете свой <token>LANGUAGES</token>, можно
+      помечать названия языков в качестве строк подлежащих
+      переводу. Но в этом случае следует использовать функцию-заглушку
+      <function>gettext()</function>, а не из модуля
+      <token>django.utils.translation</token>. <emphasis>Нельзя</emphasis>
+      импортировать <token>django.utils.translation</token> в
+      конфигурационном файле, так как этот модуль сам зависит от файла
+      конфигурации, можем получить бесконечный цикл.
+    </para>
+
+    <para>
+      Решением этой проблемы будет использование функции-заглушки,
+      например так:
+      <screen>
+	<![CDATA[
+_ = lambda s: s
+
+LANGUAGES = (
+      ('de', _('German')),
+      ('en', _('English')),
+)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Такой подход позволяет утилите
+      <command>bin/make-messages.py</command> находить такие строки
+      для перевода, но перевод не будет осуществляться налету. Таким
+      образом вам потребуется не забыть сменить язык в
+      <emphasis>настоящей</emphasis> функции
+      <function>gettext()</function> в любом коде, который использует
+      <token>LANGUAGES</token>.
+    </para>
+
+    <para>
+      Пакет <token>LocaleMiddleware</token> может только выбирать
+      языки для которых Django предоставляет перевод. Если вы желаете
+      предоставить перевод для вашего приложения, который ещё не
+      входит в набор исходных текстов Django, вы пожелаете
+      предоставить как минимум базовый перевод для данного
+      языка. Например, Django использует технические идентификаторы
+      сообщений для перевода форматов даты и времени &mdash; вам
+      потребуются хотя бы этот перевод для того, чтобы система
+      работала корректно.
+    </para>
+
+    <para>
+      Хорошей отправной точкой будет копирование <token>.po</token>
+      файла для английского языка и перевод хотя бы технических
+      сообщений, а может ещё и сообщений модуля проверки.
+    </para>
+
+    <para>
+      Технические идентификаторы сообщений хорошо распознаются, они
+      написаны заглавными буквами. Не следует переводить
+      идентификаторы сообщений, просто предоставьте корректный вариант
+      для английского значения. Например, для
+      <token>DATETIME_FORMAT</token> (или <token>DATE_FORMAT</token>
+      или <token>TIME_FORMAT</token>, это будет форматированная
+      строка, которую вы желаете использовать для вашего языка. Формат
+      идентичен формату строки, используемому шаблонным тэгом
+      <token>{{ now }}</token>.
+    </para>
+
+    <para>
+      После того, как модуль <token>LocaleMiddleware</token> определит
+      языковую настройку, он делает её доступной через
+      <token>request.LANGUAGE_CODE</token> для каждого объекта
+      запроса. Можно обращаться к его значению в коде ваших
+      представлений. Простой пример:
+      <screen>
+	<![CDATA[
+def hello_world(request, count):
+    if request.LANGUAGE_CODE == 'de-at':
+        return HttpResponse("You prefer to read Austrian German.")
+    else:
+        return HttpResponse("You prefer to read another language.")
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Следует отметить, что в случае статических переводов (т.е., без
+      использования пакета) язык определён в
+      <token>settings.LANGUAGE_CODE</token>, а при использовании
+      динамического перевода (т.е., через пакет) &mdash; в
+      <token>request.LANGUAGE_CODE</token>.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.set-language-redirect">
+    
+    <title id="&BASEID;.set-language-redirect.title">
+      Представление set_language
+    </title>
+      
+    <para>
+      Для вашего удобства Django поставляется с представлением
+      <token>django.views.i18n.set_language</token>, которое
+      устанавливает языковую настройку пользователя и перенаправляет
+      браузер обратно на предыдущую страницу.
+    </para>
+
+    <para>
+      Для активации этого представления добавьте следующую строку в
+      схему URL:
+      <screen>
+	<![CDATA[
+(r'^i18n/', include('django.conf.urls.i18n')),
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Следует отметить, что данный пример делает это представление
+      доступным на <token>/i18n/setlang/</token>.
+    </para>
+
+    <para>
+      Это представление вызывается через метод GET с указанием
+      параметра <token>language</token> в строке запроса. Если
+      поддержка сессий активна, представление сохраняет информацию о
+      выбранном языке в сессии пользователя. В противном случае,
+      сохранение производится в cookie <token>django_language</token>.
+    </para>
+
+    <para>
+      После определения выбора пользователя Django перенаправляет
+      браузер, следуя алгоритму:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Проверяется параметр <token>next</token> в строке запроса.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если такого параметра нет или он пуст, проверяется
+	    заголовок <token>Referer</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Если заголовок пуст (браузер мог запретить его отправку),
+	    тогда пользователь будет перенаправлен на корень сайта.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Ниже представлен пример HTML шаблона:
+      <screen>
+	<![CDATA[
+<form action="/i18n/setlang/" method="get">
+<input name="next" type="hidden" value="/next/page/" />
+<select name="language">
+{% for lang in LANGUAGES %}
+<option value="{{ lang.0 }}">{{ lang.1 }}</option>
+{% endfor %}
+</select>
+<input type="submit" value="Go" />
+</form>
+	]]>
+      </screen>
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.using">
+    
+    <title id="&BASEID;.using.title">
+      Использование переводов в ваших проектах
+    </title>
+      
+    <para>
+      Django ищет переводы по следующему алгоритму:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Сначала просматривается каталог
+	    <filename>locale</filename> в каталоге приложения
+	    представление которого было вызвано. Если будет найден
+	    соответствующий файл с переводами, будет установлен этот
+	    перевод.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Затем просматривается каталог <filename>locale</filename>
+	    в каталоге проекта. Если файл с переводами будет найден,
+	    он будет установлен.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Наконец, просматривается базовый каталог
+	    <filename>django/conf/locale</filename>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Таким образом вы можете создавать приложения, которые будут
+      иметь свой собственный перевод, также вы можете переопределять
+      базовый перевод для своего проекта. Вы можете построить большой
+      проект с несколькими приложениями и разместить переводы в одном
+      большом файле. Этот выбор за вами.
+
+      <note>
+	<para>
+	  Если вы используете вручную сконфигурированные настройки, то
+	  каталог <filename>locale</filename> в каталоге проекта не
+	  будет рассмотрен, так как Django теряет возможность
+	  обработать каталог проекта. Django обычно использует
+	  местоположение конфигурационного файла для определения
+	  каталога проекта.
+	</para>
+      </note>
+    </para>
+
+    <para>
+      Все репозитории с файлами переводов структурированы одинаково:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <filename><![CDATA[$APPPATH/locale/<language>/LC_MESSAGES/django.(po|mo)]]></filename>
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <filename><![CDATA[$PROJECTPATH/locale/<language>/LC_MESSAGES/django.(po|mo)]]></filename>
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Все пути перечисленные в параметре
+	    <token>LOCALE_PATHS</token> файла конфигурации проверяются
+	    по порядку для
+	    <filename><![CDATA[<language>/LC_MESSAGES/django.(po|mo)]]></filename>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <filename><![CDATA[$PYTHONPATH/django/conf/locale/<language>/LC_MESSAGES/django.(po|mo)]]></filename>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Для создания файлов с сообщениями следует использовать утилиту
+      <command>bin/make-messages.py</command>. Потребуется только
+      запускать её из правильного места &mdash; в каталоге в котором
+      находится <filename>conf/locale</filename> (в случае дерева
+      исходных текстов) или <filename>locale/</filename> (в случае
+      сообщений приложения или проекта). Далее следует использовать
+      <command>compile-messages.py</command> для создания бинарного
+      <filename>django.mo</filename>, который используется
+      <token>gettext</token>.
+    </para>
+
+    <para>
+      Файлы сообщения для приложения немного сложнее обнаружить, им
+      требуется пакет <token>LocaleMiddleware</token>. Если вы не
+      используете этот пакет, будут обрабатываться только файлы
+      сообщений Django и проекта.
+    </para>
+
+    <para>
+      Наконец, вы должны как-то организовать структуру файлов с
+      переводами. Если ваши приложения будут распространяться среди
+      других пользователей и будут использоваться в других проектах,
+      может потребоваться использовать переводы на уровне
+      приложений. Но одновременное наличие переводов на уровне
+      приложений и проекта могут породить неприятные проблемы с
+      <command>make-messages.py</command>. Эта утилита просматривает
+      все каталоги, начиная от текущего, и помещает идентификаторы
+      сообщений в файл сообщений проекта, а эти идентификаторы уже
+      могут находиться в файле приложений.
+    </para>
+
+    <para>
+      Простейший способ решения этой проблемы &mdash; не хранить
+      приложения внутри каталога проекта (предоставляя им собственные
+      переводы). Тогда выполнение <command>make-messages.py</command>
+      на уровне проекта соберёт строки относящиеся только к проекту и
+      которые не будут распространяться независимо от проекта.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.javascript">
+    
+    <title id="&BASEID;.javascript.title">
+      Переводы и JavaScript
+    </title>
+
+    <para>
+      Добавление возможности перевода строк в JavaScript порождает ряд
+      проблем:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Код на JavaScript не имеет доступа к реализации
+	    <token>gettext</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Код на JavaScript не имеет доступа к <token>.po</token>
+	    или <token>.mo</token> файлам. Они должны быть
+	    предоставлены сервером.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Каталоги с переводами для JavaScript должны быть малы
+	    насколько это возможно.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Django предоставляет интегрированное решения для этих
+      проблем. Оно передаёт переводы в JavaScript, таким образом вы
+      можете использовать <token>gettext</token> в JavaScript.
+    </para>
+
+    <section id="&BASEID;.javascript.catalog-view">
+    
+      <title id="&BASEID;.javascript.catalog-view.title">
+	Представление javascript_catalog
+      </title>
+      
+      <para>
+	Основным решением для этих проблем является представление
+	<function>javascript_catalog()</function>, которое создаёт
+	библиотеку кода JavaScript с функциями, имитирующими поведение
+	интерфейса <token>gettext</token>, и с массивом переведённых
+	строк. Эти строки получаются из приложения, проекта или ядра
+	Django, в соответствии с тем, что вы определили в
+	<token>info_dict</token> или в URL.
+      </para>
+
+      <para>
+	Вы можете использовать это так:
+	<screen>
+	  <![CDATA[
+js_info_dict = {
+    'packages': ('your.app.package',),
+}
+
+urlpatterns = patterns('',
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Каждая строка в <token>packages</token> должна быть в формате,
+	аналогичном параметру <token>INSTALLED_APPS</token>, и должна
+	ссылаться на пакет, который содержится в каталоге
+	<filename>locale</filename>. Если вы укажите несколько
+	пакетов, все эти каталоги будут объединены в единый. Это
+	полезно когда работаете с JavaScript, который использует
+	строки из разных приложений.
+      </para>
+
+      <para>
+	Вы можете создать представление динамически, указав пакеты в
+	схеме URL:
+	<screen>
+	  <![CDATA[
+urlpatterns = patterns('',
+    (r'^jsi18n/(?P<packages>\S+?)/$, 'django.views.i18n.javascript_catalog'),
+)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Учитывая это, вы указываете пакеты в виде списка их имён,
+	разделённых знаками <token>+</token> в URL. Это особенно
+	полезно, если ваши страницы используют код из разных
+	приложений, которые часто меняются и у вас нет желания
+	помещать переводы в единый большой файл. С точки зрения
+	безопасности эти значеним могут быть только в
+	<token>django.conf</token> или в любом пакете указанном в
+	параметре <token>INSTALLED_APPS</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.javascript.catalog">
+    
+      <title id="&BASEID;.javascript.catalog.title">
+	Использование каталога с переводами
+      </title>
+      
+      <para>
+	Для использования каталога просто подключите динамически
+	генерируемый скрипт:
+	<screen>
+	  <![CDATA[
+<script type="text/javascript" src="/path/to/jsi18n/"></script>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Этим способом пользуется административный сайт для получения
+	каталога с переводами от сервера. После загрузки каталога ваш
+	JavaScript код может использовать стандартный интерфейс
+	<token>gettext</token>:
+	<screen>
+	  <![CDATA[
+document.write(gettext('this is to be translated'));
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Есть даже интерфейс <token>ngettext</token> и функция
+	интерполяции строк:
+	<screen>
+	  <![CDATA[
+d = {
+    count: 10
+};
+s = interpolate(ngettext('this is %(count)s object', 'this are %(count)s objects', d.count), d);
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Функция <function>interpolate()</function> поддерживает как
+	позиционную интерполяцию, так и именованную. Таким образом
+	предыдущий код может быть переписан так:
+	<screen>
+	  <![CDATA[
+s = interpolate(ngettext('this is %s object', 'this are %s objects', 11), [11]);
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Синтаксис интерполяции позаимствован из Python. Вы не должны
+	злоупотреблять интерполяцией, это всё ещё JavaScript, так что
+	код будет повторять подстановки с помощью регулярного
+	выражения. Это не так быстро как строковая интерполяция в
+	Python, так что не используйте это лишний раз.
+      </para>
+
+    </section>
+	    
+    <section id="&BASEID;.javascript.create-catalog">
+    
+      <title id="&BASEID;.javascript.create-catalog.title">
+	Создание каталога
+      </title>
+      
+      <para>
+	Создание и обновление каталогов с переводами происходит
+	аналогично другим видам каталогов. Единственное отличие в том,
+	что следует указывать параметр <token>-d djangojs</token>:
+	<screen>
+make-messages.py -d djangojs -l de
+	</screen>
+      </para>
+
+      <para>
+	Эта команда создаёт или обновляет каталог с переводами для
+	JavaScript кода для немецкого языка. После обновления
+	каталогов, просто выполните
+	<command>compile-messages.py</command> аналогично предыдущим
+	примерам.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.gettext">
+    
+    <title id="&BASEID;.gettext.title">
+      Замечание для тех, кто уже работал с gettext
+    </title>
+    
+    <para>
+      Если вы знакомы с <token>gettext</token>, вам следует помнить о
+      особенностях использования этого пакета в Django:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Домен переводов определён как <token>django</token> или
+	    <token>djangojs</token>. Домен используется для различения
+	    различных программ, которые хранят свои данные в общей
+	    библиотеке сообщений (обычно в
+	    <filename>/usr/share/locale/</filename>). Домен
+	    <token>django</token> используется интерпретатором Python
+	    и в шаблонных строках. Домен загружается в глобальные
+	    каталоги переводов. Домен <token>djangojs</token>
+	    используется только для каталогов JavaScript и должен
+	    содержать минимально возможный объём информации.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Django использует только <function>gettext()</function> и
+	    <function>gettext_noop()</function>. Это происходит потому
+	    что Django всегда работает со строками
+	    <token>DEFAULT_CHARSET</token>. Не существует
+	    значительного преимуществу в использовании
+	    <function>ugettext()</function>, так как вы будете всегда
+	    нуждаться в UTF-8 (по-моему это наш случай FIXME).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Django не использует <function>xgettext()</function>. Оно
+	    использует обёртки Python для
+	    <function>xgettext()</function> и
+	    <function>msgfmt()</function>. Это гораздо удобнее.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+  </section>
+
+</chapter>

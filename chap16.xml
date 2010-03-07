@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap16">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Интеграция с унаследованным
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Django хорошо подготовлен для так называемой полевой разработки,
+    т.е., для создания проекта с нуля. Но несмотря на этот факт,
+    существует возможность использовать Django совместно с
+    унаследованными базами данных и приложениями. В данной главе
+    рассматривается несколько стратегий такого использования.
+  </para>
+
+  <section id="&BASEID;.legacy-database">
+
+    <title id="&BASEID;.legacy-database.title">
+      Интеграция с унаследованной базой данных
+    </title>
+
+    <para>
+      Слой Django, предназначенный для поддержки баз данных,
+      генерирует SQL схему базы данных по коду модели, но когда вы
+      сталкиваетесь с унаследованной базой данных, то у вас уже есть
+      схема. В этом случае вам потребуется создать модели для каждой
+      существующей таблицы. Для решения такой задачи Django
+      поставляется с утилитой, которая может генерировать код модели
+      по описанию таблицы в базе данных. Данная утилита называется
+      <command>inspectdb</command> и вы можете вызывать её с помощью
+      команды:
+      <screen>
+python manage.py inspectdb
+      </screen>
+    </para>
+
+    <section id="&BASEID;.legacy-database.inspectdb">
+      
+      <title id="&BASEID;.legacy-database.inspectdb.title">
+	Использование inspectdb
+      </title>
+      
+      <para>
+	Утилита <command>inspectdb</command> просматривает базу
+	данных, указанную в вашем конфигурационном файле, определяет
+	представление модели для каждой таблицы и выводит код модели
+	на стандартный вывод.
+      </para>
+
+      <para>
+	Ниже представлено пошаговое описание обычного процесса
+	интегрирования унаследованной базы данных. Описание
+	предполагает, что Django уже установлен и что в наличии есть
+	унаследованная база данных.
+      </para>
+
+      <para>
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Создать проект Django с помощью команды <command>python
+	      manage.py startproject mysite</command>, где
+	      <token>mysite</token> является именем проекта.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Отредактировать конфигурационный файл проекта,
+	      <filename>mysite/settings.py</filename>, внеся в него
+	      правильные параметры соединения с базой данных. За
+	      подробностями обратитесь к главе <quote><xref
+	      linkend="djangobook.chap05"
+	      endterm="djangobook.chap05.title"/></quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Создать приложение внутри проекта с помощью команды
+	      <command>python manage.py startapp myapp</command>, где
+	      <token>myapp</token> является именем приложения.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Выполнить команду <command>python manage.py
+	      inspectdb</command>. Команда выведет код модели для
+	      каждой таблицы базы данных. Просмотрите этот вывод.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Сохранить вывод в файл
+	      <filename>mysite/myapp/models.py</filename>:
+	      <screen>
+		<![CDATA[
+python mysite/manage.py inspectdb > mysite/myapp/models.py
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Отредактировать файл
+	      <filename>mysite/myapp/models.py</filename>, приведя его
+	      в нужный вид.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+    </section>
+    
+    <section id="&BASEID;.legacy-database.cleaning-models">
+      
+      <title id="&BASEID;.legacy-database.cleaning-models.title">
+	Очистка сгенерированных моделей
+      </title>
+      
+      <para>
+	Как вы можете ожидать, процесс генерации моделей по описанию
+	таблиц не является идеальным и вам может потребоваться немного
+	<quote>почистить</quote> полученный результат. Вот несколько
+	советов:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Каждая таблица базы данных описывается в виде
+	      модели. Это означает, что потребуется провести
+	      рефакторинг моделей для преобразования таблиц типа
+	      <quote>многие-ко-многим</quote> в объекты
+	      <classname>ManyToManyField</classname>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Каждая созданная модель имеет атрибуты для каждого поля,
+	      включая поле <token>id</token>. Однако, следует помнить,
+	      что Django автоматически добавляет поле <token>id
+	      primary key</token>, если модель не содержит первичного
+	      ключа. Следовательно, вы пожелаете удалить строки
+	      подобные этой:
+	      <screen>
+		<![CDATA[
+id = models.IntegerField(primary_key=True)
+		]]>
+	      </screen>
+	      Такие строки не только избыточны, но они также могут
+	      вызвать проблемы в случае, если ваше приложение будет
+	      добавлять <quote>новые</quote> записи в эти
+	      таблицы. Утилита <command>inspectdb</command> не может
+	      надежно определить является ли поле автоинкрементным,
+	      таким образом данная задача ложится на вас, используйте
+	      <token>AutoField</token> когда это необходимо.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Каждый тип поля (т.е., <token>CharField</token>,
+	      <token>DateField</token>) определяется с помощью
+	      описания данного поля (т.е., <token>VARCHAR</token>,
+	      <token>DATE</token>). Если утилита
+	      <command>inspectdb</command> не может точно определить
+	      тип поля, она использует <token>TextField</token> и
+	      добавляет комментарий <quote>Данный тип поля является
+	      предположением.</quote> (<quote>This field type is a
+	      guess.</quote>) после поля. Обращайте внимания на такие
+	      поля и изменяйте их тип при необходимости.
+	    </para>
+
+	    <para>
+	      Если для поля таблицы невозможно подобрать эквивалент в
+	      виде поля модели, можно вообще его не указывать. Слой
+	      Django для работы с моделями не требует, чтобы было
+	      описано каждое поле таблицы.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если имя поля таблицы совпадает с зарезервированным
+	      словом языка Python (например, <token>pass</token>,
+	      <token>class</token> или <token>for</token>), утилита
+	      <command>inspectdb</command> добавит суффикс
+	      <token>_field</token> к имени поля и установит атрибуту
+	      <token>db_column</token> реальное значение имени поля.
+	    </para>
+
+	    <para>
+	      Например, если таблица содержит целочисленное поле с
+	      именем <token>for</token>, сгенерированная модель будет
+	      содержать такое определение для этого поля:
+	      <screen>
+		<![CDATA[
+for_field = models.IntegerField(db_column='for')
+		]]>
+	      </screen>
+	    </para>
+
+	    <para>
+	      Утилита <command>inspectdb</command> добавит комментарий
+	      <quote>Поле было переименовано, так как имя
+	      конфликтовало с зарезервированным словом языка
+	      Python.</quote> (<quote>Field renamed because it was a
+	      Python reserved word.</quote>) после поля.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если в базе данных есть таблицы, которые ссылаются на
+	      другие таблицы (как это происходит в большинстве баз
+	      данных), вам может потребоваться изменить порядок
+	      описания моделей в файле. Например, если модель
+	      <token>Book</token> ссылается на модель
+	      <token>Author</token>, то модель <token>Author</token>
+	      должна быть определена до модели
+	      <token>Book</token>. Если требуется создать ссылку на
+	      модель, которая ещё не была определена, вы можете
+	      использовать имя модели, а не сам объект модели.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Утилита <command>inspectdb</command> определяет
+	      первичные ключи для таблиц следующих баз данных:
+	      PostgreSQL, MySQL и SQLite. Следовательно, в модели
+	      будет внесено <token>primary_key=True</token>, там где
+	      это необходимо. Для остальных баз данных вам потребуется
+	      вручную внести это определение в определённое поле
+	      каждой модели, так как Django требует определения
+	      первичного ключа для каждой модели.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Определение ссылок работает только с PostgreSQL и с
+	      некоторыми типами таблиц MySQL. В остальных случаях
+	      такие поля будут сгенерированы как
+	      <quote>IntegerField's, assuming the foreign-key column
+	      was an INT column</quote>.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.auth-system">
+
+    <title id="&BASEID;.auth-system.title">
+      Интеграция с системой аутентификации
+    </title>
+
+    <para>
+      Существует возможность интеграции Django с имеющейся системой
+      аутентификации &mdash; с другим источником имён и паролей или
+      методов аутентификации.
+    </para>
+
+    <para>
+      Например, ваша компания может уже использовать LDAP, в котором
+      хранятся имена и пароли для каждого сотрудника. Администратору
+      сети и пользователям быстро надоест использовать разные логины
+      для работы с LDAP и Django приложениями.
+    </para>
+
+    <para>
+      Для решения этой задачи система аутентификации Django позволяет
+      вам подключить внешние источники аутентификации. Вы можете
+      переопределить схему аутентификации, изначально настроенную на
+      использование базы данных, также вы можете использовать
+      стандартную систему в тандеме с другими системами.
+    </para>
+
+    <section id="&BASEID;.auth-system.specify-back-ends">
+
+      <title id="&BASEID;.auth-system.specify-back-ends.title">
+	Описание источников аутентификации
+      </title>
+      
+      <para>
+	С технической точки зрения, Django поддерживает список
+	источников аутентификации. Когда кто-нибудь вызывает
+	<token>django.contrib.auth.authenticate()</token> (описанный в
+	главе <quote><xref linkend="djangobook.chap12"
+	endterm="djangobook.chap12.title"/></quote>), Django пытается
+	проверить пользователя, используя все источники
+	аутентификации. Django перебирает каждый источник, пока не
+	найдёт совпавший.
+      </para>
+
+      <para>
+	Список источников аутентификации, предназначенных для
+	использования, определён в параметре
+	<varname>AUTHENTICATION_BACKENDS</varname>. Параметр должен
+	хранить кортеж путей, которые указывают на классы, которые в
+	свою очередь знают, как выполнять процедуру
+	аутентификации. Эти классы могут быть где угодно, главное,
+	чтобы их можно было найти через <token>$PYTHONPATH</token>.
+      </para>
+
+      <para>
+	По умолчанию, параметр
+	<varname>AUTHENTICATION_BACKENDS</varname> содержит:
+	<screen>
+	  <![CDATA[
+('django.contrib.auth.backends.ModelBackend',)
+	  ]]>
+	</screen>
+	Это простая схема аутентификации, которая проверяет
+	пользователя по базе данных.
+      </para>
+
+      <para>
+	Порядок определения источников в параметре
+	<varname>AUTHENTICATION_BACKENDS</varname> имеет
+	значение. Таким образом, если пользователь верно определён в
+	нескольких источниках, Django остановит свой поиск при первом
+	совпадении.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.auth-system.write-back-ends">
+
+      <title id="&BASEID;.auth-system.write-back-ends.title">
+	Реализация источников аутентификации
+      </title>
+      
+      <para>
+	Источник аутентификации &mdash; это обычный класс, который
+	имеет два метода: <function>get_user(id)</function> и
+	<function>authenticate(**credentials)</function>.
+      </para>
+
+      <para>
+	Метод <function>get_user()</function> принимает параметр
+	<varname>id</varname>, который может быть именем пользователя,
+	идентификатором в базе данных, да всем чем угодно, и
+	возвращает объект <classname>User</classname>.
+      </para>
+
+      <para>
+	Метод <function>authenticate()</function> принимает
+	удостоверение личности в виде именованных аргументов. Обычно
+	это выглядит так:
+	<screen>
+	  <![CDATA[
+class MyBackend(object):
+    def authenticate(self, username=None, password=None):
+        # Check the username/password and return a User.
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Но также может принимать элемент FIXME???, например:
+	<screen>
+	  <![CDATA[
+class MyBackend(object):
+    def authenticate(self, token=None):
+        # Check the token and return a User.
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Другими словами, метод <function>authenticate()</function>
+	должен проверять полученное удостоверение личности и должен
+	возвращать объект <classname>User</classname>, который
+	соответствует переданному удостоверению, если последнее
+	является верным. В противном случае метод должен возвращать
+	<token>None</token>.
+      </para>
+
+      <para>
+	Интерфейс администратора Django плотно объединён с собственным
+	объектом <classname>User</classname>, описанным в главе
+	<quote><xref linkend="djangobook.chap12"
+	endterm="djangobook.chap12.title"/></quote>. Для
+	взаимодействия с этой системой лучше всего создавать объект
+	<classname>User</classname> для каждого пользователя, который
+	существует в вашем источнике (т.е., для вашего LDAP, вашей
+	внешней SQL базе данных и так далее.). Либо вы разработаете
+	для этого скрипт, либо ваш метод
+	<function>authenticate()</function> сделает это при первом
+	входе пользователя в систему.
+      </para>
+
+      <para>
+	Ниже представлен пример источника, который аутентифицирует
+	пользователей по переменным имени и пароля, определённым в
+	файле конфигурации, и создаёт объект
+	<classname>User</classname> при первой аутентификации
+	пользователя:
+	<screen>
+	  <![CDATA[
+from django.conf import settings
+from django.contrib.auth.models import User, check_password
+
+class SettingsBackend(object):
+    """
+    Authenticate against the settings ADMIN_LOGIN and ADMIN_PASSWORD.
+
+    Use the login name, and a hash of the password. For example:
+
+    ADMIN_LOGIN = 'admin'
+    ADMIN_PASSWORD = 'sha1$4e987$afbcf42e21bd417fb71db8c66b321e9fc33051de'
+    """
+    def authenticate(self, username=None, password=None):
+        login_valid = (settings.ADMIN_LOGIN == username)
+        pwd_valid = check_password(password, settings.ADMIN_PASSWORD)
+        if login_valid and pwd_valid:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                # Create a new user. Note that we can set password
+                # to anything, because it won't be checked; the password
+                # from settings.py will.
+                user = User(username=username, password='get from settings.py')
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+            return user
+        return None
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.web-apps">
+
+    <title id="&BASEID;.web-apps.title">
+      Интеграция с унаследованными веб приложениями
+    </title>
+
+    <para>
+      Существует возможность выполнения Django приложений на том же
+      веб сервере, на котором работает приложение, основанное на
+      другой технологии. Наиболее прямолинейным способом решения такой
+      задачи является использование конфигурационного файла Apache,
+      <filename>httpd.conf</filename>, для определения какие URL с
+      помощью какой технологии обрабатывать. (Следует отметить, что
+      глава <quote><xref linkend="djangobook.chap20"
+      endterm="djangobook.chap20.title"/></quote> описывает процесс
+      установки приложения на Apache, имеет смысл прочитать сначала
+      тот раздел перед попыткой такой интеграции.)
+    </para>
+
+    <para>
+      Решение заключается в том, что Django будет использоваться для
+      определённого шаблона URL только если так будет сказано в
+      <filename>httpd.conf</filename>. Стандартная установка на
+      сервер, описанная в главе <quote><xref
+      linkend="djangobook.chap20"
+      endterm="djangobook.chap20.title"/></quote>, предполагает, что
+      Django поддерживает целый домен:
+      <screen>
+	<![CDATA[
+<Location "/">
+    SetHandler python-program
+    PythonHandler django.core.handlers.modpython
+    SetEnv DJANGO_SETTINGS_MODULE mysite.settings
+    PythonDebug On
+</Location>
+	]]>
+      </screen>
+      Здесь, строка <token><![CDATA[<Location "/">]]></token> означает
+      <quote>обрабатывать каждый URL, который начинается от корня
+      домена</quote>.
+    </para>
+
+    <para>
+      Удобно ограничивать эту директиву определённым
+      каталогом. Например, у вас есть унаследованное PHP приложение,
+      которое поддерживает множество страниц текущего домена и вы
+      желаете установить интерфейс администратора Django в каталог
+      <token>/admin/</token> без влияния на PHP приложение. Для этого,
+      следует определить директиву
+      <token><![CDATA[<Location>]]></token> для
+      <token>/admin/</token>:
+      <screen>
+	<![CDATA[
+<Location "/admin/">
+    SetHandler python-program
+    PythonHandler django.core.handlers.modpython
+    SetEnv DJANGO_SETTINGS_MODULE mysite.settings
+    PythonDebug On
+</Location>
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      После этого, только URL, которые начинаются с
+      <token>/admin/</token> будут обрабатываться Django. Остальные
+      страницы будут использовать ранее существовавшую инфраструктуру.
+    </para>
+
+    <para>
+      Следует отметить, что подключение Django к ограниченному URL
+      никак не влияет на внутренний процесс Django, который
+      обрабатывает URL. Django работает с абсолютным URL (т.е.,
+      <token>/admin/people/person/add/</token>), а не
+      <quote>урезанную</quote> версию URL (т.е.,
+      <token>/people/person/add/</token>). Это означает, что корневая
+      схема URL должна содержать ведущий <token>/admin/</token>.
+    </para>
+
+  </section>
+
+ </chapter>

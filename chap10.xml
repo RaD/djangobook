@@ -1,0 +1,2163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap10">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Расширения для шаблонной системы
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Несмотря на то, что большинство случаев взаимодействия с шаблонной
+    системой Django у вас будет в качестве дизайнера шаблонов, вы
+    можете пожелать настроить под себя или расширить возможности
+    шаблонной системы.
+  </para>
+
+  <para>
+    В этой главе мы глубоко копнём внутренности шаблонной системы
+    Django. В ней вы узнаете всё, что вам потребуется, если вы
+    планируете расширить систему или вам просто любопытно узнать как
+    она работает.
+  </para>
+
+  <para>
+    Если вы рассматриваете возможность использования шаблонной системы
+    Django в другом приложении (т.е., без остальной части среды
+    разработки), прочитайте раздел <quote><xref
+    linkend="&BASEID;.standalone-mode"
+    endterm="&BASEID;.standalone-mode.title"/></quote> этой главы.
+  </para>
+
+  <section id="&BASEID;.review">
+    
+    <title id="&BASEID;.review.title">
+      Обзор языка шаблонов
+    </title>
+
+    <para>
+      Сначала давайте быстро рассмотрим ряд терминов, введённых в
+      главе <quote><xref linkend="djangobook.chap04"
+      endterm="djangobook.chap04.title"/></quote>:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <emphasis>Шаблоном</emphasis> называется текстовый
+	    документ или обычная строка языка Python, которая помечена
+	    с помощью шаблонного языка Django. Шаблон может содержать
+	    блочные тэги и переменные.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Блочным тэгом</emphasis> называют символ внутри
+	    шаблона, который производит какое-то действие. Это
+	    определение умышленно сделано неясным. Например, блочный
+	    тэг может производить контент, работать как управляющая
+	    структура (как оператор <token>if</token> или
+	    <token>loop</token>), получать информацию из базы данных
+	    или разрешать доступ к другим шаблонным тэгам.
+	  </para>
+
+	  <para>
+	    Блочные тэги указываются внутри <token>{%</token> и
+	    <token>%}</token>:
+	    <screen>
+	      <![CDATA[
+{% if is_logged_in %}
+  Спасибо за аутентификацию!
+{% else %}
+  Пожалуйста, назовите себя.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Переменной</emphasis> называют символ внутри
+	    шаблона, который выводит значение.
+	  </para>
+
+	  <para>
+	    Переменные указываются внутри <token>{{</token> и
+	    <token>}}</token>:
+	    <screen>
+	      <![CDATA[ 
+Меня зовут {{ first_name }} {{ last_name }}.
+	      ]]>
+	    </screen>
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <emphasis>Контекстом</emphasis> называют соответствие
+	    <token>имя - переменная</token> (аналогичное словарю языка
+	    Python), которое передаётся в шаблон.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Шаблон <emphasis>обрабатывает</emphasis> контекст, заменяя
+	    переменные значениями из этого контекста и исполняя все
+	    блочные тэги.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Остальная часть данной главы рассказывает о методах расширения
+      функциональности системы шаблонов. Хотя, давайте сначала быстро
+      пробежимся по особенностям шаблонной системы, которые были
+      опущены ранее для простоты изложения.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.processors">
+    
+    <title id="&BASEID;.processors.title">
+      Процессоры RequestContext и Context
+    </title>
+
+    <para>
+      Для обработки шаблона вам необходим контекст. Обычно это
+      экземпляр <token>django.template.Context</token>, но в поставку
+      Django также входит специальный подкласс &mdash;
+      <token>django.template.RequestContext</token>, который работает
+      немного иначе. Класс <classname>RequestContext</classname> по
+      умолчанию добавляет группу переменных в контекст шаблона - такие
+      как объект <classname>HttpRequest</classname> или информацию о
+      текущем пользователе.
+    </para>
+
+    <para>
+      Используйте <classname>RequestContext</classname> когда вы не
+      желаете указывать тот же набор переменных в серии
+      шаблонов. Например, рассмотрим эти четыре представления:
+      <screen>
+	<![CDATA[
+from django.template import loader, Context
+
+def view_1(request):
+    # ...
+    t = loader.get_template('template1.html')
+    c = Context({
+        'app': 'My app',
+        'user': request.user,
+        'ip_address': request.META['REMOTE_ADDR'],
+        'message': 'I am view 1.'
+    })
+    return t.render(c)
+
+def view_2(request):
+    # ...
+    t = loader.get_template('template2.html')
+    c = Context({
+        'app': 'My app',
+        'user': request.user,
+        'ip_address': request.META['REMOTE_ADDR'],
+        'message': 'I am the second view.'
+    })
+    return t.render(c)
+
+def view_3(request):
+# ...
+    t = loader.get_template('template3.html')
+    c = Context({
+        'app': 'My app',
+        'user': request.user,
+        'ip_address': request.META['REMOTE_ADDR'],
+        'message': 'I am the third view.'
+    })
+    return t.render(c)
+
+def view_4(request):
+    # ...
+    t = loader.get_template('template4.html')
+    c = Context({
+        'app': 'My app',
+        'user': request.user,
+        'ip_address': request.META['REMOTE_ADDR'],
+        'message': 'I am the fourth view.'
+    })
+    return t.render(c)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Следует отметить, что мы явно <emphasis>не используем</emphasis>
+      сокращение <function>render_to_response()</function> &mdash; мы
+      вручную загружаем шаблоны, конструируем объекты с контекстом и
+      обрабатываем шаблоны. Мы делаем так с целью облегчения понимания
+      вами этих примеров.
+    </para>
+
+    <para>
+      Каждое представление принимает три одинаковые переменные,
+      <varname>app</varname>, <varname>user</varname> и
+      <varname>ip_address</varname>, для своего шаблона. Неплохо было
+      бы убрать эту избыточность.
+    </para>
+
+    <para>
+      Класс <classname>RequestContext</classname> и контекстные
+      процессоры были созданы для решения этой задачи. Контекстные
+      процессоры позволяют вам указывать ряд переменных, которые будут
+      устанавливаться автоматически для каждого контекста, без
+      необходимости их указания в каждом вызове
+      <function>render_to_response()</function>. Надо лишь
+      использовать <classname>RequestContext</classname> вместо
+      <classname>Context</classname> при обработке шаблона.
+    </para>
+
+    <para>
+      Самый низкоуровневый метод использования контекстных процессоров
+      заключается в создании нескольких процессоров и в передачи им
+      <classname>RequestContext</classname>. Перепишем вышеприведённые
+      примеры с использованием контекстных процессоров:
+      <screen>
+	<![CDATA[
+from django.template import loader, RequestContext
+
+def custom_proc(request):
+    "A context processor that provides 'app', 'user' and 'ip_address'."
+    return {
+        'app': 'My app',
+        'user': request.user,
+        'ip_address': request.META['REMOTE_ADDR']
+    }
+
+def view_1(request):
+    # ...
+    t = loader.get_template('template1.html')
+    c = RequestContext(request, {'message': 'I am view 1.'},
+            processors=[custom_proc])
+    return t.render(c)
+
+def view_2(request):
+    # ...
+    t = loader.get_template('template2.html')
+    c = RequestContext(request, {'message': 'I am the second view.'},
+            processors=[custom_proc])
+    return t.render(c)
+
+def view_3(request):
+    # ...
+    t = loader.get_template('template3.html')
+    c = RequestContext(request, {'message': 'I am the third view.'},
+            processors=[custom_proc])
+    return t.render(c)
+
+def view_4(request):
+    # ...
+    t = loader.get_template('template4.html')
+    c = RequestContext(request, {'message': 'I am the fourth view.'},
+            processors=[custom_proc])
+    return t.render(c)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Разберём этот код:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Сначала мы определили функцию
+	    <function>custom_proc</function>. Это контекстный
+	    процессор, он принимает объект
+	    <classname>HttpRequest</classname> и возвращает словарь
+	    переменных для его последующего использования в контексте
+	    шаблона. Вот и всё что он делает.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Мы изменили четыре функции представления так, чтобы они
+	    использовали <classname>RequestContext</classname> вместо
+	    <classname>Context</classname>. Есть два различия в
+	    методике построения контекста. Первое,
+	    <classname>RequestContext</classname> требует, чтобы
+	    первым аргументом был <classname>HttpRequest</classname>,
+	    который передаётся в функцию представления первым
+	    аргументом (<token>request</token>). Второе,
+	    <classname>RequestContext</classname> принимает
+	    необязательный аргумент <token>processors</token>, который
+	    может быть списком или кортежем с функциями контекстного
+	    процессора, которые надо будет использовать. В нашем
+	    случае мы передали <function>custom_proc</function>
+	    &mdash; наш процессор, который мы определили ранее.
+	  </para>
+	</listitem>
+      
+	<listitem>
+	  <para>
+	    Теперь каждое представление не нуждается больше во
+	    включении переменных <varname>app</varname>,
+	    <varname>user</varname> и <varname>ip_address</varname> в
+	    её контекстную конструкцию, потому что они предоставляются
+	    функцией <function>custom_proc</function>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Каждое представление <emphasis>всё ещё</emphasis> обладает
+	    возможностью введения любых своих шаблонных переменных,
+	    которые могут потребоваться. В данном примере шаблонная
+	    переменная <varname>message</varname> была передана в
+	    каждое представление.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      В главе <quote><xref linkend="djangobook.chap04"
+      endterm="djangobook.chap04.title"/></quote> мы описали
+      сокращение <function>render_to_response()</function>, которое
+      позволяет вам не вызывать <token>loader.get_template()</token>,
+      затем создавать <token>Context</token>, а затем вызывать метод
+      <function>render()</function> для шаблона. Для того, чтобы
+      продемонстрировать низкоуровневую работу контекстных
+      процессоров, вышеприведённые примеры не используют сокращение
+      <function>render_to_response()</function>. Но это возможно и
+      предпочтительно. Сделаем это с помощью аргумента
+      <varname>context_instance</varname>:
+      <screen>
+	<![CDATA[
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
+def custom_proc(request):
+    "A context processor that provides 'app', 'user' and 'ip_address'."
+    return {
+        'app': 'My app',
+        'user': request.user,
+        'ip_address': request.META['REMOTE_ADDR']
+    }
+
+def view_1(request):
+    # ...
+    return render_to_response('template1.html',
+        {'message': 'I am view 1.'},
+        context_instance=RequestContext(request, processors=[custom_proc]))
+
+def view_2(request):
+    # ...
+    return render_to_response('template2.html',
+        {'message': 'I am the second view.'},
+        context_instance=RequestContext(request, processors=[custom_proc]))
+
+def view_3(request):
+    # ...
+    return render_to_response('template3.html',
+        {'message': 'I am the third view.'},
+        context_instance=RequestContext(request, processors=[custom_proc]))
+
+def view_4(request):
+    # ...
+    return render_to_response('template4.html',
+        {'message': 'I am the fourth view.'},
+        context_instance=RequestContext(request, processors=[custom_proc]))
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Здесь мы привели в порядок код обработки шаблона в каждой
+      функции представления.
+    </para>
+
+    <para>
+      This is an improvement, but, evaluating the conciseness of this
+      code, we have to admit we're now almost overdosing on the other
+      end of the spectrum. FIXME. Мы убрали избыточность в данных
+      (переменные нашего шаблона) за счёт добавления избыточности в
+      код (в вызов <token>processors</token>). Использование
+      контекстных процессоров не избавляет вас от необходимости
+      набирать много строк кода.
+    </para>
+
+    <para>
+      По этим причинам Django предоставляет поддержку для
+      <emphasis>глобальных</emphasis> контекстных
+      процессоров. Параметр
+      <varname>TEMPLATE_CONTEXT_PROCESSORS</varname><footnote><para>См. файл
+      <filename>settings.py</filename> или глобальный файл
+      конфигурации.</para></footnote> определяет то, какой процессор
+      должен <emphasis>всегда</emphasis> применяться к
+      <classname>RequestContext</classname>. Он исключает
+      необходимость указания <token>processors</token> при каждом
+      использовании <classname>RequestContext</classname>.
+    </para>
+
+    <para>
+      По умолчанию параметр
+      <varname>TEMPLATE_CONTEXT_PROCESSORS</varname> определён так:
+      <screen>
+	<![CDATA[
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Этот параметр представляет собой кортеж вызываемых сущностей
+      FIXME???, которые используют тот же интерфейс, что и
+      вышеописанная функция <function>custom_proc</function> &mdash;
+      функции, принимающие объект запроса и возвращающие словарь
+      элементов, который затем включается в контекст. Следует
+      отметить, что значения параметра
+      <varname>TEMPLATE_CONTEXT_PROCESSORS</varname> указаны в виде
+      строк, которые определяют процессоры (они должны быть доступны
+      интерпретатору языка Python).
+    </para>
+
+    <para>
+      Процессоры применяются по порядку. Таким образом, если один
+      процессор добавляет переменную в контекст, а затем второй
+      процессор добавляет в контекст переменную с таким же именем, то
+      второе значение перезапишет первое.
+    </para>
+
+    <para>
+      Django предоставляет ряд простых контекстных процессоров,
+      включая активные по умолчанию:
+    </para>
+
+    <section id="&BASEID;.processors.auth">
+    
+      <title id="&BASEID;.processors.auth.title">
+	Процессор django.core.context_processors.auth
+      </title>
+      
+      <para>
+	Если параметр <varname>TEMPLATE_CONTEXT_PROCESSORS</varname>
+	содержит этот процессор, то каждый объект
+	<classname>RequestContext</classname> будет содержать
+	следующие переменные:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>user</token>: Экземпляр класса
+	      <token>django.contrib.auth.models.User</token>,
+	      представляющий текущего авторизованного
+	      пользователя. Если пользователь не авторизован, то это
+	      будет экземпляр класса <classname>AnonymousUser</classname>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>messages</token>: Список сообщений (в виде строк)
+	      для текущего авторизованного пользователя. С технической
+	      точки зрения, эта переменная вызывает
+	      <token>request.user.get_and_delete_messages()</token>
+	      для каждого запроса. Этот метод получает
+	      пользовательские сообщения и удаляет их из базы данных.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>perms</token>: Экземпляр класса
+	      <token>django.core.context_processors.PermWrapper</token>,
+	      который представляет собой права текущего
+	      авторизованного пользователя.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	В главе <quote><xref linkend="djangobook.chap12"
+	endterm="djangobook.chap12.title"/></quote> предоставлена
+	информацию о пользователях, их правах и сообщениях.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.processors.debug">
+    
+      <title id="&BASEID;.processors.debug.title">
+	django.core.context_processors.debug
+      </title>
+      
+      <para>
+	Этот процессор помещает отладочную информацию в слой
+	шаблона. Если параметр
+	<varname>TEMPLATE_CONTEXT_PROCESSORS</varname> содержит этот
+	процессор, то каждый экземпляр класса
+	<classname>RequestContext</classname> будет содержать
+	следующие переменные:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>debug</token>: Значение параметра
+	      <varname>DEBUG</varname> (<token>True</token> или
+	      <token>False</token>). Вы можете использовать эту
+	      переменную в шаблоне для определения работы в режиме
+	      отладки.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>sql_queries</token>: Список словарей вида
+	      <token>{'sql': ..., 'time': ...}</token> представляющих
+	      каждый SQL запрос, который был выполнен во время
+	      обработки запроса и затраченное на это время. Порядок
+	      запросов в списке соответствует реальному порядку их
+	      выполнения.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Поскольку отладочная информация не предназначена для других
+	глаз, этот контекстный процессор добавляет переменные к
+	контексту только при выполнении обоих условий:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Параметр <varname>DEBUG</varname> установлен в
+	      <token>True</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Запрос пришёл с IP адреса указанного в списке
+	      <varname>INTERNAL_IPS</varname>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.processors.i18n">
+    
+      <title id="&BASEID;.processors.i18n.title">
+	django.core.context_processors.i18n
+      </title>
+      
+      <para>
+	Если этот процессор включен, то каждый экземпляр класса
+	<classname>RequestContext</classname> будет содержать
+	следующие переменные:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>LANGUAGES</token>: Значение параметра
+	      <token>LANGUAGES</token> файла конфигурации.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>LANGUAGE_CODE</token>: Будет содержать значение
+	      <token>request.LANGUAGE_CODE</token>, если оно
+	      существует. В противном случае &mdash; значение
+	      параметра <token>LANGUAGE_CODE</token> файла
+	      конфигурации.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	В приложении <quote><xref linkend="djangobook.appendix_e"
+	endterm="djangobook.appendix_e.title"/></quote> об этих двух
+	параметрах написано подробнее.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.processors.request">
+    
+      <title id="&BASEID;.processors.request.title">
+	django.core.context_processors.request
+      </title>
+      
+      <para>
+	Если этот процессор включен, то каждый экземпляр класса
+	<classname>RequestContext</classname> будет содержать
+	переменную <token>request</token>, которая будет указывать на
+	текущий экземпляр класса
+	<classname>HttpRequest</classname>. Следует отметить, что этот
+	процессор не включен по умолчанию, вам потребуется
+	активировать его самостоятельно.
+      </para>
+ 
+    </section>
+
+    <section id="&BASEID;.processors.howto">
+    
+      <title id="&BASEID;.processors.howto.title">
+	Как написать свой процессор?
+      </title>
+      
+      <para>
+	Вот несколько советов:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Каждый контекстный процессор должен отвечать за
+	      небольшую часть возможной функциональности. Очень просто
+	      использовать множество процессоров, таким образом вы
+	      можете разделять функциональность на логические части
+	      для повторного использования в будущем.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Следует помнить, что любой контекстный процессор,
+	      указанный в
+	      <varname>TEMPLATE_CONTEXT_PROCESSORS</varname>, будет
+	      доступен в <emphasis>любом</emphasis> шаблоне,
+	      подчинённом данному файлу конфигурации. Таким образом,
+	      выбирайте имена переменных так, чтобы они не
+	      конфликтовали с именами переменных в ваших шаблонах. Так
+	      как имена переменных чувствительны к регистру, неплохо
+	      будет использовать прописные (т.е., большие) буквы для
+	      переменных, которые предоставляет процессор.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Безразлично, где на файловой системе располагается
+	      контекстные процессоры, пока они находятся в пути
+	      интерпретатора. Учитывая это, удобно хранить их в файле
+	      <filename>context_processors.py</filename> внутри вашего
+	      приложения или проекта.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+  </section>
+  
+  <section id="&BASEID;.template-loading">
+    
+    <title id="&BASEID;.template-loading.title">
+      Загрузка шаблонов
+    </title>
+    
+    <para>
+      Обычно, ваши шаблоны будут храниться в файлах на файловой
+      системе, но вы можете использовать специальные
+      <emphasis>загрузчики шаблонов</emphasis> для их загрузки из
+      других источников.
+    </para>
+
+    <para>
+      Django может загружать шаблоны двумя способами:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <token>django.template.loader.get_template(template_name)</token>:
+	    Метод <function>get_template()</function> возвращает
+	    скомпилированный шаблон (объект
+	    <classname>Template</classname>) для указанного
+	    шаблона. Если шаблон не существует, вызывается исключение
+	    <token>TemplateDoesNotExist</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>django.template.loader.select_template(template_name_list)</token>:
+	    Метод <function>select_template()</function> подобен
+	    методу <function>get_template()</function>, но принимает
+	    список имён шаблонов. Метод возвращает первый существующий
+	    шаблон из этого списка. Если ни одного шаблона не
+	    существует, вызывается исключение
+	    <token>TemplateDoesNotExist</token>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Как было рассказано в главе <quote><xref
+      linkend="djangobook.chap04"
+      endterm="djangobook.chap04.title"/></quote>, каждая из этих
+      функций по умолчанию использует параметр
+      <varname>TEMPLATE_DIRS</varname> при загрузке шаблонов. С
+      технической точки зрения, эти функции делегируют свою работу
+      загрузчику шаблонов.
+    </para>
+
+    <para>
+      Некоторые из загрузчиков отключены по умолчанию, но вы можете
+      активировать их, отредактировав параметр
+      <varname>TEMPLATE_LOADERS</varname>. Этот параметр должен
+      содержать кортеж строк, где каждая строка будет представлять
+      загрузчик. Следующие шаблонные загрузчики поставляются с Django:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <token>django.template.loaders.filesystem.load_template_source</token>:
+	    Этот загрузчик подгружает шаблоны с файловой системы,
+	    учитывая параметр <varname>TEMPLATE_DIRS</varname>. Этот
+	    загрузчик включен по умолчанию.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>django.template.loaders.app_directories.load_template_source</token>:
+	    Этот загрузчик подгружает шаблоны из приложений Django на
+	    файловой системе. Для каждого приложения указанного в
+	    параметре <varname>INSTALLED_APPS</varname>, загрузчик
+	    ищет каталог <filename>templates</filename>. Если такой
+	    каталог существует, Django ищет шаблоны в нём.
+	  </para>
+
+	  <para>
+	    Это означает, что вы можете хранить шаблоны внутри
+	    отдельных приложений, упрощая процесс распространения
+	    приложений со стандартными шаблонами. Например, если
+	    параметр <varname>INSTALLED_APPS</varname> содержит
+	    <token>('myproject.polls', 'myproject.music')</token>, то
+	    метод <function>get_template('foo.html')</function> будет
+	    искать шаблоны по порядку:
+	    <itemizedlist>
+	      <listitem>
+		<para>
+		  <filename>/path/to/myproject/polls/templates/foo.html</filename>
+		</para>
+	      </listitem>
+
+	      <listitem>
+		<para>
+		  <filename>/path/to/myproject/music/templates/foo.html</filename>
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+
+	  <para>
+	    Следует отметить, что загрузчик выполняет некую
+	    оптимизацию при первой загрузке, он кэширует список
+	    приложений из параметра <varname>INSTALLED_APPS</varname>,
+	    которые имеют свой каталог <filename>templates</filename>.
+	  </para>
+
+	  <para>
+	    Этот загрузчик включен по умолчанию.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>django.template.loaders.eggs.load_template_source</token>:
+	    Этот загрузчик аналогичен <token>app_directories</token>,
+	    но подгружают шаблоны из <ulink
+	    url="http://www.pyobject.ru/blog/post/cooking-python-eggs/">питонских
+	    яиц</ulink> ;), а не с файловой системы. Этот загрузчик
+	    отключен по умолчанию. Если вы используете
+	    <quote>яйца</quote> для распространения своих приложений,
+	    вам потребуется активировать его.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Django использует загрузчики шаблонов в порядке их определения в
+      параметре <varname>TEMPLATE_LOADERS</varname>, перебирая их,
+      пока не найдёт подходящий.
+    </para>
+
+  </section>
+	    
+  <section id="&BASEID;.extending-system">
+    
+    <title id="&BASEID;.extending-system.title">
+      Расширение шаблонной системы
+    </title>
+    
+    <para>
+      Теперь, когда вы знаете немного больше о внутренностях шаблонной
+      системы, давайте рассмотрим как можно расширить её возможности с
+      помощью дополнительного кода.
+    </para>
+
+    <para>
+      Большая часть работы над шаблонами производится в шаблонных
+      тэгах и/или фильтрах. Несмотря на то, что шаблонный язык Django
+      поставляется со множеством встроенных тэгов и фильтров, скорее
+      всего вы будете создавать свои собственные библиотеки тэгов и
+      фильтров, которые будут удовлетворять вашим требованиям. К
+      счастью, это не так сложно сделать.
+    </para>
+
+    <section id="&BASEID;.extending-system.create-template-library">
+      <title id="&BASEID;.extending-system.create-template-library.title">
+	Создание шаблонной библиотеки
+      </title>
+    
+      <para>
+	При разработке своих тэгов или фильтров, первое, что надо
+	сделать &mdash; создать <emphasis>шаблонную
+	библиотеку</emphasis>, это небольшая инфраструктура, которую
+	может использовать Django.
+      </para>
+
+      <para>
+	Создание шаблонной библиотеки состоит из двух шагов:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Во-первых, определитесь какое приложение Django должно
+	      будет содержать шаблонную библиотеку. Если вы создали
+	      приложение с помощью <command>python manage.py
+	      startapp</command>, вы можете расположить её там или вы
+	      можете создать другое приложение, полностью
+	      ориентированное на хранение библиотеки.
+	    </para>
+	    
+	    <para>
+	      Независимо от вашего выбора, следует удостовериться, что
+	      вы добавили приложение в параметр
+	      <varname>INSTALLED_APPS</varname>. Мы ещё вернёмся к
+	      этому.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Во-вторых, создайте каталог
+	      <filename>templatetags</filename> в соответствующем
+	      пакете приложения Django. Он должен быть на том же
+	      уровне, что и файлы <filename>models.py</filename>,
+	      <filename>views.py</filename> и так далее. Например:
+	      <screen>
+		<![CDATA[
+books/
+    __init__.py
+    models.py
+    templatetags/
+    views.py
+		]]>
+	      </screen>
+	    </para>
+
+	    <para>
+	      Создайте два пустых файла в этом каталоге: файл
+	      <filename>__init__.py</filename>, чтобы интерпретатор
+	      Python знал, что это пакет для него; и файл, который
+	      будет содержать определения ваших тэгов и фильтров. Имя
+	      последнего файла можете выбрать сами. Например, если
+	      ваши тэги и фильтры находятся в файле
+	      <filename>poll_extras.py</filename>, вам придётся писать
+	      в шаблоне так:
+	      <screen>
+		<![CDATA[
+{% load poll_extras %}
+		]]>
+	      </screen>
+	    </para>
+
+	    <para>
+	      Тэг <token>{% load %}</token> просматривает содержимое
+	      параметра <varname>INSTALLED_APPS</varname> в файле
+	      конфигурации и просто разрешает загрузку шаблонных
+	      библиотек из установленных приложений. Это особенность
+	      предназначена для обеспечения безопасности, она
+	      позволяет размещать код Python во многих шаблонных
+	      библиотеках на одном компьютере без разрешения доступа
+	      ко всем им для каждой инсталляции Django.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Если вы разрабатываете шаблонную библиотеку, которая не
+	связана ни с одной определённой моделью или представлением, то
+	правильно и достаточно стандартно иметь пакет приложения,
+	который содержит только пакет <token>templatetags</token>. Нет
+	никакого ограничения на количество модулей, которые вы можете
+	разместить в пакете <token>templatetags</token>. Просто не
+	забывайте, что оператор <token>{% load %}</token> будет
+	загружать тэги и фильтры по имени данного модуля, а не по
+	имени приложения.
+      </para>
+
+      <para>
+	После создания такого модуля, вам потребуется написать немного
+	кода, в зависимости от того, тэг вы реализуете или фильтр.
+      </para>
+
+      <para>
+	Для того, чтобы быть правильной библиотекой тэгов, модуль
+	должен содержать в себе переменную
+	<varname>register</varname>, которая является экземпляром
+	<token>template.Library</token>. Этот экземпляр класса
+	<classname>Library</classname> является структурой данных, в
+	которой зарегистрированы все тэги и фильтры. Таким образом,
+	ваш модуль должен начинаться примерно так:
+	<screen>
+	  <![CDATA[
+from django import template
+
+register = template.Library()
+	  ]]>
+	</screen>
+
+	<note>
+	  <para>
+	    Ряд хороших примеров по разработке тэгов и фильтров как
+	    обычно находится в исходном коде Django. Изучите файлы
+	    <filename>django/template/defaultfilters.py</filename> и
+	    <filename>django/template/defaulttags.py</filename>. Некоторые
+	    приложения в <token>django.contrib</token> также содержат
+	    шаблонные библиотеки.
+	  </para>
+	</note>
+      </para>
+      
+      <para>
+	После создания переменной <varname>register</varname>, вы
+	будете использовать её при создании шаблонных фильтров и
+	тэгов.
+      </para>
+	
+    </section>
+
+    <section id="&BASEID;.extending-system.writing-template-filters">
+    
+      <title id="&BASEID;.extending-system.writing-template-filters.title">
+	Разработка своих шаблонных фильтров
+      </title>
+    
+      <para>
+	Фильтры это обычные функции языка Python, которые могут
+	принимать от одного до двух аргументов:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Значение переменной (вход);
+	    </para>
+	  </listitem>
+	  
+	  <listitem>
+	    <para>
+	      Значение аргумента, который может иметь значение по
+	      умолчанию или не иметь.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+      
+      <para>
+	Например, в фильтре <token>{{ var|foo:"bar" }}</token>,
+	фильтру <token>foo</token> будет передано содержимое
+	переменной <varname>var</varname> и аргумент
+	<token>"bar"</token>.
+      </para>
+
+      <para>
+	Функции фильтра должны всегда что-нибудь возвращать. Они не
+	должны вызывать исключения, т.е., они должны тихо игнорировать
+	ошибки. При наличии ошибки, они должны возвращать либо
+	оригинальное значение, либо пустую строку, что привлечёт к
+	себе внимание.
+      </para>
+      
+      <para>
+	Пример определения фильтра:
+	<screen>
+	  <![CDATA[
+def cut(value, arg):
+    "Удаляет все значения аргумента arg из строки value"
+    return value.replace(arg, '')
+	  ]]>
+	</screen>
+      </para>
+      
+      <para>
+	А это пример того, как можно использовать данный фильтр:
+	<screen>
+	  <![CDATA[
+{{ somevariable|cut:"0" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Большинство фильтров не принимают аргументы. В этом случае,
+	просто не используйте второй аргумент в вашей функции:
+	<screen>
+	  <![CDATA[
+def lower(value): # Only one argument.
+    "Преобразовывает регистр строки в строчный"
+    return value.lower()
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	После определения своего фильтра требуется зарегистрировать
+	его в вашем экземпляре класса <classname>Library</classname>,
+	чтобы он стал доступен через шаблонный язык Django:
+	<screen>
+	  <![CDATA[
+register.filter('cut', cut)
+register.filter('lower', lower)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Метод <function>filter()</function> класса
+	<classname>Library</classname> принимает два аргумента:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Имя фильтра в виде строки;
+	    </para>
+	  </listitem>
+	  
+	  <listitem>
+	    <para>
+	      Саму функцию фильтра.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+      
+      <para>
+	Если вы используете Python версии 2.4 и выше, то вы можете
+	воспользоваться для этого декоратором
+	<function>register.filter()</function>:
+	<screen>
+	  <![CDATA[
+@register.filter(name='cut')
+def cut(value, arg):
+    return value.replace(arg, '')
+
+@register.filter
+def lower(value):
+    return value.lower()
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если вы опустите аргумент <token>name</token>, как это сделано
+	во втором примере, Django будет использовать имя функции в
+	качестве имени фильтра.
+      </para>
+
+      <para>
+	Ниже приведён полный пример шаблонной библиотеки,
+	предоставляющей фильтр <token>cut</token>:
+	<screen>
+	  <![CDATA[
+from django import template
+
+register = template.Library()
+
+@register.filter(name='cut')
+def cut(value, arg):
+    return value.replace(arg, '')
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.extending-system.writing-template-tags">
+    
+      <title id="&BASEID;.extending-system.writing-template-tags.title">
+	Разработка своих шаблонных тэгов
+      </title>
+    
+      <para>
+	Тэги более сложны в реализации, чем фильтры, потому что тэги
+	могут делать практически всё.
+      </para>
+
+      <para>
+	В главе <quote><xref linkend="djangobook.chap04"
+	endterm="djangobook.chap04.title"/></quote> было описано как
+	работает шаблонная система, два шага: компиляция и
+	рендеринг. Для того, чтобы определить свой шаблонный тэг, вам
+	понадобится указать Django как управлять этими шагами при
+	обработке вашего тэга.
+      </para>
+
+      <para>
+	При компиляции шаблона Django разбирает его текст на
+	<emphasis>узлы</emphasis>. Каждый узел является экземпляром
+	<token>django.template.Node</token> и имеет метод
+	<function>render()</function>. Следовательно, скомпилированный
+	шаблон является списком объектов <classname>Node</classname>.
+      </para>
+
+      <para>
+	Когда вы вызываете метод <function>render()</function> для
+	скомпилированного шаблона, сам шаблон вызывает метод
+	<function>render()</function> для каждого объекта
+	<classname>Node</classname> в своём списке узлов, передавая им
+	текущий контекст. Результаты рендеринга узлов будут объединены
+	вместе. Следовательно, для того, чтобы определить свой
+	шаблонный тэг вы указываете метод преобразования тега в узел и
+	метод рендеринга для этого тэга.
+      </para>
+
+      <para>
+	Далее в секциях мы рассмотрим все шаги необходимые для
+	создания своего тэга:
+      </para>
+
+      <section id="&BASEID;.extending-system.writing-template-tags.compilation-function">
+	
+	<title id="&BASEID;.extending-system.writing-template-tags.compilation-function.title">
+	  Определение функции компиляции
+	</title>
+	
+	<para>
+	  Для каждого встречающегося тэга шаблонный парсер вызывает
+	  функцию, передавая ей содержимое тэга и ссылку на себя. Эта
+	  функция отвечает за возвращение экземпляра класса
+	  <classname>Node</classname>, построенного по переданной
+	  информации.
+	</para>
+
+	<para>
+	  Например, давайте реализуем шаблонный тэг <token>{%
+	  current_time %}</token>, который отображает текущую дату и
+	  время, отформатированную в соответствии с параметром тега,
+	  используя синтаксис <token>strftime</token> (см. <ulink
+	  url="http://docs.python.org/library/datetime.html#datetime.date.strftime"/>).
+	  Неплохо будет сначала продумать синтаксис тэга. В нашем
+	  случае, пусть будет так:
+	  <screen>
+	    <![CDATA[
+<p>The time is {% current_time "%Y-%m-%d %I:%M %p" %}.</p>
+	    ]]>
+	  </screen>
+
+	  <note>
+	    <para>
+	      Конечно, этот шаблонный тег является лишним, стандартный
+	      тэг Django <token>{% now %}</token> делает то же самое и
+	      с более простым синтаксисом. Данный шаблонный тэг
+	      представлен здесь лишь в целях обучения.
+	    </para>
+	  </note>
+	</para>
+
+	<para>
+	  Парсер должен выделять параметр и создавать объект
+	  <classname>Node</classname> для этой функции:
+	  <screen>
+	    <![CDATA[
+from django import template
+
+def do_current_time(parser, token):
+    try:
+        # метод split_contents() знает, что не надо разделять строки в кавычках
+        tag_name, format_string = token.split_contents()
+    except ValueError:
+        # камрады с мест сообщают, что в следующей строке должно использоваться
+	# token.split_contents()[0], требуется дополнительное подтверждение.
+        msg = '%r tag requires a single argument' % token.contents[0]
+        raise template.TemplateSyntaxError(msg)
+    return CurrentTimeNode(format_string[1:-1])
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Разберём этот код:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		Аргумент <token>parser</token> является экземпляром
+		шаблонного парсера. В данном примере мы его не
+		используем.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>token.contents</token> является строкой
+		содержимого тэга. В нашем примере это
+		<token>current_time "%Y-%m-%d %I:%M %p"</token>.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Метод <token>token.split_contents()</token> разделяет
+		аргументы по пробелу, не разбивая строку в
+		кавычках. Избегайте использовать
+		<token>token.contents.split()</token>, которая
+		использует стандартную семантику разбиения строк. Она
+		не учитывает кавычки, разбивая все по пробелам.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Эта функция отвечает за вызов исключения
+		<token>django.template.TemplateSyntaxError</token> с
+		соответствующим сообщением на любую ошибку синтаксиса.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Не следует жёстко определять имя тэга в сообщениях об
+		ошибках. <token>token.split_contents()[0]</token>
+		будет <emphasis>всегда</emphasis> именем вашего тэга,
+		даже если тэг не имеет аргументов.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Функция возвращает экземпляр класса
+		<classname>CurrentTimeNode</classname> (который мы
+		скоро определим), содержащий всё, что требуется узлу
+		знать об этом тэге. В данном случае, просто передается
+		<token>"%Y-%m-%d %I:%M %p"</token>. Ведущая и
+		завершающая кавычки убираются с помощью
+		<function>format_string[1:-1]</function>.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Функции компиляции шаблонных тэгов
+		<emphasis>должны</emphasis> возвращать подкласс
+		<classname>Node</classname>. Всё остальное &mdash;
+		ошибка.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.extending-system.writing-template-tags.template-node">
+    
+	<title id="&BASEID;.extending-system.writing-template-tags.template-node.title">
+	  Определение шаблонного узла
+	</title>
+    
+	<para>
+	  На втором шаге следует определить подкласс
+	  <classname>Node</classname>, который должен иметь метод
+	  <function>render()</function>. Продолжая наш пример, нам
+	  надо определить <function>CurrentTimeNode</function>:
+	  <screen>
+	    <![CDATA[
+import datetime
+
+class CurrentTimeNode(template.Node):
+
+    def __init__(self, format_string):
+        self.format_string = format_string
+
+    def render(self, context):
+        now = datetime.datetime.now()
+        return now.strftime(self.format_string)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Эти два метода (<function>__init__</function> и
+	  <function>render</function>) соответствую двум шагам
+	  обработки (компиляция и рендеринг). Таким образом, метод
+	  инициализации применяется только для сохранения строки
+	  формата для дальнейшего использования, а метод
+	  <function>render()</function> делает основную работу.
+	</para>
+
+	<para>
+	  Аналогично шаблонным фильтрам, эти методы должны тихо
+	  игнорировать ошибки. Единственный момент, когда шаблонные
+	  тэги могут вызвать исключение &mdash; момент компиляции.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.extending-system.writing-template-tags.register-tag">
+    
+	<title id="&BASEID;.extending-system.writing-template-tags.register-tag.title">
+	  Регистрация тэга
+	</title>
+    
+	<para>
+	  В конце, следует зарегистрировать тэг в экземпляре класса
+	  <classname>Library</classname>. Регистрация собственных
+	  тэгов очень похожа на регистрацию своих фильтров. Создайте
+	  экземпляр <token>template.Library</token> и вызовите метод
+	  <function>tag()</function>. Например:
+	  <screen>
+	    <![CDATA[
+register.tag('current_time', do_current_time)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Метод <function>tag()</function> принимает два аргумента:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		Имя шаблонного тэга в виде строки. Если имя не
+		указано, то используется имя функции компиляции.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Функция компиляции.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+	<para>
+	  Как и при регистрации фильтра, также возможно использование
+	  декоратора (необходим Python версии 2.4+):
+	  <screen>
+	    <![CDATA[
+@register.tag(name="current_time")
+def do_current_time(parser, token):
+    # ...
+
+@register.tag
+def shout(parser, token):
+    # ...
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Если вы не укажете аргумент <token>name</token>, как было во
+	  втором примере, Django будет использовать имя функции в
+	  качестве имени тэга.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.extending-system.writing-template-tags.context-variables">
+    
+	<title id="&BASEID;.extending-system.writing-template-tags.context-variables.title">
+	  Установка переменных в контексте
+	</title>
+    
+	<para>
+	  Пример из предыдущей секции просто возвращал значение. Часто
+	  бывает полезным устанавливать шаблонную переменную вместо
+	  возвращения значение. Для этого авторы шаблонов могут
+	  использовать переменные, устанавливаемые их шаблонными
+	  тэгами.
+	</para>
+
+	<para>
+	  Для того, чтобы установить переменную в контексте,
+	  используйте словарное назначение для контекстного объекта в
+	  методе <function>render()</function>. Ниже показана
+	  обновлённая версия класса
+	  <classname>CurrentTimeNode</classname>:
+	  <screen>
+	    <![CDATA[
+class CurrentTimeNode2(template.Node):
+
+    def __init__(self, format_string):
+        self.format_string = format_string
+
+    def render(self, context):
+        now = datetime.datetime.now()
+        context['current_time'] = now.strftime(self.format_string)
+        return ''
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Следует отметить, что метод <function>render()</function>
+	  возвращает пустую строку. Данный метод должен всегда
+	  возвращать строку. Раз шаблонный тэг устанавливает
+	  переменную, то метод должен возвращать пустую строку.
+	</para>
+
+	<para>
+	  Вот так теперь это можно использовать:
+	  <screen>
+	    <![CDATA[
+{% current_time2 "%Y-%M-%d %I:%M %p" %}
+<p>The time is {{ current_time }}.</p>
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Но с классом <classname>CurrentTimeNode2</classname> есть
+	  одна проблема &mdash; имя переменной
+	  <token>current_time</token> жёстко определено. Это означает,
+	  что вам придётся проверять ваши шаблоны, что они не
+	  используют <token>{{ current_time }}</token>, так как
+	  <token>{% current_time2 %}</token> слепо перепишет значение
+	  этой переменной.
+	</para>
+
+	<para>
+	  Более явное решение &mdash; позволить шаблонному тэгу
+	  указывать имя устанавливаемой переменной, например так:
+	  <screen>
+	    <![CDATA[
+{% get_current_time "%Y-%M-%d %I:%M %p" as my_current_time %}
+<p>The current time is {{ my_current_time }}.</p>
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Для этого потребуется провести рефакторинг функции
+	  компиляции и класса <classname>Node</classname>:
+	  <screen>
+	    <![CDATA[
+import re
+
+class CurrentTimeNode3(template.Node):
+
+    def __init__(self, format_string, var_name):
+        self.format_string = format_string
+        self.var_name = var_name
+
+    def render(self, context):
+        now = datetime.datetime.now()
+        context[self.var_name] = now.strftime(self.format_string)
+        return ''
+
+def do_current_time(parser, token):
+    # This version uses a regular expression to parse tag contents.
+    try:
+        # Splitting by None == splitting by spaces.
+        tag_name, arg = token.contents.split(None, 1)
+    except ValueError:
+        msg = '%r tag requires arguments' % token.contents[0]
+        raise template.TemplateSyntaxError(msg)
+
+    m = re.search(r'(.*?) as (\w+)', arg)
+    if m:
+        fmt, var_name = m.groups()
+    else:
+        msg = '%r tag had invalid arguments' % tag_name
+        raise template.TemplateSyntaxError(msg)
+
+    if not (fmt[0] == fmt[-1] and fmt[0] in ('"', "'")):
+        msg = "%r tag's argument should be in quotes" % tag_name
+        raise template.TemplateSyntaxError(msg)
+
+    return CurrentTimeNode3(fmt[1:-1], var_name)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Теперь <function>do_current_time()</function> передаёт
+	  строку формата и имя переменной в
+	  <classname>CurrentTimeNode3</classname>.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag">
+    
+	<title id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag.title">
+	  Обработка до другого блочного тэга
+	</title>
+    
+	<para>
+	  Шаблонные тэги могут работать как блоки, содержащие другие
+	  тэги (типа <token>{% if %}</token>, <token>{% for %}</token>
+	  и так далее). Для создания такого шаблонного тэга следует
+	  использовать <token>parser.parse()</token> в вашей функции
+	  компиляции.
+	</para>
+
+	<para>
+	  Ниже показана реализация стандартного тэга <token>{% comment
+	  %}</token>:
+	  <screen>
+	    <![CDATA[
+def do_comment(parser, token):
+    nodelist = parser.parse(('endcomment',))
+    parser.delete_first_token()
+    return CommentNode()
+
+class CommentNode(template.Node):
+    def render(self, context):
+        return ''
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Метод <function>parse()</function> получает кортеж имён
+	  блочных тэгов, до которых он должен вести обработку. Метод
+	  возвращает экземпляр
+	  <token>django.template.NodeList</token>, который является
+	  списком всех объектов класса <classname>Node</classname>,
+	  которые парсер обнаружил на обработки любого тэга из
+	  переданного кортежа.
+	</para>
+
+	<para>
+	  Таким образом, в предыдущем примере <token>nodelist</token>
+	  является списком всех узлов между <token>{% comment
+	  %}</token> и <token>{% endcomment %}</token>.
+	</para>
+
+	<para>
+	  После вызова метода <function>parse()</function> парсер ещё
+	  не <quote>использовал</quote> тэг <token>{% endcomment
+	  %}</token>, поэтому необходимо явно вызвать метод
+	  <function>delete_fist_token()</function>, чтобы не
+	  обрабатывать этот тэг дважды.
+	</para>
+
+	<para>
+	  Затем <token>CommentNode.render()</token> просто возвращает
+	  пустую строку. Всё, что находилось между тэгами <token>{%
+	  comment %}</token> и <token>{% endcomment %}</token>
+	  игнорируется.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag-save-content">
+    
+	<title id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag-save-content.title">
+	  Обработка до другого блочного тэга с сохранением содержимого
+	</title>
+    
+	<para>
+	  В предыдущем примере, метод
+	  <function>do_comment()</function> отбрасывал всё, что
+	  находилось между тэгами <token>{% comment %}</token> и
+	  <token>{% endcomment %}</token>. Можно так не делать.
+	</para>
+
+	<para>
+	  Например, здесь представлен шаблонный тэг <token>{% upper
+	  %}</token>, который преобразует все буквы в заглавные между
+	  собой и тэгом <token>{% endupper %}</token>:
+	  <screen>
+	    <![CDATA[
+{% upper %}
+    This will appear in uppercase, {{ your_name }}.
+{% endupper %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Как и в предыдущем примере мы будет использовать
+	  <token>parser.parse()</token>. В этот раз мы передадим
+	  <token>nodelist</token> в <classname>Node</classname>:
+	  <screen>
+	    <![CDATA[
+@register.tag
+def do_upper(parser, token):
+    nodelist = parser.parse(('endupper',))
+    parser.delete_first_token()
+    return UpperNode(nodelist)
+
+class UpperNode(template.Node):
+
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def render(self, context):
+        output = self.nodelist.render(context)
+        return output.upper()
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Единственная новая концепция в этом коде это использование
+	  <token>self.nodelist.render(context)</token> в
+	  <token>UpperNode.render()</token>. Он просто вызывает метод
+	  <function>render()</function> у каждого экземпляра класса
+	  <classname>Node</classname> в списке.
+	</para>
+
+	<para>
+	  Примеры более сложной обработки можно подсмотреть в исходном
+	  коде <token>{% if %}</token>, <token>{% for %}</token>,
+	  <token>{% ifequal %}</token> и <token>{% ifchanged
+	  %}</token>. Их код можно найти в
+	  <filename>django/template/defaulttags.py</filename>.
+	</para>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.extending-system.shortcuts-simpletag">
+    
+      <title id="&BASEID;.extending-system.shortcuts-simpletag.title">
+	Сокращения для простых тэгов
+      </title>
+      
+      <para>
+	Множество шаблонных тэгов принимают только один аргумент,
+	строку или ссылку на шаблонную переменную, и возвращают строку
+	после выполнения обработки, руководствуясь переданным
+	аргументом и некоторой внешней информацией. Например, тэг
+	<token>current_time</token>, который мы реализовали ранее,
+	подходит под это описание. Если ему передать строку формата, а
+	он возвратит время в виде строки.
+      </para>
+
+      <para>
+	Для того, чтобы упростить создание тэгов такого типа Django
+	предоставляет функции-помощники,
+	<token>simple_tag</token>. Этот метод принадлежит
+	<token>django.template.Library</token>, он принимает функцию
+	одного аргумента, оборачивает её методом
+	<function>render()</function> и регистрирует в шаблонной
+	системе.
+      </para>
+
+      <para>
+	Наша предыдущая функция <function>current_time</function>
+	могла быть переписана так:
+	<screen>
+	  <![CDATA[
+def current_time(format_string):
+    return datetime.datetime.now().strftime(format_string)
+
+register.simple_tag(current_time)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	А с использованием декоратора, так:
+	<screen>
+	  <![CDATA[
+@register.simple_tag
+def current_time(token):
+    ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Про <token>simple_tag</token> следует сказать следующее:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Эта функция одного аргумента.
+	    </para>
+	  </listitem>
+	  
+	  <listitem>
+	    <para>
+	      Проверку обязательного количества аргументов провела
+	      наша функция, так что не надо это здесь делать.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Кавычки вокруг аргументов (если есть) уже удалены, т.е.,
+	      мы получаем чистую строку.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.extending-system.inclusion-tags">
+    
+      <title id="&BASEID;.extending-system.inclusion-tags.title">
+	Тэги включения
+      </title>
+      
+      <para>
+	Другим общим типом тэгов являются тэги, которые отображают
+	данные с помощью обработки <emphasis>другого</emphasis>
+	шаблона. Например, интерфейс администратора Django использует
+	свои шаблонные тэги для отображения кнопок FIXME. Эти кнопки
+	всегда выглядят одинаково, но их ссылки изменяются в
+	соответствии с объектом, к которому они относятся. Данные
+	кнопки являются отличным примером использования небольшого
+	шаблона, который заполняется информацией из текущего объекта.
+      </para>
+
+      <para>
+	Этот тип тэгов называется
+	<emphasis>включениями</emphasis>. Реализацию такого тэга лучше
+	демонстрировать на примере. Давайте создадим тэг, который
+	создаёт список значений, несколько из которых можно выбрать
+	&mdash; класс <classname>Poll</classname>. Мы будем
+	использовать этот тэг так:
+	<screen>
+	  <![CDATA[
+{% show_results poll %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Результат будет выглядеть так:
+	<screen>
+	  <![CDATA[
+<ul>
+  <li>First choice</li>
+  <li>Second choice</li>
+  <li>Third choice</li>
+</ul>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Сначала, мы определяем функцию, которая получает аргумент и
+	возвращает словарь данных. Следует отметить, что нам требуется
+	возвратить только словарь и ничего более сложного. Этот
+	словарь будет использован как контекст:
+	<screen>
+	  <![CDATA[
+def show_books_for_author(author):
+    books = author.book_set.all()
+    return {'books': books}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Затем мы создаём шаблон, который будет использоваться при
+	обработке тэга. Следуя нашему примеру, шаблон будет очень
+	простым:
+	<screen>
+	  <![CDATA[
+<ul>
+{% for book in books %}
+    <li> {{ book }} </li>
+{% endfor %}
+</ul>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Наконец, мы создаём и регистрируем тэг с помощью метода
+	<function>inclusion_tag()</function> объекта
+	<classname>Library</classname>.
+      </para>
+
+      <para>
+	Следуя нашему примеру, раз предыдущий шаблон был в файле
+	<filename>polls/result_snippet.html</filename>, регистрируем
+	тэг так:
+	<screen>
+	  <![CDATA[
+register.inclusion_tag('books/books_for_author.html')(show_books_for_author)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	И как обычно, Python версии 2.4+ позволяет использование
+	декоратора:
+	<screen>
+	  <![CDATA[
+@register.inclusion_tag('books/books_for_author.html')
+def show_books_for_author(show_books_for_author):
+    ...
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Иногда может потребоваться, чтобы ваш тэг получал доступ к
+	значениям контекста родительского шаблона. Для решения этой
+	задачи Django предоставляет опцию
+	<token>takes_context</token>. Если вы укажете её при создании
+	шаблонного тэга, то тэгу не понадобятся обязательные
+	аргументы, функция нижнего уровня будет использовать контекст
+	шаблона из которого данный тэг был вызван.
+      </para>
+
+      <para>
+	Например, вы реализовали тэг включения, который всегда будет
+	использовать в контексте, содержащем переменные
+	<varname>home_link</varname> и <varname>home_title</varname>,
+	которые будут указывать на главную страницу. Функция может
+	быть такой:
+	<screen>
+	  <![CDATA[
+@register.inclusion_tag('link.html', takes_context=True)
+def jump_link(context):
+    return {
+        'link': context['home_link'],
+        'title': context['home_title'],
+    }
+	  ]]>
+	</screen>
+
+	<note>
+	  <para>
+	    Первый параметр функции <emphasis>должен</emphasis>
+	    называться <token>context</token>.
+	  </para>
+	</note>
+      </para>
+
+      <para>
+	Шаблон <filename>link.html</filename> может содержать такую
+	строку:
+	<screen>
+	  <![CDATA[
+Jump directly to <a href="{{ link }}">{{ title }}</a>.
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Тогда, когда потребуется использовать этот тэг, загрузите его
+	библиотеку и вызовите его без аргументов:
+	<screen>
+	  <![CDATA[
+{% jump_link %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.template-loader">
+    
+    <title id="&BASEID;.template-loader.title">
+      Реализация своих шаблонных загрузчиков
+    </title>
+      
+    <para>
+      Встроенные в Django шаблонные загрузчики (описанные в секции
+      <quote><xref linkend="&BASEID;.template-loading"
+      endterm="&BASEID;.template-loading.title"/></quote>) покрывают
+      практически все ваши нужды, но в случае необходимости будет
+      достаточно просто реализовать свой собственный
+      загрузчик. Например, вы можете загружать шаблоны из базы данных
+      или напрямую из репозитория Subversion, или из ZIP архива.
+    </para>
+
+    <para>
+      Ожидается, что каждый шаблонный загрузчик, описанный в параметре
+      <varname>TEMPLATE_LOADERS</varname> конфигурационного файла,
+      будет функцией вида:
+      <screen>
+	<![CDATA[
+load_template_source(template_name, template_dirs=None)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Аргумент <token>template_name</token> является именем шаблона,
+      который требуется загрузить (имя передаётся в
+      <token>loader.get_template()</token> или
+      <token>loader.select_template()</token>), а
+      <token>template_dirs</token> является необязательным списком
+      каталогов, в которых следует производить поиск вместо указанных
+      в <varname>TEMPLATE_DIRS</varname>.
+    </para>
+
+    <para>
+      Если загрузчик может успешно загрузить шаблон, он должен
+      возвратить кортеж <token>(template_source,
+      template_path)</token>. Здесь <token>template_source</token>
+      является шаблонной строкой, которая будет скомпилирована
+      шаблонной системой, а <token>template_path</token> &mdash; путь
+      до загружаемого шаблона. Этот путь может отображаться
+      пользователю в отладочных целях.
+    </para>
+
+    <para>
+      Если загрузчик не может загрузить шаблон, он должен вызывать
+      исключение <token>django.template.TemplateDoesNotExist</token>.
+    </para>
+
+    <para>
+      Функция каждого загрузчика должна также иметь атрибут
+      <token>is_usable</token>. Это значение булевого типа, которое
+      информирует шаблонную систему о том, доступен ли этот загрузчик
+      текущему проекту. Например, загрузчик, который может загружать
+      шаблоны из <ulink
+      url="http://www.pyobject.ru/blog/post/cooking-python-eggs/">питонских
+      яиц</ulink> ;) устанавливает значение <token>False</token> для
+      этого атрибута, если модуль <token>pkg_resources</token> не
+      установлен, так как этот модуль необходим для его работы с
+      яйцами.
+    </para>
+
+    <para>
+      Пример должен всё прояснить. Ниже представлена функция
+      шаблонного загрузчика, который может загружать шаблоны из ZIP
+      файла. Он использует свой конфигурационный параметр
+      <varname>TEMPLATE_ZIP_FILES</varname> в качестве пути поиска
+      вместо <varname>TEMPLATE_DIRS</varname> и ожидает, что каждый
+      путь должен быть ZIP файлом, который содержит шаблоны:
+      <screen>
+	<![CDATA[
+import zipfile
+from django.conf import settings
+from django.template import TemplateDoesNotExist
+
+def load_template_source(template_name, template_dirs=None):
+    """Template loader that loads templates from a ZIP file."""
+
+    template_zipfiles = getattr(settings, "TEMPLATE_ZIP_FILES", [])
+
+    # Try each ZIP file in TEMPLATE_ZIP_FILES.
+    for fname in template_zipfiles:
+        try:
+            z = zipfile.ZipFile(fname)
+            source = z.read(template_name)
+        except (IOError, KeyError):
+            continue
+        z.close()
+        # We found a template, so return the source.
+        template_path = "%s:%s" % (fname, template_name)
+        return (source, template_path)
+
+    # If we reach here, the template couldn't be loaded
+    raise TemplateDoesNotExist(template_name)
+
+# This loader is always usable (since zipfile is included with Python)
+load_template_source.is_usable = True
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Для того, чтобы воспользоваться данным загрузчиком, его надо
+      добавить в параметр <varname>TEMPLATE_LOADERS</varname>. Если мы
+      разместили этот код в пакете <token>mysite.zip_loader</token>,
+      тогда надо добавить
+      <token>mysite.zip_loader.load_template_source</token> в параметр
+      <varname>TEMPLATE_LOADERS</varname>.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.using-reference">
+    
+    <title id="&BASEID;.using-reference.title">
+      Использование встроенного шаблонного справочника
+    </title>
+      
+    <para>
+      Интерфейс администратора Django включает в себя полный
+      справочник по всем шаблонным тэгам и фильтрам доступным для
+      текущего сайта. Справочник является инструментом, который
+      разработчики кода предоставляют разработчикам шаблонов. Для
+      того, чтобы воспользоваться справочником зайдите в интерфейс
+      администратора и перейдите в раздел документации.
+    </para>
+
+    <para>
+      Справочник разделён на четыре секции: тэги, фильтры, модели и
+      представления. Секции <emphasis>тэги</emphasis> и
+      <emphasis>фильтры</emphasis> описывают все встроенные тэги и все
+      ваши доступные библиотеки тегов и фильтров.
+    </para>
+
+    <para>
+      Наиболее значимой секцией является секция
+      <emphasis>представлений</emphasis>. Каждый URL на всём сайте
+      имеет здесь отдельную запись. Если соответствующее представление
+      имеет документирующую строку, то нажатие на этот URL отобразит
+      вам следующее:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Имя функции представления.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Краткое описание того, что делает это представление.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Контекст или список переменных, доступный шаблону
+	    представления.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Имя шаблона или шаблонов, которые используются в этом
+	    представлении.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Подробный пример документирования представления можно получить в
+      процессе чтения исходного кода базового представления
+      <token>object_list</token>, который можно найти в файле
+      <filename>django/views/generic/list_detail.py</filename>.
+    </para>
+
+    <para>
+      Так как сайты под управлением Django обычно используют объекты
+      хранящиеся в базе данных, секция <emphasis>моделей</emphasis>
+      описывает каждый тип объекта в системе, включая все поля
+      доступные этому объекту.
+    </para>
+
+    <para>
+      В целом, страницы документации могут рассказать всё о каждом
+      тэге, фильтре, переменной и объекте, которые доступны вам в
+      шаблоне.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.standalone-mode">
+    
+    <title id="&BASEID;.standalone-mode.title">
+      Работа в автономном режиме
+    </title>
+      
+    <para>
+      <note>
+	<para>
+	  Эта секция пригодится только тем разработчикам, которые
+	  будут пытаться использовать шаблонную систему в качестве
+	  компонента другого приложения. Если вы используете эту
+	  систему как часть Django, вам эта информация не понадобится.
+	</para>
+      </note>
+    </para>
+
+    <para>
+      Для работы шаблонной системы Django загружает все необходимые
+      данные из своего конфигурационного файла, объединяя их с
+      параметрами проекта, которые указаны в модуле, определённом в
+      переменной среды <varname>DJANGO_SETTINGS_MODULE</varname>. Но в
+      случае, когда требуется применить шаблонную систему отдельно от
+      Django, использование переменной среды будет не совсем удобно.
+    </para>
+
+    <para>
+      Например, мне понадобилось создавать и отправлять своему
+      менеджеру отчёт о проделанной работе. Менеджер мог понимать
+      почтовые сообщения только в формате HTML, почтовое сообщение
+      должно было быть отформатировано определённым образом. Я не мог
+      заставить себя тратить полчаса на заполнение его
+      <quote>портянки</quote>. Поэтому был написан небольшой скрипт,
+      который для генерации HTML представления сообщения использовал
+      шаблонную систему Django. Описанное далее, учитывает мой опыт.
+    </para>
+
+    <para>
+      Для решения этой задачи потребуется использовать параметры
+      конфигурации, которые описаны в приложении <quote><xref
+      linkend="djangobook.appendix_e"
+      endterm="djangobook.appendix_e.title"/></quote>. Это означает,
+      что переменная среды <varname>PYTHONPATH</varname> должна
+      указывать на каталог, где развёрнут Django, а также то, что вам
+      необходимо определить соответствующие параметры
+      конфигурации. Можно, конечно, создать скрипт в котором будет
+      определяться переменная среды
+      <varname>DJANGO_SETTINGS_MODULE</varname> (и, соответственно,
+      потребуется создать файл с настройками, как это происходит в
+      Django приложении), а затем вызываться скрипт. Но лучше сделать
+      следующее (на примере шаблонной системы):
+      <screen>
+	<![CDATA[ 
+import django
+django.conf.settings.configure(TEMPLATE_DIRS = ('/home/rad/devel/cpr_report',))
+	]]>
+      </screen>
+    </para>
+      
+    <para>
+      Через запятую, можно определить столько параметров конфигурации,
+      сколько надо.  Среди параметров могут быть такие как
+      <varname>TEMPLATE_DIRS</varname> (если вам потребуется
+      использовать шаблонные загрузчики),
+      <varname>DEFAULT_CHARSET</varname> (хотя использование
+      <token>UTF-8</token> будет достаточным) и
+      <varname>TEMPLATE_DEBUG</varname>. Все доступные параметры
+      описаны в приложении <quote><xref
+      linkend="djangobook.appendix_e"
+      endterm="djangobook.appendix_e.title"/></quote>, особый интерес
+      представляют параметры, начинающиеся с <token>TEMPLATE_</token>.
+    </para>
+
+    <para>
+      Небольшой пример:
+      <screen>
+	<![CDATA[
+import django
+from django.template import Context, loader
+django.conf.settings.configure(TEMPLATE_DIRS = ('/home/rad/devel/cpr_report',))
+
+template = loader.get_template('cpr_report_template.html')
+context = Context({'problems': info_problems or 'нет',
+                   'plans': info_plans or 'нет',
+                   'done': info_done or 'нет'})
+html = template.render(context)
+	]]>
+      </screen>
+    </para>
+
+  </section>
+
+</chapter>

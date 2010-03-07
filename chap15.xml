@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap15">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Компоненты
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Иногда появляется необходимость выполнения некоторого кода на
+    каждый запрос, обрабатываемый Django. Этот код может изменять
+    запрос перед его передачей в функцию представления, может
+    организовывать журналирование информации о запросе в целях отладки
+    и так далее.
+  </para>
+
+  <para>
+    Вы можете делать такие вещи с помощью среды Django для работы с
+    компонентами. Это лёгкая, низкоуровневая плагинная система,
+    которая имеет возможность глобально влиять на ввод и вывод Django.
+  </para>
+
+  <para>
+    Каждый компонент этой системы отвечает за выполнение определённой
+    задачи. Если вы читаете эту книгу с самого начала, вы уже
+    встречались с такими компонентами:
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Все инструменты для работы с сессиями и пользователями,
+	  описанные в главе <quote><xref linkend="djangobook.chap12"
+	  endterm="djangobook.chap12.title"/></quote>, появились
+	  благодаря этой системе. Точнее, компоненты были подключены к
+	  вашей функции представления с помощью модулей
+	  <token>request.session</token> и
+	  <token>request.user</token>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Кэш для сайта, описанный в главе <quote><xref
+	  linkend="djangobook.chap13"
+	  endterm="djangobook.chap13.title"/></quote>, на самом деле
+	  является таким компонентом, который пропускает через себя
+	  вызов вашей функции представления в случае, когда это
+	  представление уже было помещено в кэш.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Сторонние приложения, такие как <token>flatpages</token>,
+	  <token>redirects</token> и <token>csrf</token>, описанные в
+	  главе <quote><xref linkend="djangobook.chap14"
+	  endterm="djangobook.chap14.title"/></quote>, делают всю свою
+	  волшебную работу через систему компонентов.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    Эта глава подробно рассматривает что такое компоненты, как они
+    работают и объясняет как вы можете самостоятельно создавать такие
+    компоненты.
+  </para>
+
+  <section id="&BASEID;.whatis">
+
+    <title id="&BASEID;.whatis.title">
+      Что такое компоненты?
+    </title>
+
+    <para>
+      Компонент является обычным классом языка Python, который
+      соответствует определённому API. Перед изучением формальных
+      аспектов API, давайте рассмотрим очень простой пример.
+    </para>
+
+    <para>
+      Сайты с высокой нагрузкой часто нуждаются в установке Django за
+      балансировщиком нагрузки (обратитесь к главе <quote><xref
+      linkend="djangobook.chap20"
+      endterm="djangobook.chap20.title"/></quote>). Это может вызвать
+      некоторые трудности, одной из которых является то, что каждый IP
+      адрес от которого идёт запрос
+      (<token>request.META['REMOTE_IP']</token>) будет теперь
+      указывать на балансировщик, а не актуальный IP
+      адрес. Балансировщики нагрузки решают эту проблему установкой
+      специального заголовка, <token>X-Forwarded-For</token>, назначая
+      ему IP адрес машины, которая сделала запрос.
+    </para>
+
+    <para>
+      Ниже приведён код небольшого компонента, который позволяет
+      сайтам, работающим за балансировщиком, получать правильный IP
+      адрес из <token>request.META['REMOTE_IP']</token>:
+      <screen>
+	<![CDATA[
+class SetRemoteAddrFromForwardedFor(object):
+    def process_request(self, request):
+        try:
+            real_ip = request.META['HTTP_X_FORWARDED_FOR']
+        except KeyError:
+            pass
+        else:
+            # HTTP_X_FORWARDED_FOR может быть списком IP адресов, 
+	    # разделённых запятой. Берём только первый.
+            real_ip = real_ip.split(",")[0]
+            request.META['REMOTE_ADDR'] = real_ip
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Если этот компонент установлен (обратитесь к следующей секции),
+      значение <token>X-Forwarded-For</token> каждого запроса будет
+      автоматически помещено в
+      <token>request.META['REMOTE_ADDR']</token>. Это означает, что
+      вашему приложению больше не требуется определять работает ли оно
+      за балансировщиком или нет. Оно может просто использовать
+      <token>request.META['REMOTE_ADDR']</token> и всё будет работать
+      как надо.
+    </para>
+
+    <para>
+      Действительно, этот функционал нужен многим и должен быть
+      встроен в Django. Так и есть, он находится в
+      <token>django.middleware.http</token>, и вы можете узнать о нём
+      больше в следующем разделе.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.installation">
+
+    <title id="&BASEID;.installation.title">
+      Установка
+    </title>
+
+    <para>
+      Если вы читали книгу с самого начала вы уже встречались с рядом
+      примеров установки компонентов. Многие из примеров в предыдущих
+      главах требовали наличия определённых компонентов. Для полноты
+      изложения, опишем здесь как производится установка компонентов.
+    </para>
+
+    <para>
+      Для активации компонента его имя следует добавить в кортеж
+      <varname>MIDDLEWARE_CLASSES</varname> в вашем файле
+      конфигурации. В параметре <varname>MIDDLEWARE_CLASSES</varname>
+      каждый компонент представлен строкой: полный путь к имени
+      класса. Например, ниже представлен стандартный
+      <varname>MIDDLEWARE_CLASSES</varname> созданный с помощью
+      <command>django-admin.py startproject</command>:
+      <screen>
+	<![CDATA[
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.doc.XViewMiddleware'
+)
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Django вообще не требует установки компонентов, т.е.
+      <varname>MIDDLEWARE_CLASSES</varname> может быть вообще пустым,
+      если вы этого пожелаете, но мы рекомендуем активировать
+      компонент <token>CommonMiddleware</token>, мы позже объясним
+      зачем.
+    </para>
+
+    <para>
+      Порядок указания модулей имеет значение. На этапах обработки
+      запроса и представления Django применяет компоненты в порядке,
+      указанном в параметре <varname>MIDDLEWARE_CLASSES</varname>, а
+      на этапах отклика и исключения Django применяет компоненты в
+      обратном порядке. Таким образом, Django рассматривает
+      <varname>MIDDLEWARE_CLASSES</varname> как вид обработчика для
+      функции представления. Обратитесь к разделу <quote><xref
+      linkend="djangobook.chap03.requestprocess"
+      endterm="djangobook.chap03.requestprocess.title"/></quote> для
+      получения подробной информации.
+    </para>
+
+  </section>
+
+  <section id="&BASEID;.methods">
+
+    <title id="&BASEID;.methods.title">
+      Методы
+    </title>
+
+    <para>
+      После того как вы узнали, что такое компоненты и как их
+      устанавливать, давайте рассмотрим все доступные методы, которые
+      могут определяться в классах компонентов.
+    </para>
+
+    <section id="&BASEID;.methods.initializer">
+      
+      <title id="&BASEID;.methods.initializer.title">
+	Конструктор
+      </title>
+      
+      <para>
+	Используйте <function>__init__(self)</function> для
+	регистрации класса компонента в системе.
+      </para>
+
+      <para>
+	В целях повышения производительности класс каждого
+	активированного компонента инициализируется только
+	<emphasis>один раз</emphasis> для серверного процесса. Это
+	означает, что <function>__init__(self)</function> вызывается
+	только один раз, при запуске сервера.
+      </para>
+
+      <para>
+	Стандартной причиной для реализации метода
+	<function>__init__(self)</function> является проверка
+	действительно ли нужен данный компонент. Если
+	<function>__init__(self)</function> вызывает исключение
+	<token>django.core.exceptions.MiddlewareNotUsed</token>, тогда
+	Django удаляет компонент из стека компонентов. Вы можете
+	использовать эту особенность для проверки некоторой части
+	программного обеспечения, которое необходимо для работы
+	компонента, для проверки работает ли сервер в режиме отладки
+	или для других подобных ситуаций.
+      </para>
+
+      <para>
+	Если для компонента определён метод
+	<function>__init__(self)</function>, то данный метод не должен
+	принимать никаких дополнительных аргументов, кроме
+	<token>self</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.methods.process-request">
+      
+      <title id="&BASEID;.methods.process-request.title">
+	Препроцессор запроса
+      </title>
+      
+      <para>
+	Этот метод вызывается при получении запроса &mdash; перед тем
+	как Django приступает к обработке URL для определения функции
+	представления, которую требуется запустить. Метод получает
+	объект <classname>HttpRequest</classname> и может изменять
+	его.
+      </para>
+
+      <para>
+	Метод <function>process_request()</function> должен возвращать
+	или <token>None</token> или объект
+	<classname>HttpResponse</classname>:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Если метод возвратил <token>None</token>, Django
+	      продолжает обработку этого запроса, используя для этого
+	      другие компоненты, а затем и соответствующее
+	      представление.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если метод возвратил объект
+	      <classname>HttpResponse</classname>, Django не будет
+	      вызывать другие компоненты и соответствующее
+	      представление, а просто вернёт этот объект.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.methods.process-view">
+      
+      <title id="&BASEID;.methods.process-view.title">
+	Препроцессор представления
+      </title>
+      
+      <para>
+	Этот метод вызывается после препроцессора запроса и после того
+	как Django определил какое именно представление следует
+	использовать для обработки этого запроса, но прежде чем это
+	представление будет использовано.
+      </para>
+
+      <para>
+	Аргументы, передаваемые в это представление, показаны в
+	таблице <quote><xref linkend="&BASEID;.tbl1"
+	endterm="&BASEID;.tbl1.title"/></quote>.
+      </para>
+
+      <para>
+	<table id="&BASEID;.tbl1" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl1.title">
+	    Аргументы передаваемые в
+	    <function>process_view()</function>
+	  </title>
+
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+
+	    <colspec colname="c1" colwidth="2cm"/>
+	    <colspec colname="c2" colwidth="12cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Аргумент</entry>
+		<entry>Комментарий</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>request</token></entry>
+		<entry>Объект <classname>HttpResponse</classname></entry>
+	      </row>
+
+	      <row>
+		<entry><token>view</token></entry>
+		<entry>Представление, которое используется Django для
+		обработки данного запроса. Это функциональный объект,
+		а не просто имя функции, представленное в виде
+		строки.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>args</token></entry>
+		<entry>Список неименованных аргументов, который будет
+		передан в представление, без аргумента
+		<token>request</token> (который всегда является первым
+		аргументом представления).</entry>
+	      </row>
+	      
+	      <row>
+		<entry><token>kwargs</token></entry>
+		<entry>Словарь именованных аргументов, который будет
+		передан в представление.</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+      
+      <para>
+	Подобно методу <function>process_request()</function>, данный
+	метод должен возвращать либо <token>None</token>, либо объект
+	<classname>HttpResponse</classname>.
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Если возвращается <token>None</token>, Django продолжает
+	      обработку данного запроса, используя остальные
+	      компоненты, а затем и соответствующее представление.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если возвращается объект
+	      <classname>HttpResponse</classname>, Django не будет
+	      вызывать другие компоненты и соответствующее
+	      представление. Django немедленно вернёт полученный
+	      объект.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.methods.process-response">
+      
+      <title id="&BASEID;.methods.process-response.title">
+	Постпроцессор отклика
+      </title>
+      
+      <para>
+	Этот метод вызывается после вызова функции представления и
+	генерации отклика. В этом месте, постпроцессор может
+	модифицировать содержимое отклика. Один очевидный случай
+	применения &mdash; компрессия контента, т.е., применение
+	утилиты gzip над отдаваемым HTML.
+      </para>
+
+      <para>
+	Назначение параметров должно быть понятно из их названия:
+	<token>request</token> &mdash; объект запроса,
+	<token>response</token> &mdash; объект отклика, возвращённый
+	из представления.
+      </para>
+
+      <para>
+	В отличие от препроцессоров запроса и представления, которые
+	могут возвращать <token>None</token>, постпроцессор
+	<function>process_response()</function>
+	<emphasis>должен</emphasis> возвращать объект
+	<classname>HttpResponse</classname>. Этот отклик может быть
+	оригинальным, т.е. тем, который был передан в метод (возможно,
+	изменённый) или совершенно новым.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.methods.process-exception">
+      
+      <title id="&BASEID;.methods.process-exception.title">
+	Постпроцессор исключения
+      </title>
+      
+      <para>
+	Этот метод вызывается в случае, если что-то идёт не так и
+	представление вызывает необработанное исключение. Вы можете
+	использовать этот метод для отправки уведомлений об ошибках,
+	записи информации об исключении в журнал или даже можете
+	попытаться исправить ошибку автоматически.
+      </para>
+
+      <para>
+	Параметры метода: <token>request</token> &mdash; объект, с
+	которым мы работаем, а <token>exception</token> &mdash; объект
+	<classname>Exception</classname>, созданный функцией
+	представления.
+      </para>
+
+      <para>
+	Метод <function>process_exception()</function> должен
+	возвращать либо <token>None</token>, либо
+	<classname>HttpResponse</classname>.
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Если возвращается <token>None</token>, Django продолжает
+	      обработку данного исключения встроенным механизмом.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если возвращается объект
+	      <classname>HttpResponse</classname>, Django будет
+	      использовать этот отклик вместо того, который отдал
+	      встроенный механизм обработки исключений.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+	<note>
+	  <para>
+	    Django поставляется с рядом компонентов, которые будут
+	    рассмотрены в следующей секции. Эти компоненты можно
+	    рассматривать в качестве хороших примеров. Изучение их
+	    исходного кода должно дать вам понимание мощи системы
+	    компонентов.
+	  </para>
+
+	  <para>
+	    Вы также можете найти ряд примеров предоставленных
+	    сообществом Django на wiki: <ulink
+	    url="http://code.djangoproject.com/wiki/ContributedMiddleware"/>.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.builtin-middleware">
+      
+    <title id="&BASEID;.builtin-middleware.title">
+      Встроенные компоненты
+    </title>
+    
+    <para>
+      Django поставляется с несколькими встроенными компонентами,
+      которые помогают решать общие задачи, которые мы обсудим в
+      следующих секциях.
+    </para>
+
+    <section id="&BASEID;.builtin-middleware.authentication">
+      
+      <title id="&BASEID;.builtin-middleware.authentication.title">
+	Компонент поддержки аутентификации
+      </title>
+      
+      <para>
+	Класс компонента
+	<token>django.contrib.auth.middleware.AuthenticationMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент включает механизм поддержки аутентификации. Он
+	добавляет атрибут <token>request.user</token>, представляющий
+	текущего авторизованного пользователя, в каждый входящий
+	объект <classname>HttpRequest</classname>.
+      </para>
+
+      <para>
+	Данный компонент описан в главе <quote><xref
+	linkend="djangobook.chap12"
+	endterm="djangobook.chap12.title"/></quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.common">
+      
+      <title id="&BASEID;.builtin-middleware.common.title">
+	Стандартный компонент
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.common.CommonMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент добавляет несколько удобств для перфекционистов:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <emphasis>Запрещает доступ для пользовательских агентов,
+	      перечисленных в параметре
+	      <varname>DISALLOWED_USER_AGENTS</varname></emphasis>:
+	      Если этот параметр определён в файле конфигурации, он
+	      должен быть представлен в виде списка объектов
+	      скомпилированных регулярных выражений, которые будут
+	      применяться к заголовкам пользовательских агентов для
+	      каждого входящего запроса. Ниже показан пример с частью
+	      конфигурационного файла:
+	      <screen>
+		<![CDATA[
+import re
+
+DISALLOWED_USER_AGENTS = (
+    re.compile(r'^OmniExplorer_Bot'),
+    re.compile(r'^Googlebot')
+)
+		]]>
+	      </screen>
+	    </para>
+
+	    <para>
+	      Следует отметить использование <token>import re</token>,
+	      оно необходимо для компилирования регулярных выражений
+	      (обратите внимание на <token>re.compile()</token>). Так
+	      как файл конфигурации является кодом на языке Python,
+	      можно спокойно использовать оператор
+	      <token>include</token> в нём.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <emphasis>Выполняет перезапись URL, основываясь на
+	      параметрах <varname>APPEND_SLASH</varname> и
+	      <varname>PREPEND_WWW</varname></emphasis>: Если параметр
+	      <varname>APPEND_SLASH</varname> имеет значение
+	      <token>True</token>, то URL у которых отсутствует
+	      завершающий слэш (но нет точки в последнем компоненте
+	      пути) будут перенаправляться на тот же URL только с
+	      завершающим слэшом. Таким образом,
+	      <token>foo.com/bar</token> будет перенаправлен на
+	      <token>foo.com/bar/</token>, а
+	      <token>foo.com/bar/file.txt</token> пройдёт
+	      не изменённым.
+	    </para>
+
+	    <para>
+	      Если параметр <varname>PREPEND_WWW</varname> имеет
+	      значение <token>True</token>, то URL, которые не имеют
+	      префикса <token>www.</token>, будут перенаправлены на
+	      URL с этим префиксом.
+	    </para>
+
+	    <para>
+	      Оба параметра нужны для нормализации URL. Философия
+	      такова, что каждый URL должен существовать в одном и
+	      только одном месте. С технической точки зрения URL
+	      <token>example.com/bar</token> является отдельным
+	      представлением от <token>example.com/bar/</token>,
+	      которое в свою очередь &mdash; от
+	      <token>www.example.com/bar/</token>. Индексаторы
+	      поисковых движков будут рассматривать эти URL как
+	      отдельные, что отрицательно скажется на рейтинге вашего
+	      сайта на этом поисковике. Так что нормализация URL
+	      приносит пользу.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <emphasis>Обработка ETags на основе параметра
+	      <varname>USE_ETAGS</varname></emphasis>:
+	      <emphasis>Etags</emphasis> являются оптимизацией HTTP
+	      уровня для условного кэширования страниц. Если параметр
+	      <varname>USE_ETAGS</varname> имеет значение
+	      <token>True</token>, Django будет вычислять Etag для
+	      каждого запроса, выполняя MD5-хэширование содержимого
+	      страницы, и заботиться об отправки откликов <quote>Не
+	      изменилось</quote>, если это так.
+	    </para>
+
+	    <para>
+	      Следует отметить существование также компонента для
+	      условного GET, который поддерживает Etags и кое-что ещё.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.compression">
+      
+      <title id="&BASEID;.builtin-middleware.compression.title">
+	Компонент компрессии
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.gzip.GZipMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент автоматически сжимает содержимое страниц
+	для браузеров, которые поддерживают алгоритм gzip (все
+	современные браузеры). Использование этого компонента может
+	значительно снизить объём трафика, потребляемого вашим
+	сервером. Недостатком применения этого компонента является
+	возрастание времени отклика из-за затрат на компрессию
+	страницы.
+      </para>
+      
+      <para>
+	Обычно мы предпочитаем иметь высокую скорость отклика, а не
+	экономию трафика, но если вы предпочитаете обратно, просто
+	активируйте этот компонент.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.conditional-get">
+      
+      <title id="&BASEID;.builtin-middleware.conditional-get.title">
+	Компонент условного GET
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.http.ConditionalGetMiddleware</token>.
+      </para>
+
+      <para>
+	Компонент предоставляет поддержку условного GET.
+
+	Если отклик содержит заголовки <token>Last-Modified</token>
+	или <token>ETag</token>, а запрос содержит
+	<token>If-None-Match</token> или
+	<token>If-Modified-Since</token>, то отклик заменяется на 304
+	(<quote>Не изменён</quote>). Поддержка <token>ETag</token>
+	зависит от параметра <varname>USE_ETAGS</varname> и ожидает
+	наличия заголовка <token>ETag</token> в отклике. Как
+	упоминалось ранее, заголовок <token>ETag</token>
+	устанавливается стандартным компонентом.
+      </para>
+
+      <para>
+	Данный компонент также удаляет содержимое любого отклика для
+	запроса <token>HEAD</token> ??? FIXME ??? и устанавливает
+	заголовки отклика <token>Date</token> и
+	<token>Content-Length</token> для всех запросов.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.reverse-proxy">
+      
+      <title id="&BASEID;.builtin-middleware.reverse-proxy.title">
+	Компонент поддержки обратного прокси
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.http.SetRemoteAddrFromForwardedFor</token>.
+      </para>
+
+      <para>
+	Этот компонент мы разобрали ранее в секции <quote><xref
+	linkend="&BASEID;.whatis"
+	endterm="&BASEID;.whatis.title"/></quote>. Он устанавливает
+	<token>request.META['REMOTE_ADDR']</token>, используя
+	<token>request.META['HTTP_X_FORWARDED_FOR']</token>, если
+	последний установлен. Это полезно, когда вы находитесь за
+	обратным прокси, который преобразовывает параметр
+	<token>REMOTE_ADDR</token> каждого запроса в
+	<token>127.0.0.1</token>.
+
+	<note>
+	  <title>
+	    Опасность!
+	  </title>
+
+	  <para>
+	    Компонент <emphasis>не производит</emphasis> проверку
+	    <token>HTTP_X_FORWARDED_FOR</token>.
+	  </para>
+
+	  <para>
+	    Если вы не находитесь за обратным прокси сервером, не
+	    используйте этот компонент.Любой может сфабриковать
+	    значение <token>HTTP_X_FORWARDED_FOR</token> и,
+	    соответственно, подменить свой IP адрес.
+	  </para>
+
+	  <para>
+	    Используйте этот компонент только в том случае, когда вы
+	    абсолютно доверяете значениям в
+	    <token>HTTP_X_FORWARDED_FOR</token>.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.session">
+      
+      <title id="&BASEID;.builtin-middleware.session.title">
+	Компонент поддержки сессий
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.contrib.sessions.middleware.SessionMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент обеспечивает поддержку сессий. Подробности
+	приведены в главе <quote><xref linkend="djangobook.chap12"
+	endterm="djangobook.chap12.title"/></quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.sitewide-cache">
+      
+      <title id="&BASEID;.builtin-middleware.sitewide-cache.title">
+	Компонент для кэширования сайта
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.cache.CacheMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент обеспечивает кэширование каждой страницы Django
+	проекта. Подробности приведены в главе <quote><xref
+	linkend="djangobook.chap13"
+	endterm="djangobook.chap13.title"/></quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.transaction">
+      
+      <title id="&BASEID;.builtin-middleware.transaction.title">
+	Компонент поддержки транзакций
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.transaction.TransactionMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент <quote>подключает</quote> операции
+	<token>COMMIT</token> или <token>ROLLBACK</token> к фазе
+	запроса/отклика. Если функция представления отрабатывает
+	успешно, то выполняется <token>COMMIT</token>. Если
+	представление вызывает исключение, то выполняется
+	<token>ROLLBACK</token>.
+      </para>
+
+      <para>
+	Место определения этого компонента в стеке компонентов имеет
+	значение. Компоненты вызываемые до данного компонента
+	выполняются по стратегии коммит-по-сохранению (стандартное
+	поведение Django). Компоненты вызываемые после &mdash; будут
+	включены в транзакцию в которой будет работать функция
+	представления.
+      </para>
+
+      <para>
+	Обратитесь к приложению <quote><xref
+	linkend="djangobook.appendix_c"
+	endterm="djangobook.appendix_c.title"/></quote> для получения
+	подробностей о транзакциях базы данных.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin-middleware.x-view">
+      
+      <title id="&BASEID;.builtin-middleware.x-view.title">
+	Компонент X-View
+      </title>
+      
+      <para>
+	Класс компонента:
+	<token>django.middleware.doc.XViewMiddleware</token>.
+      </para>
+
+      <para>
+	Этот компонент добавляет определённый HTTP заголовок
+	<token>X-View</token> в запросы <token>HEAD</token>, которые
+	идут от IP адресов, указанных в параметре
+	<varname>INTERNAL_IPS</varname>. Компонент используется
+	системой автоматического документирования Django.
+      </para>
+
+    </section>
+
+  </section>
+
+</chapter>

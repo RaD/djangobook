@@ -1,0 +1,90 @@
+BODY { font: 14px arial, helvetica, sans-serif; background-color: #487858; }
+P { font: 12px arial; color: white; line-height: 1.5; }
+H1.title { font: 32px arial; font-weight: bold; color: #9AEF3F; }
+H2.title { font: 24px arial; font-weight: bold; color: #9AEF3F; }
+H3.title { font: 20px arial; font-weight: bold; color: #9AEF3F; }
+H4.title { font: 18px arial; font-weight: bold; color: #9AEF3F; }
+H5.title { font: 16px arial; font-weight: bold; color: #9AEF3F; }
+H6.title { font: 14px arial; font-weight: bold; color: #9AEF3F; }
+CODE.systemitem { color: brown; }
+A { color: #FFC757; }
+
+.navheader TD { font: 10px verdana; color: #9AEF3F; }
+.navheader TH { font: 12px arial; color: #9AEF3F; }
+.navheader TABLE { border: 0px; }
+.navfooter TD { font: 10px verdana; color: #9AEF3F; }                    }
+.navfooter TH { font: 12px arial; color: #9AEF3F; }
+.navfooter TABLE { border: 0px; }
+
+.toc { font: arial; color: white; }
+.toc P B { font: 20px sans-serif; font-weight: bold; color: #9AEF3F;}
+.toc .chapter A { font: 16px arial; color: white; }
+.toc .section A { font: 14px arial; color: white; }
+.toc .appendix A { font: 14px arial; color: white; }
+dt { margin: 4px 0px;}
+
+.subtitle { font: 24px helvetica, sans-serif italic; }
+
+.list-of-figures P B { font: 16px arial; }
+.list-of-figures { font: 14px arial; color: white; }
+.list-of-figures A { color: white; }
+
+.list-of-tables P B { font: 16px arial; }
+.list-of-tables { font: 14px arial; color: white; }
+.list-of-tables A { color: white; }
+
+.bibliography {}
+
+.titlepage { font: 12px helvetica, sans-serif; }
+.title { font: 18px helvetica, sans-serif; }
+
+.figure { text-align: center; }
+.figure .title { font: 12px verdana; color: #9AEF3F; text-align: center; }
+
+.productname { font: helvetica, sans-serif italic; }
+
+.filename { font: 12px courier; color: #FFC757; }
+
+.firstterm { font: 14px helvetica, sans-serif italic; color: darkred; }
+
+.note {	border: 1px solid black; background: #234F32; padding: 0px 2em; margin: 0px; }
+.note .title { font: 14 arial; font-weight: bold; color: #9AEF3F; }
+
+.emphasis { font-style: italic; }
+
+.quote { }
+
+.orderedlist { color: white; padding-left: 10px; }
+.orderedlist .title { font: 16px arial; }
+.orderedlist P { font: 12px arial; line-height: 1.5; }
+
+.itemizedlist { color: white; padding-left: 10px; }
+.itemizedlist .title { font: 16px arial; }
+.itemizedlist P { font: 12px arial; line-height: 1.5; }
+
+.command { font: 12px courier; color: #FFC757; padding: 2px 4px; white-space: nowrap; }
+.token { font: 12px courier; font-weight: bold; white-space: nowrap; color: #FFC757; }
+.classname { font: 12px courier; white-space: nowrap; background-color: #486953; padding: 0px 2px; }
+.function { font-family: monospace; font-size: 12px; background-color: #708D8A; padding: 0px 2px; }
+.varname { font: 12x courier; color: #FFC757; }
+
+
+.screenshot { }
+.screenshot IMG { border: 1px solid black; text=align: center }
+
+.guibutton { color: black; background:buttonface; margin:1px; padding:1px 2px; 
+   border-top:1px solid buttonhighlight;border-left:1px solid buttonhighlight; 
+   border-bottom:1px solid buttonshadow;border-right:1px solid buttonshadow; }
+.guilabel { color: brown; }
+.guimenu { }
+
+.computeroutput { font: courier small-caps; color: brown; }
+.screen { font-family: monospace; font-size: 12px; white-space: pre; color: #FFC757; padding-left: 4em; }
+
+TABLE { font: 12px arial; color: white; border: 1px solid black;border-collapse: collapse; }
+.table .title { font: 14px arial italic; color: #9AEF3F; }
+
+.zsection {
+	font-family: helvetica, sans-serif;
+	font-size: 18px;
+}

@@ -1,0 +1,2597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+[
+<!ENTITY BASEID "djangobook.chap14">
+]>
+
+<chapter lang="ru" id="&BASEID;">
+
+  <title id="&BASEID;.title">
+    Средства от других разработчиков
+  </title>
+
+  <para>
+    Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+  </para>
+
+  <para>
+    Одним из множества преимуществ использования Python является
+    философия <quote>всё включено</quote>: когда вы устанавливаете
+    Python, он поставляется с большой стандартной библиотекой пакетов,
+    которые вы можете начать использовать немедленно, без
+    необходимости скачивать что-нибудь ещё. Django старается следовать
+    этой философии и включает в себя все свои стандартные библиотеки
+    модулей, полезных для задач веб разработки. Эта глава рассказывает
+    об этих модулях.
+  </para>
+
+  <section id="&BASEID;.standard-library">
+
+    <title id="&BASEID;.standard-library.title">
+      Стандартная библиотека Django
+    </title>
+
+    <para>
+      Стандартная Django находится в пакете
+      <token>django.contrib</token>. В каждом субпакете находится
+      отдельная часть дополнительного функционала. Эти части не всегда
+      зависят друг от друга, но некоторые могут.
+    </para>
+
+    <para>
+      Нет жёсткого требования для типов функциональности в
+      <token>django.contrib</token>. Некоторые из пакетов включают в
+      себя модели (и следовательно требуют, чтобы вы установили их
+      таблицы в базу данных), но другие могут состоять полностью из
+      кода или шаблонов.
+    </para>
+
+    <para>
+      Единственная общая особенность пакетов
+      <token>django.contrib</token> &mdash; если вы полностью удалите
+      пакет <token>django.contrib</token>, вы сможете использовать
+      основные компоненты Django без проблем. Когда разработчики
+      добавляют новую функциональность в Django они используют это
+      правило при рассмотрении вопроса о том, должна ли эта
+      функциональность быть размещена в <token>django.contrib</token>
+      или где-то в другом месте.
+    </para>
+
+    <para>
+      Библиотека <token>django.contrib</token> содержит следующие
+      пакеты:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <token>admin</token>: Автоматический сайт
+	    администратора. Обратитесь к главам <quote><xref
+	    linkend="djangobook.chap06"
+	    endterm="djangobook.chap06.title"/></quote> и глава
+	    <quote><xref linkend="djangobook.chap18"
+	    endterm="djangobook.chap18.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>auth</token>: Среда аутентификации и
+	    авторизации. Обратитесь к главе <quote><xref
+	    linkend="djangobook.chap12"
+	    endterm="djangobook.chap12.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>comments</token>: Среда управления
+	    комментариями. Обратитесь к разделу <quote><xref
+	    linkend="&BASEID;.standard-library.comments"
+	    endterm="&BASEID;.standard-library.comments.title"/></quote>
+	    данной главы.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>contenttypes</token>: Среда подключения к
+	    <quote>типам</quote> данных, в которой каждая
+	    установленная модель Django является отдельным типом
+	    данных. Эта среда используется другими модулями библиотеки
+	    и в основном ориентировано на очень продвинутых Django
+	    разработчиков. Эти разработчики должны получить больше
+	    информации по этому модулю, читая исходный код в
+	    <token>django/contrib/contenttypes/</token>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>csrf</token>: Защита против Cross-Site Request
+	    Forgery (CSRF). Смотрите далее секцию <quote><xref
+	    linkend="&BASEID;.csrf"
+	    endterm="&BASEID;.csrf.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>flatpages</token>: Среда для управления простым
+	    <quote>плоским</quote> HTML представлением в базе
+	    данных. Смотрите далее секцию <quote><xref
+	      linkend="&BASEID;.flatpages"
+	      endterm="&BASEID;.flatpages.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>humanize</token>: Набор шаблонных фильтров,
+	    полезных для <quote>очеловечивания</quote>
+	    данных. Смотрите далее секцию <quote><xref
+	    linkend="&BASEID;.humanizing"
+	    endterm="&BASEID;.humanizing.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>markup</token>: Набор шаблонных фильтров, которые
+	    реализуют ряд стандартных языков разметки. Смотрите далее
+	    секцию <quote><xref linkend="&BASEID;.markup"
+	    endterm="&BASEID;.markup.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>redirects</token>: Среда управления
+	    перенаправлениями. Смотрите далее секцию <quote><xref
+	    linkend="&BASEID;.redirects"
+	    endterm="&BASEID;.redirects.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>sessions</token>: Среда управления
+	    сессиями. Смотрите главу <quote><xref
+	    linkend="djangobook.chap12"
+	    endterm="djangobook.chap12.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>sitemaps</token>: Среда генерации XML файлов для
+	    карты сайта. Смотрите главу <quote><xref
+	    linkend="djangobook.chap11"
+	    endterm="djangobook.chap11.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>sites</token>: Среда управления множеством сайтов
+	    на основе единой базы данных и Django. Обратитесь к
+	    следующей секции <quote><xref linkend="&BASEID;.sites"
+	    endterm="&BASEID;.sites.title"/></quote>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>syndication</token>: Среда управления средствами
+	    трансляции в форматах RSS и Atom. Обратитесь к секции
+	    <quote><xref linkend="djangobook.chap11.rss"
+	    endterm="djangobook.chap11.rss.title"/></quote>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      Остальная часть этой главы посвящена деталям каждого модуля
+      пакета <token>django.contrib</token>, которые мы ещё не
+      рассматривали в нашей книге.
+    </para>
+
+    <section id="&BASEID;.standard-library.comments">
+
+      <title id="&BASEID;.standard-library.comments.title">
+	Среда управления комментариями
+      </title>
+      
+      <para>
+	Перевод статьи <ulink
+	url="http://code.djangoproject.com/wiki/UsingFreeComment"/>.
+      </para>
+
+      <para>
+	Django поставляется с простой системой комментариев, которая
+	может сэкономить вам кучу времени в случае, если вам
+	потребуется обеспечить возможность для пользователей
+	комментировать, например, заметку вашего блога или фотографию.
+      </para>
+
+      <section id="&BASEID;.standard-library.comments.setup">
+	
+	<title id="&BASEID;.standard-library.comments.setup.title">
+	  Настройка
+	</title>
+      
+	<para>
+	  Система комментариев является приложением
+	  Django. Следовательно, требуется прописать его в параметре
+	  <varname>INSTALLED_APPS</varname> файла конфигурации
+	  проекта:
+	  <screen>
+	    <![CDATA[
+INSTALLED_APPS = (
+    [...]
+    'django.contrib.comments',
+)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Если вы используете свои представления и точно не
+	  используете базовые представления, вам потребуется добавить
+	  нижеприведённую строчку в начала соответствующего файла
+	  <filename>urls.py</filename>. Базовые представления сами
+	  подключают этот класс, при их использовании об этом можно не
+	  беспокоиться.
+	  <screen>
+	    <![CDATA[
+from django.contrib.comments.models import FreeComment
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Добавьте следующий шаблон URL в глобальный файл привязки:
+	  <screen>
+	    <![CDATA[
+urlpatterns = patterns('',
+        [...]
+        (r'^comments/', include('django.contrib.comments.urls.comments')),
+}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Потребуется обновить вашу базу данных, чтобы там появилась
+	  необходимая таблица. Для этого следует остановить веб сервер
+	  и выполнить <command>python manage.py syncdb</command>.
+	</para>
+
+	<para>
+	  В каждом шаблонном файле, который должен будет предоставлять
+	  доступ к комментариям, следует подгрузить соответствующий
+	  пакет (вставьте эту строку в самое начало шаблона):
+	  <screen>
+	    <![CDATA[
+{% load comments %}
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>	
+
+      <section id="&BASEID;.standard-library.comments.counts">
+	
+	<title id="&BASEID;.standard-library.comments.counts.title">
+	  Информация о количестве комментариев
+	</title>
+      
+	<para>
+	  Для получения доступа к комментариям объекта вам нужен
+	  только идентификатор этого объекта. При его наличии вы
+	  можете получить сами комментарии, информацию об их
+	  количестве и другую информацию.
+	</para>
+
+	<section id="&BASEID;.standard-library.comments.counts.object-list">
+	
+	  <title id="&BASEID;.standard-library.comments.counts.object-list.title">
+	    django.views.generic.list_detail.object_list
+	  </title>
+	  
+	  <para>
+	    В шаблоне <token>object_list</token> вы можете делать
+	    следующее для того, чтобы добавить информацию о количестве
+	    комментариев для каждой записи блога в
+	    списке. Нижеприведённый пример предполагает, что вы
+	    работаете над приложением <token>blog</token> с классом
+	    <classname>entry</classname>, у которого есть поля
+	    <token>title</token> и <token>summary</token>, а также
+	    метод <function>get_absolute_url()</function>, который
+	    возвращает абсолютный URL для страницы с записью блога.
+
+	    <note>
+	      <para>
+		Следует отметить, что имя класса должно всегда быть
+		указано в нижнем регистре. Например, если класс имеет
+		имя <classname>Entry</classname>, все обращения к нему
+		будут идти как к <token>blog.entry</token>.
+	      </para>
+	    </note>
+
+	    <screen>
+	      <![CDATA[
+<ul>
+  {% for object in object_list %}
+    {% get_free_comment_count for blog.entry object.id as comment_count %}
+    <li>
+      <h2><a href="{{ object.url }}">{{ object.title }}</a></h2>
+      <p class="description">{{ object.summary}}</p>
+      <p class="details">
+        <a href="{{ object.get_absolute_url }}">
+          {{ comment_count }} Comments
+        </a>
+      </p>
+    </li>
+  {% endfor %}
+</ul>
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.standard-library.comments.counts.archive-index">
+	
+	  <title id="&BASEID;.standard-library.comments.counts.archive-index.title">
+	    django.views.generic.date_based.archive_index
+	  </title>
+	  
+	  <para>
+	    Базовое представление <token>archive_index</token>
+	    работает почти так как описанное в предыдущей секции,
+	    только итерация происходит по объектам из коллекции
+	    <token>latest</token>, а не по <token>object_list</token>:
+	    <screen>
+	      <![CDATA[
+<ul>
+  {% for object in latest %}
+    {% get_free_comment_count for blog.entry object.id as comment_count %}
+    [...]
+  {% endfor %}
+</ul>
+	      ]]>
+	    </screen>
+	  </para>
+	    
+	  <para>
+	    В архивах, отсортированных по дате (таких как
+	    <token>archive_year</token> или
+	    <token>archive_month</token>), коллекция, по которой
+	    производится итерация называется
+	    <quote>object_list</quote>. <token>archive_index</token>
+	    является только базовым представлением с
+	    <token>latest</token>.
+	  </para>
+
+	</section>
+
+      </section>
+
+      <section id="&BASEID;.standard-library.comments.detail-page">
+	
+	<title id="&BASEID;.standard-library.comments.detail-page.title">
+	  Добавление комментариев на страницу
+	</title>
+      
+	<para>
+	  Обычно добавление комментариев разрешено пользователям на
+	  страницах с детальной информацией об объекте. Можно
+	  разрешить добавление комментариев откуда угодно, но для
+	  простоты данный пример не будет так делать. При
+	  использовании любых базовых представлений для отображения
+	  детальной информации, таких как
+	  <token>django.views.generic.list_detail.object_detail</token>
+	  или
+	  <token>django.views.generic.date_based.object_detail</token>,
+	  у вас будет идентификатор объекта в
+	  <token>object.id</token>, таким образом получение информации
+	  о количестве комментариев для этого объект будет несложным:
+	  <screen>
+	    <![CDATA[
+{% get_free_comment_count for blog.entry object.id as comment_count %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Для того, чтобы получить список комментариев, необходимо
+	  использовать нижеприведённый пример, который помещает список
+	  комментариев в шаблонную переменную
+	  <varname>comment_list</varname>:
+	  <screen>
+	    <![CDATA[
+{% get_free_comment_list for blog.entry object.id as comment_list %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Каждый объект <classname>object</classname> в
+	  <varname>comment_list</varname> имеет следующие поля:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		<token>comment.person_name</token>: Имя комментатора.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>comment.submit_date</token>: Дата и время
+		отправки комментария. Вы можете пропустить эту
+		информацию через фильтр <token>date</token> для
+		форматирования строки с датой. Это будет показано в
+		примере далее.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>comment.comment</token>: Текст комментария. Не
+		забывайте экранировать его с помощью фильтра
+		<token>escape</token> для предотвращения инъекций
+		вредоносного кода. Это будет показано в примере далее.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>comment.is_public</token>: Разрешение на
+		публикацию комментария (TODO: надо понять как мы даём
+		это разрешение).
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>comment.ip_address</token>: IP адрес
+		комментатора.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>comment.approved</token>: Разрешение на
+		публикацию от представителя сайта (TODO: узнать как
+		оно реализовано).
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+	<para>
+	  А также следующие встроенные методы:
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		<token>comment.get_absolute_url</token>: Метод
+		возвращает абсолютный URL для текущего
+		комментария. Например, если комментарий был написан
+		для записи блога размещённой по ссылке
+		<token>/blog/some-slug/</token>, то будет возвращён
+		URL <token>/blog/some-slug/#c4</token>, где
+		<token>4</token> &mdash; это идентификатор
+		комментария.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		<token>comment.get_content_object</token>: Метод
+		возвращает объект для которого было создан текущий
+		комментарий.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+	<para>
+	  Система комментирования не позволяет вам добавлять другие
+	  типы данных, такие как адрес электронной почты
+	  комментатора. Это может быть исправлено в будущем.
+	</para>
+
+	<para>
+	  Пример:
+	  <screen>
+	    <![CDATA[
+{% get_free_comment_count for blog.entry object.id as comment_count %}
+
+<h2><a href="{{ object.url }}">{{ object.title }}</a></h2>
+
+<em>{{ object.description }}</em>
+
+<div class="article_menu">
+  <b>Added on {{ object.add_date|date:"F j, Y" }}</b> 
+  <a href="{{ object.get_absolute_url }}#comments">{{ comment_count }} 
+    Comment{{ comment_count|pluralize }}</a>
+</div>
+
+{% get_free_comment_list for blog.entry object.id as comment_list %}
+
+<h2 id="comments">Comments</h2>
+{% for comment in comment_list %}
+<div class="comment_{% cycle odd,even %}" id="c{{ comment.id }}">
+  <span class="comnum">
+    <a id="c{{ comment.id }}" href="#c{{ comment.id }}">
+      #{{ forloop.counter }}
+    </a>
+  </span>
+  <p>
+    <b>{{ comment.person_name|escape }}</b> commented, 
+    on {{ comment.submit_date|date:"F j, Y" }} 
+    at {{ comment.submit_date|date:"P" }}:
+  </p>
+  {{ comment.comment|escape|urlizetrunc:40|linebreaks }}
+</div>
+{% endfor %}
+
+<h2>Post a comment</h2>
+{% free_comment_form for blog.entry object.id %}
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.standard-library.comments.templates">
+	
+	<title id="&BASEID;.standard-library.comments.templates.title">
+	  Шаблоны
+	</title>
+      
+	<para>
+	  Django поставляется со встроенными стандартными шаблонами
+	  для системы комментирования.
+	</para>
+
+	<para>
+	  Вы можете переопределить любой из них, создав каталог
+	  <filename>comments</filename> в каталоге с вашими шаблонами
+	  и соответствующие шаблоны в нём.
+	</para>
+
+	<section id="&BASEID;.standard-library.comments.templates.freeform">
+	  
+	  <title id="&BASEID;.standard-library.comments.templates.freeform.title">
+	    Шаблон с формой отправки комментария
+	  </title>
+	  
+	  <para>
+	    Этот шаблон (<filename>freeform.html</filename>) содержит
+	    код формы, с помощью которой пользователь отправляет
+	    комментарий. В вышеприведённом примере, он подключался
+	    так:
+	    <screen>
+	      <![CDATA[
+<h2>Post a comment</h2>
+{% free_comment_form for blog.entry object.id %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	  <para>
+	    Пример шаблона:
+	    <screen>
+	      <![CDATA[
+{% if display_form %}
+  <form action="/comments/postfree/" method="post">
+    <p>Your name: <input type="text" id="id_person_name" name="person_name" /></p>
+    <p>Comment:<br /><textarea name="comment" id="id_comment" rows="10" cols="60"></textarea></p>
+    <input type="hidden" name="options" value="{{ options }}" />
+    <input type="hidden" name="target" value="{{ target }}" />
+    <input type="hidden" name="gonzo" value="{{ hash }}" />
+    <p><input type="submit" name="preview" value="Preview comment" /></p>
+  </form>
+{% endif %}
+	      ]]>
+	    </screen>
+	    Если вы не желаете использовать страницу для
+	    предварительного просмотра комментария, просто замените
+	    <token>name="preview"</token> на
+	    <token>name="post"</token>.
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.standard-library.comments.templates.preview">
+	  
+	  <title id="&BASEID;.standard-library.comments.templates.preview.title">
+	    Шаблон для предварительного просмотра
+	  </title>
+	  
+	  <para>
+	    Этот шаблон
+	    (<filename>free_preview.html</filename>)используется при
+	    просмотре пользователем своего комментария перед его
+	    отправкой.
+	  </para>
+
+	  <para>
+	    Пример:
+	    <screen>
+	      <![CDATA[
+<h1>Preview your comment</h1>
+
+<form action="/comments/postfree/" method="post">
+  {% if comment_form.has_errors %}
+    <p><strong style="color: red;">Please correct the following errors.</strong></p>
+  {% else %}
+    <div class="comment">
+      {{ comment.comment|escape|urlizetrunc:"40"|linebreaks }}
+      <p class="date small">Posted by <strong>{{ comment.person_name|escape }}</strong></p>
+    </div>
+
+    <p><input type="submit" name="post" value="Post public comment" /></p>
+
+    <h1>Or edit it again</h1>
+  {% endif %}
+
+  {% if comment_form.person_name.errors %}
+    {{ comment_form.person_name.html_error_list }}
+  {% endif %}
+
+  <p><label for="id_person_name">Your name:</label> {{ comment_form.person_name }}</p>
+
+  {% if comment_form.comment.errors %}
+    {{ comment_form.comment.html_error_list }}
+  {% endif %}
+
+  <p>
+    <label for="id_comment">Comment:</label>
+    <br />
+    {{ comment_form.comment }}
+  </p>
+        
+  <input type="hidden" name="options" value="{{ options }}" />
+  <input type="hidden" name="target" value="{{ target }}" />
+  <input type="hidden" name="gonzo" value="{{ hash }}" />
+  
+  <p>
+    <input type="submit" name="preview" value="Preview revised comment" />
+  </p>
+</form>
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.standard-library.comments.templates.posted">
+	  
+	  <title id="&BASEID;.standard-library.comments.templates.posted.title">
+	    Шаблон для отправленного комментария
+	  </title>
+	  
+	  <para>
+	    Этот шаблон (<filename>posted.html</filename>)
+	    отображается после того как пользователь отправит
+	    комментарий. Вы можете получить доступ к
+	    прокомментированному объекту через контекстную переменную
+	    <varname>object</varname>.
+	  </para>
+
+	  <para>
+	    Пример:
+	    <screen>
+	      <![CDATA[
+<h1>Comment posted successfully</h1>
+
+<p>Thanks for contributing.</p>
+
+{% if object %}
+        <ul>
+                <li><a href="{{ object.get_absolute_url }}">View your comment</a></li>
+        </ul>
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+      </section>
+
+      <section id="&BASEID;.standard-library.comments.wrapping">
+	
+	<title id="&BASEID;.standard-library.comments.wrapping.title">
+	  Wrapping post_free_comment to change the redirect url
+	</title>
+      
+	<para>
+	  В настоящее время
+	  <token>django.contrib.comments.views.comments</token> в
+	  методе <function>post_free_comment()</function> имеет жёстко
+	  определённый адрес перенаправления на
+	  <token>posted.html</token>. Если вы желаете, чтобы отправка
+	  комментария возвращала пользователя на комментируемую
+	  страницу, вы можете переопределить метод
+	  <function>post_free_comment()</function> и добавить
+	  перенаправление в другое место после отправки
+	  комментария. URL может передаваться в виде скрытого
+	  параметра в шаблоне <filename>freeform.html</filename>. Для
+	  этого потребуется создать обработчик в
+	  <filename>views.py</filename>:
+	  <screen>
+	    <![CDATA[
+from django.contrib.comments.views.comments import post_free_comment
+from django.http import HttpResponseRedirect
+
+def my_post_free_comment(request):
+    if request.has_key('url') and not request.has_key('preview'):
+        response = post_free_comment(request)
+                
+        # Check there's a url to redirect to, and that post_free_comment worked
+        if len(request['url'].strip()) > 0 and 
+               isinstance(response, HttpResponseRedirect):
+            return HttpResponseRedirect(request['url'])
+                
+            # Fall back on the default post_free_comment response
+            return response
+        
+        return post_free_comment(request)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  После этого потребуется перенаправить запросу на это
+	  представление вместо оригинального. Для этого,
+	  <emphasis>перед</emphasis> строкой:
+	  <screen>
+	    <![CDATA[
+(r'^comments/', include('django.contrib.comments.urls.comments')),
+	    ]]>
+	  </screen>
+	  надо добавить строку:
+	  <screen>
+	    <![CDATA[
+(r'^comments/postfree/', 'views.my_post_free_comment'),
+	    ]]>
+	  </screen>
+	</para>
+	
+	<para>
+	  Теперь надо добавить в форму скрытое поле с URL. Но как
+	  получить текущий URL в шаблонной переменной? Для этого
+	  потребуется активировать шаблонный контекстный процессор
+	  <token>request</token> добавив следующий код в файл
+	  <filename>settings.py</filename>:
+	  <screen>
+	    <![CDATA[
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
+TEMPLATE_CONTEXT_PROCESSORS += (
+     'django.core.context_processors.request',
+) 
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  После активации контекстного процессора шаблонам будет
+	  доступна переменная <varname>request</varname>. Используя
+	  эту переменную вы можете выполнить
+	  <token>request.get_full_path</token> для получения текущего
+	  URL. Внесём эти изменения в
+	  <filename>freeform.html</filename>:
+	  <screen>
+	    <![CDATA[
+{% load i18n %}
+{% if display_form %}
+  <form action="/comments/postfree/" method="post">
+    <p>
+      <label for="id_person_name">{% trans "Your name:" %}</label>
+      <input type="text" id="id_person_name" name="person_name" />
+    </p>
+    <p>
+      <label for="id_comment">{% trans "Comment:" %}</label><br />
+      <textarea name="comment" id="id_comment" rows="10" cols="60"></textarea>
+    </p>
+    <p>
+      <input type="hidden" name="options" value="{{ options }}" />
+      <input type="hidden" name="target" value="{{ target }}" />
+      <input type="hidden" name="gonzo" value="{{ hash }}" />
+      <input type="hidden" name="url" value="{{ request.get_full_path }}" />
+      <input type="submit" name="preview" value="{% trans "Preview comment" %}" />
+    </p>
+  </form>
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  В <filename>free_preview.html</filename> добавим:
+	  <screen>
+	    <![CDATA[
+<input type="hidden" name="url" value="{{ request.url }}" />
+	    ]]>
+	  </screen>
+	  перед
+	  <screen>
+	    <![CDATA[
+<p><input type="submit" name="preview" value="Preview revised comment" /></p>
+	    ]]>
+	  </screen>
+	  Этого должно быть достаточно!
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.standard-library.comments.other-examples">
+	
+	<title id="&BASEID;.standard-library.comments.other-examples.title">
+	  Другие примеры
+	</title>
+
+	<para>
+	  Список свежих комментариев. Нижеприведённый код отображает в
+	  виде списка последние комментарии для всего вашего сайта, не
+	  обращая внимания на приложения:
+	  <screen>
+	    <![CDATA[
+<h1>Recent comments</h1>
+
+<p>
+  {% if has_previous %}
+    <a href="?page={{ previous }}">Previous</a> | 
+  {% endif %}
+        
+  Page {{ page }} of {{ pages }} 
+        
+  {% if has_next %}
+    | <a href="?page={{ next }}">Next</a>
+  {% endif %}
+</p>
+
+{% for comment in object_list %}
+  <div class="comment" id="c{{ comment.id }}">
+    <h3>
+      <a href="{{ comment.get_absolute_url }}">
+        {{ comment.person_name|escape }} 
+	<span class="small quiet">
+	  {{ comment.submit_date|date:"F j, Y" }} at {{ comment.submit_date|date:"P" }}
+	</span>
+      </a>
+    </h3>
+    {{ comment.comment|escape|urlizetrunc:"40"|linebreaks }}
+  </div>
+{% endfor %}
+
+<p>
+  {% if has_previous %}
+    <a href="?page={{ previous }}">Previous</a> | 
+  {% endif %}
+        
+  Page {{ page }} of {{ pages }} 
+        
+  {% if has_next %}
+    | <a href="?page={{ next }}">Next</a>
+  {% endif %}
+</p>
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.sites">
+
+    <title id="&BASEID;.sites.title">
+      Сайты
+    </title>
+
+    <para>
+      Система сайтов Django является базовой средой, которая позволяет
+      вам управлять множеством сайтов с помощью одной базы данных и
+      одного проекта Django. Это абстрактная концепция и её не всегда
+      легко понять, поэтому мы начнём с описания ряда сценариев где
+      эта особенность Django может быть полезной.
+    </para>
+
+    <section id="&BASEID;.sites.scenario1">
+
+      <title id="&BASEID;.sites.scenario1.title">
+	Сценарий 1: Использование данных на множестве сайтов
+      </title>
+      
+      <para>
+	Как мы рассказывали в главе <quote><xref
+	linkend="djangobook.chap01"
+	endterm="djangobook.chap01.title"/></quote>, сайты LJWorld.com
+	и Lawrence.com управляются одной новостной компанией: газетой
+	<emphasis>Lawrence Journal-World</emphasis> в городе Lawrence,
+	штат Канзас. Сайт LJWorld.com сфокусирован на новостях, в то
+	время как сайта Lawrence.com сосредоточен на местных
+	развлечениях. Но иногда корреспонденты желают разместить свою
+	статью на <emphasis>обоих</emphasis> сайтах.
+      </para>
+
+      <para>
+	Мозгодробящим способом решения этой задачи будет использование
+	раздельных баз данных для каждого сайта и наличие требования к
+	корреспондентам о необходимости размещения их статьи дважды:
+	на одном и на другом сайтах. Но этот метод неэффективен и
+	приводит к дублированию информации в базе данных.
+      </para>
+
+      <para>
+	Есть ли решение получше? Оба сайта используют единую базу
+	данных для статей и статья ассоциирована с одним или
+	несколькими сайтами с помощью отношения
+	<quote>многие-ко-многим</quote>. Среда управления сайтами
+	предоставляет таблицу базы данных через которую статьи
+	ассоциируются с сайтами.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.sites.scenario2">
+
+      <title id="&BASEID;.sites.scenario2.title">
+	Сценарий 2: Хранение информации о сайте в одном месте
+      </title>
+      
+      <para>
+	Сайты LJWorld.com и Lawrence.com имеют функциональность для
+	уведомления пользователей по электронной почте о появившихся
+	новостях. Это очень просто: пользователь регистрируется на
+	форме сайта и немедленно получает по электронной почте
+	сообщение: <quote>Спасибо за вашу подписку.</quote>
+      </para>
+
+      <para>
+	Будет неэффективно и избыточно реализовывать код регистрации
+	дважды, таким образом сайты должны использовать единый код. Но
+	сообщение должно различаться для каждого сайта. Используя
+	объекты <token>Site</token>, мы можем абстрагировать ваше
+	уведомление так, что оно будет использовать атрибуты объекта
+	<token>name</token> (т.е., <token>LJWorld.com</token>) и
+	<token>domain</token> (т.е., <token>www.ljworld.com</token>).
+      </para>
+
+      <para>
+	Среда управления сайтами предоставляет место для хранения
+	атрибутов <token>name</token> и <token>domain</token> для
+	каждого сайта вашего проекта Django и это означает, что вы
+	можете повторно использовать эти значения в общем виде.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.sites.how-to-use">
+
+      <title id="&BASEID;.sites.how-to-use.title">
+	Как это использовать
+      </title>
+      
+      <para>
+	Среда управления сайтами больше походит на ряд удобств, чем на
+	полноценную среду. Всё основано на двух базовых концепциях:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Модель <token>Site</token>, которая находится в модуле
+	      <token>django.contrib.sites</token>, имеет атрибуты
+	      <token>name</token> и <token>domain</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Параметр <token>SITE_ID</token> определяет идентификатор
+	      в базе данных для объекта <token>Site</token>, который
+	      ассоциирован с определённым файлом настроек.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	То, как будут использоваться эти две концепции, полностью
+	зависит от вас, но Django автоматически использует их в ряде
+	случаев.
+      </para>
+
+      <para>
+	Для того, чтобы установить приложение среды управления
+	сайтами, выполните следующие шаги:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Добавьте значение <token>django.contrib.sites</token> в
+	      параметр <token>INSTALLED_APPS</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Выполните команду <command>manage.py syncdb</command>
+	      для установки таблицы <token>django_site</token> в вашу
+	      базу данных.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Добавьте один или более объектов <token>Site</token>,
+	      через интерфейс администратора Django или через Python
+	      API. Создайте объект <token>Site</token> для каждого
+	      сайта/домена, который управляется с помощью проекта
+	      Django.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Определите параметр <token>SITE_ID</token> в каждом из
+	      ваших файлов конфигурации. Это значение должно быть
+	      идентификатором объекта <token>Site</token> в базе
+	      данных для сайта, которому принадлежит редактируемый
+	      файл конфигурации.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+      
+    </section>
+    
+    <section id="&BASEID;.sites.capabilities">
+
+      <title id="&BASEID;.sites.capabilities.title">
+	Возможности
+      </title>
+      
+      <para>
+	Следующие секции описывают различные варианты использования
+	среды управления сайтами.
+      </para>
+
+      <section id="&BASEID;.sites.capabilities.reusing-data">
+
+	<title id="&BASEID;.sites.capabilities.reusing-data.title">
+	  Повторное использование данных на сайтах
+	</title>
+	
+	<para>
+	  Для повторного использования данных на множестве сайтов, как
+	  было описано в <quote><xref
+	  linkend="&BASEID;.sites.scenario1"
+	  endterm="&BASEID;.sites.scenario1.title"/></quote>, следует
+	  создать поле <token>ManyToManyField</token> в модели
+	  <token>Site</token>, например:
+	  <screen>
+	    <![CDATA[
+from django.db import models
+from django.contrib.sites.models import Site
+
+class Article(models.Model):
+    headline = models.CharField(max_length=200)
+    # ...
+    sites = models.ManyToManyField(Site)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Эта инфраструктура необходима вам для ассоциирования статей
+	  со множеством сайтов в вашей базе данных. Используя это, вы
+	  можете использовать один и тот же код функции представления
+	  для множества сайтов. Продолжая работу с примером модели
+	  <token>Article</token>, так может выглядеть код
+	  представления <token>article_detail</token>:
+	  <screen>
+	    <![CDATA[
+from django.conf import settings
+
+def article_detail(request, article_id):
+    try:
+        a = Article.objects.get(id=article_id, sites__id=settings.SITE_ID)
+    except Article.DoesNotExist:
+        raise Http404
+    # ...
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Эта функция представления может быть использована повторно,
+	  потому что она динамически проверяет сайт для статьи,
+	  учитывая значения параметра <token>SITE_ID</token>.
+	</para>
+
+	<para>
+	  Например, предположим что <token>SITE_ID</token> для
+	  LJWorld.com имеет значение <token>1</token>, а для
+	  Lawrence.com &mdash; значение <token>2</token>. Если данное
+	  представление будет вызвано с использованием
+	  конфигурационного файла от LJWorld.com, то выборка статей
+	  будет ограничена теми записями, у которых в списке сайтов
+	  есть <token>LJWorld.com</token>.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.sites.capabilities.single-site">
+
+	<title id="&BASEID;.sites.capabilities.single-site.title">
+	  Ассоциирование данных с единственным сайтом
+	</title>
+	
+	<para>
+	  Аналогично, вы можете ассоциировать модель к
+	  <token>Site</token> как <token>многие-к-одному</token> с
+	  помощью <token>ForeignKey</token>.
+	</para>
+
+	<para>
+	  Например, если отображение статьи разрешено только для
+	  одного сайта, вы можете использовать следующую модель:
+	  <screen>
+	    <![CDATA[
+from django.db import models
+from django.contrib.sites.models import Site
+
+class Article(models.Model):
+    headline = models.CharField(max_length=200)
+    # ...
+    site = models.ForeignKey(Site)
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Такой подход имеет те же преимущества, аналогичные описанным
+	  в секции <quote><xref linkend="&BASEID;.markup"
+	  endterm="&BASEID;.markup.title"/></quote>.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.sites.capabilities.hooking-site-views">
+
+	<title id="&BASEID;.sites.capabilities.hooking-site-views.title">
+	  Изменение логики представления в зависимости от текущего сайта
+	</title>
+	
+	<para>
+	  На низком уровне, вы можете использовать среду управления
+	  сайтами в ваших представлениях для выполнения определённых
+	  действия, основываясь на текущем сайте, например:
+	  <screen>
+	    <![CDATA[
+from django.conf import settings
+
+def my_view(request):
+    if settings.SITE_ID == 3:
+        # Делаем что-то.
+    else:
+        # Делаем что-то другое.
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Конечно, руки бы оторвать за такой код с жёстким
+	  определением идентификаторов. Более явным способом
+	  выполнения тех же действий является проверка домена текущего
+	  сайта:
+	  <screen>
+	    <![CDATA[
+from django.conf import settings
+from django.contrib.sites.models import Site
+
+def my_view(request):
+    current_site = Site.objects.get(id=settings.SITE_ID)
+    if current_site.domain == 'foo.com':
+        # Делаем что-то.
+    else:
+        # Делаем что-то другое.
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Идея получения объекта <token>Site</token> для определения
+	  значения параметра конфигурации <token>SITE_ID</token>
+	  довольно стандартна, поэтому менеджер модели
+	  <token>Site</token> (<token>Site.objects</token>) имеет
+	  метод <function>get_current()</function>. Данный пример
+	  эквивалентен предыдущему:
+	  <screen>
+	    <![CDATA[
+from django.contrib.sites.models import Site
+
+def my_view(request):
+    current_site = Site.objects.get_current()
+    if current_site.domain == 'foo.com':
+        # Делаем что-то.
+    else:
+        # Делаем что-то другое.
+	    ]]>
+	  </screen>
+	  <note>
+	    <para>
+	      В последнем примере нет необходимости импортирования
+	      <token>django.conf.settings</token>.
+	    </para>
+	  </note>
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.sites.capabilities.get-domain">
+
+	<title id="&BASEID;.sites.capabilities.get-domain.title">
+	  Отображение текущего домена
+	</title>
+
+	<para>
+	  При использовании методики <quote>Не повторяйся</quote>
+	  название вашего сайта и его доменное имя, как было показано
+	  в секции <quote><xref linkend="&BASEID;.sites.scenario2"
+	  endterm="&BASEID;.sites.scenario2.title"/></quote>, являются
+	  всего лишь ссылками на атрибуты <token>name</token> и
+	  <token>domain</token> объекта <token>Site</token>. Например:
+	  <screen>
+	    <![CDATA[
+from django.contrib.sites.models import Site
+from django.core.mail import send_mail
+
+def register_for_newsletter(request):
+    # Check form values, etc., and subscribe the user.
+    # ...
+    current_site = Site.objects.get_current()
+    send_mail('Thanks for subscribing to %s alerts' % current_site.name,
+        'Thanks for your subscription. We appreciate it.\n\n-The %s team.' % current_site.name,
+        'editor@%s' % current_site.domain,
+        [user_email])
+    # ...
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Продолжая наш пример с LJWorld.com и Lawrence.com, на
+	  последнем сообщение имеет заголовок <quote>Thanks for
+	  subscribing to lawrence.com alerts.</quote> На LJWorld.com,
+	  соответственно, такой &mdash; <quote>Thanks for subscribing
+	  to LJWorld.com alerts.</quote> Аналогичное поведение
+	  применяется и для тела сообщения.
+	</para>
+
+	<para>
+	  Более гибким (но и более сложным) способом реализации такого
+	  поведения будет использование шаблонной системы
+	  Django. Предположим, что сайты LJWorld.com и Lawrence.com
+	  хранят свои шаблоны в разных каталогах
+	  (<token>TEMPLATE_DIRS</token>), тогда переложим
+	  ответственность на шаблонную систему:
+	  <screen>
+	    <![CDATA[
+from django.core.mail import send_mail
+from django.template import loader, Context
+
+def register_for_newsletter(request):
+    # Check form values, etc., and subscribe the user.
+    # ...
+    subject = loader.get_template('alerts/subject.txt').render(Context({}))
+    message = loader.get_template('alerts/message.txt').render(Context({}))
+    send_mail(subject, message, 'do-not-reply@example.com', [user_email])
+    # ...
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  В данном случае вам потребуется создать шаблоны
+	  <filename>subject.txt</filename> и
+	  <filename>message.txt</filename> в обоих каталогах с
+	  шаблонами. Как упоминалось ранее, это даст вам большую
+	  гибкость, но и работы прибавится.
+	</para>
+
+	<para>
+	  Хорошей идеей будет максимально возможное развитие объекта
+	  <token>Site</token>, чтобы удалить ненужную сложность и
+	  избыточность.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.sites.capabilities.get-domain-full-url">
+
+	<title id="&BASEID;.sites.capabilities.get-domain-full-url.title">
+	  Текущий домен в URL
+	</title>
+
+	<para>
+	  Метод <function>get_absolute_url()</function> удобен для
+	  получения URL без доменного имени, но в некоторых случаях
+	  может потребоваться отобразить полный URL. Для этого можно
+	  использовать среду управления сайтами. Вот простой пример:
+	  <screen>
+	    <![CDATA[
+>>> from django.contrib.sites.models import Site
+>>> obj = MyModel.objects.get(id=3)
+>>> obj.get_absolute_url()
+'/mymodel/objects/3/'
+>>> Site.objects.get_current().domain
+'example.com'
+>>> 'http://%s%s' % (Site.objects.get_current().domain, obj.get_absolute_url())
+'http://example.com/mymodel/objects/3/'
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.sites.current-site-manager">
+
+      <title id="&BASEID;.sites.current-site-manager.title">
+	CurrentSiteManager
+      </title>
+
+      <para>
+	Если объект <token>Site</token> играет ключевую роль в вашем
+	приложении, рассмотрите использование
+	<token>CurrentSiteManager</token> в ваших моделях. Это
+	менеджер модели, описанный в приложении <quote><xref
+	linkend="djangobook.appendix_b"
+	endterm="djangobook.appendix_b.title"/></quote>, который
+	автоматически обрабатывает свои запросы так, чтобы они
+	включали только объекты ассоциированные с текущим сайтом.
+      </para>
+
+      <para>
+	Для использование <token>CurrentSiteManager</token> его
+	следует явно подключить в модель. Например:
+	<screen>
+	  <![CDATA[
+from django.db import models
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
+
+class Photo(models.Model):
+    photo = models.FileField(upload_to='/home/photos')
+    photographer_name = models.CharField(max_length=100)
+    pub_date = models.DateField()
+    site = models.ForeignKey(Site)
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	При использовании этой модели, вызов
+	<token>Photo.objects.all()</token> возвратит все объекты
+	<token>Photo</token> из базы данных, а вызов
+	<token>Photo.on_site.all()</token> &mdash; только те объекты
+	<token>Photo</token>, которые относятся к текущему сайту (это
+	определяется с помощью параметра <token>SITE_ID</token>).
+      </para>
+
+      <para>
+	Другими словами, эти два оператора эквивалентны:
+	<screen>
+Photo.objects.filter(site=settings.SITE_ID)
+Photo.on_site.all()
+	</screen>
+      </para>
+
+      <para>
+	Как же <token>CurrentSiteManager</token> определяет какое поле
+	объекта <token>Photo</token> относится к <token>Site</token>?
+	По умолчанию он смотрит на поле с именем
+	<token>site</token>. Если ваша модель имеет поля
+	<token>ForeignKey</token> или <token>ManyToManyField</token> с
+	именами <emphasis>отличными от</emphasis> <token>site</token>,
+	вам потребуется явно передать имя в виде параметра в
+	<token>CurrentSiteManager</token>. Нижеприведённая модель, у
+	которой такое поле называется <token>publish_on</token>,
+	демонстрирует такой случай:
+	<screen>
+	  <![CDATA[
+from django.db import models
+from django.contrib.sites.models import Site
+from django.contrib.sites.managers import CurrentSiteManager
+
+class Photo(models.Model):
+    photo = models.FileField(upload_to='/home/photos')
+    photographer_name = models.CharField(max_length=100)
+    pub_date = models.DateField()
+    publish_on = models.ForeignKey(Site)
+    objects = models.Manager()
+    on_site = CurrentSiteManager('publish_on')
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если вы попытаетесь использовать
+	<token>CurrentSiteManager</token>, передав имя несуществующего
+	поля, Django вызовет исключение <token>ValueError</token>.
+	<note>
+	  <para>
+	    Вероятно вы пожелаете иметь обычный (не привязанный к
+	    сайтам) <token>Manager</token> для ваших моделей, даже
+	    если вы используете <token>CurrentSiteManager</token>. Как
+	    описано в приложении <quote><xref
+	    linkend="djangobook.appendix_b"
+	    endterm="djangobook.appendix_b.title"/></quote>, если вы
+	    определите менеджер вручную, тогда Django не будет
+	    создавать менеджер автоматически <token>objects =
+	    models.Manager()</token>.
+	  </para>
+
+	  <para>
+	    Также определённые части Django, а именно интерфейс
+	    администратора и базовые представления, используют тот
+	    менеджер, который был определён
+	    <emphasis>первым</emphasis> в модели. Таким образом, если
+	    потребуется, чтобы ваш сайт администратора имел доступ ко
+	    всем объектам (а не только к тем, которые относятся к
+	    сайту), следует поместить <token>objects =
+	    models.Manager()</token> в модели до определения
+	    <token>CurrentSiteManager</token>.
+	  </para>
+	</note>
+      </para>
+
+    </section>	    
+
+    <section id="&BASEID;.sites.django-users">
+
+      <title id="&BASEID;.sites.django-users.title">
+	Как Django использует среду управления сайтами
+      </title>
+
+      <para>
+	Несмотря на то, что использование среды управления сайтами
+	необязательно, это настоятельно рекомендуется делать, потому
+	что Django пользуется некоторыми преимуществами среды. Даже
+	если Django используется для управления единственным сайтом,
+	вы должны потратить несколько секунд на создание объекта
+	<token>Site</token> с правильными значениями атрибутов
+	<token>name</token> и <token>domain</token>, а затем указать
+	на этот объект с помощью параметра <token>SITE_ID</token>.
+      </para>
+
+      <para>
+	Опишем, как Django использует среду управления сайтами:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      В среде управления перенаправлением (смотрите далее
+	      секцию <quote><xref linkend="&BASEID;.redirects"
+	      endterm="&BASEID;.redirects.title"/></quote>) каждый
+	      объект перенаправления ассоциирован с определённым
+	      сайтом. Когда Django производит поиск для
+	      перенаправления пользователя, оно принимает во внимание
+	      текущее значение <token>SITE_ID</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      В среде управления комментариями каждый комментарий
+	      ассоциирован с определённым сайтом. При размещении
+	      комментария, его атрибут <token>site</token> принимает
+	      значение текущего <token>SITE_ID</token>, а при
+	      отображении комментариев через соответствующий шаблонный
+	      тэг, отображаются только те комментарии, которые имеют
+	      отношение к текущему сайту.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      В системе управления статическими страницами (смотрите
+	      далее секцию <quote><xref
+	      linkend="&BASEID;.flatpages"
+	      endterm="&BASEID;.flatpages.title"/></quote>) каждая
+	      такая страница ассоциирована с определённым сайтом. При
+	      создании статической страницы вы указываете для неё
+	      атрибут <token>site</token>, а система управления
+	      проверяет текущий <token>SITE_ID</token> при её
+	      отображении.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      В системе управления трансляциями (обратитесь к разделу
+	      <quote><xref linkend="djangobook.chap11.rss"
+	      endterm="djangobook.chap11.rss.title"/></quote>) шаблоны
+	      для <token>title</token> и <token>description</token>
+	      автоматически получают доступ к переменной <token>{{
+	      site }}</token>, которая является объектом
+	      <token>Site</token>. Также атрибут <token>domain</token>
+	      объекта <token>Site</token> используется обработчиком
+	      URL в случае, если вы не указали полностью определённым
+	      домен.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      В системе аутентификации и авторизации (обратитесь к
+	      разделу <quote><xref
+	      linkend="djangobook.chap12.authentication"
+	      endterm="djangobook.chap12.authentication.title"/></quote>)
+	      представление
+	      <token>django.contrib.auth.views.login</token> передаёт
+	      текущее имя сайта в шаблон через <token>{{ site_name
+	      }}</token>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.flatpages">
+
+    <title id="&BASEID;.flatpages.title">
+      Статические страницы
+    </title>
+    
+    <para>
+      Часто, при использовании веб приложений с базой данных,
+      появляется необходимость вывода нескольких статических страниц,
+      таких как страница с информацией о сайте или страница политики
+      безопасности. В таком случае можно использовать обычный веб
+      сервер, например, Apache, для вывода этих страниц в виде обычных
+      HTML файлов. Но такой подход добавит дополнительный уровень
+      сложности в ваше приложение, потому что потребуется заботиться о
+      конфигурации Apache, предоставлении доступа на редактирование
+      для вашей команды и вы не сможете воспользоваться преимуществами
+      использования шаблонной системы Django для управления видом
+      страниц.
+    </para>
+
+    <para>
+      Решением этой проблемы является использование специального
+      приложения, которое находится в пакете
+      <token>django.contrib.flatpages</token>. Это приложение
+      позволяет вам управлять статическими страницами через интерфейс
+      администратора Django и указывать шаблоны для таких страниц с
+      помощью шаблонной системы Django. Это приложение использует
+      модели Django для своей работы, значит оно хранит страницы в
+      базе данных, как и остальные ваши данные. Вы можете получить
+      доступ к статическим страницам с помощью стандартного API для
+      взаимодействия с базой данных.
+    </para>
+
+    <para>
+      Статические страницы выбираются по URL и сайту. При создании
+      статической страницы вы указываете с каким URL она ассоциирована
+      и с каким сайтом. (Более подробно о системе управления сайтами
+      рассказано в секции <quote><xref linkend="&BASEID;.sites"
+      endterm="&BASEID;.sites.title"/></quote>.)
+    </para>
+
+    <section id="&BASEID;.flatpages.using">
+      
+      <title id="&BASEID;.flatpages.using.title">
+	Использование
+      </title>
+      
+      <para>
+	Для установки приложения выполните следующие шаги:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Добавьте <token>django.contrib.flatpages</token> в
+	      параметр конфигурации
+	      <token>INSTALLED_APPS</token>. Пакет
+	      <token>django.contrib.flatpages</token> зависит от
+	      пакета <token>django.contrib.sites</token>,
+	      удостоверьтесь, что оба этих пакета указаны в
+	      <token>INSTALLED_APPS</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Добавьте
+	      <token>django.contrib.flatpages.middleware.FlatpageFallbackMiddleware</token>
+	      в параметр конфигурации
+	      <token>MIDDLEWARE_CLASSES</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Выполните команду <command>manage.py syncdb</command>
+	      для установки двух необходимых таблиц в вашу базу
+	      данных.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+      <para>
+	Приложение создаёт две таблицы в базе данных:
+	<token>django_flatpage</token> и
+	<token>django_flatpage_sites</token>. Таблица
+	<token>django_flatpage</token> содержит соответствия URL и
+	страницы. Таблица <token>django_flatpage_sites</token>
+	является таблицей типа <quote>многие-ко-многим</quote>,
+	которая связывает страницу с одним или более сайтами.
+      </para>
+
+      <para>
+	Приложение поставляется с единственной моделью
+	<classname>FlatPage</classname>, определённой в
+	<filename>django/contrib/flatpages/models.py</filename>:
+	<screen>
+	  <![CDATA[
+from django.db import models
+from django.contrib.sites.models import Site
+
+class FlatPage(models.Model):
+    url = models.CharField(max_length=100)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    enable_comments = models.BooleanField()
+    template_name = models.CharField(max_length=70, blank=True)
+    registration_required = models.BooleanField()
+    sites = models.ManyToManyField(Site)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Рассмотрим поля модели:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>url</token>: URL, с которым ассоциирована
+	      страница, исключая доменное имя и включая начальный слэш
+	      (т.е., <token>/about/contact/</token>).
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>title</token>: Заголовок страницы. Приложение не
+	      делает ничего особенного с заголовком. Это вам решать
+	      как отобразить его в шаблоне.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>content</token>: Содержимое страницы (т.е., HTML
+	      код страницы). Приложение не делает ничего особенного с
+	      содержимым. Это вам решать как отобразить его в шаблоне.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>enable_comments</token>: Разрешение создания
+	      комментариев для страницы. Приложение никак не реагирует
+	      на значение этого поля. Вы можете проверять значение
+	      этого поля в вашем шаблоне и отображать форму для
+	      комментария по необходимости.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>template_name</token>: Имя шаблона, который
+	      используется для отображения страницы. Необязательное
+	      поле. Если такого поля нет, то приложение будет
+	      использовать шаблон
+	      <filename>flatpages/default.html</filename>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>registration_required</token>: Указание на
+	      необходимость регистрации пользователя для посещения
+	      страницы. Интегрируется с системой аутентификации
+	      пользователя, которая была описана в разделе
+	      <quote><xref linkend="djangobook.chap12.authentication"
+	      endterm="djangobook.chap12.authentication.title"/></quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>sites</token>: Сайт, для которого предназначена
+	      страницы. Интегрируется с системой управления сайтами,
+	      которая рассмотрена в разделе <quote><xref
+	      linkend="&BASEID;.sites"
+	      endterm="&BASEID;.sites.title"/></quote>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Вы можете создавать страницы как через интерфейс
+	администратора Django, так и через API работы с базой
+	данных. Более подробно это описано в разделе <quote><xref
+	linkend="&BASEID;.flatpages.manage"
+	endterm="&BASEID;.flatpages.manage.title"/></quote>.
+      </para>
+
+      <para>
+	После установки приложения вся работа будет выполняться с
+	помощью класса <token>FlatpageFallbackMiddleware</token>. При
+	каждом вызове ошибки 404, в качестве последнего действия, этот
+	класс будет проверять наличие в базе данных статических
+	страниц для требуемого URL. Главное, проверка производится с
+	учётом сайта.
+      </para>
+
+      <para>
+	Если будет найдено совпадение, то будет произведена загрузка
+	шаблона страницы (в крайнем случае будет загружен
+	<filename>flatpages/default.html</filename>). В шаблон будет
+	передана одна контекстная переменная,
+	<varname>flatpage</varname>, которая будет ссылаться на
+	объект. При обработке шаблона будет использоваться
+	<token>RequestContext</token>.
+      </para>
+
+      <para>
+	Если не будет найдено совпадение, запрос будет обработан как
+	обычно.
+	<note>
+	  <para>
+	    Данный обработчик активируется только при ошибке 404
+	    (страница не найдена), а не в случае ошибки 500 (ошибка
+	    сервера) или каких-то других. Следует отметить, что
+	    порядок значений <token>MIDDLEWARE_CLASSES</token>
+	    важен. Рекомендуется размещать
+	    <token>FlatpageFallbackMiddleware</token> в конце списка.
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.flatpages.manage">
+      
+      <title id="&BASEID;.flatpages.manage.title">
+	Добавление, изменение и удаление
+      </title>
+      
+      <para>
+	Вы можете добавлять, изменять и удалять страницы двумя
+	способами:
+      </para>
+
+      <section id="&BASEID;.flatpages.manage.via-iface">
+      
+	<title id="&BASEID;.flatpages.manage.via-iface.title">
+	  Через интерфейс администратора
+	</title>
+      
+	<para>
+	  Если вы активировали автоматический интерфейс администратора
+	  Django, вы должны увидеть на его главной странице раздел
+	  <quote>Flatpages</quote>. Редактирование статических страниц
+	  производится аналогично редактированию любого объекта
+	  системы.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.flatpages.manage.via-api">
+      
+	<title id="&BASEID;.flatpages.manage.via-api.title">
+	  Через Python API
+	</title>
+      
+	<para>
+	  Как было описано ранее, статические страницы представлены в
+	  виде стандартной Django модели, которая расположена в
+	  <filename>django/contrib/flatpages/models.py</filename>. Следовательно,
+	  вы можете получить доступ к объектам через API работы с
+	  базой данных, например:
+	  <screen>
+	    <![CDATA[
+>>> from django.contrib.flatpages.models import FlatPage
+>>> from django.contrib.sites.models import Site
+>>> fp = FlatPage(
+...     url='/about/',
+...     title='About',
+...     content='<p>About this site...</p>',
+...     enable_comments=False,
+...     template_name='',
+...     registration_required=False,
+... )
+>>> fp.save()
+>>> fp.sites.add(Site.objects.get(id=1))
+>>> FlatPage.objects.get(url='/about/')
+<FlatPage: /about/ -- About>
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.flatpages.templates">
+      
+      <title id="&BASEID;.flatpages.templates.title">
+	Использование шаблонов
+      </title>
+      
+      <para>
+	По умолчанию статические страницы генерируются с
+	использованием шаблона
+	<filename>flatpages/default.html</filename>, но вы можете
+	указать свой шаблон с помощью поля
+	<token>template_name</token> объекта
+	<classname>FlatPage</classname>.
+      </para>
+
+      <para>
+	Ответственность за создание шаблона
+	<filename>flatpages/default.html</filename> лежит на
+	вас. Необходимо создать каталог <filename>flatpages</filename>
+	в вашем каталоге шаблонов.
+      </para>
+
+      <para>
+	Шаблоны статических страниц получают одну контекстную
+	переменную, <varname>flatpage</varname>, которая содержит
+	объект.
+      </para>
+
+      <para>
+	Пример шаблона <filename>flatpages/default.html</filename>:
+	<screen>
+	  <![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+    "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>{{ flatpage.title }}</title>
+</head>
+<body>
+{{ flatpage.content }}
+</body>
+</html>
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.redirects">
+
+    <title id="&BASEID;.redirects.title">
+      Перенаправления
+    </title>
+    
+    <para>
+      Средства Django для перенаправления позволяются вам легко
+      управлять этим процессом, храня всю информацию в базе данных и
+      рассматривая перенаправления как и любую другую
+      модель. Например, вы можете использовать это средства для
+      указания Django, что надо <quote>перенаправлять любой запрос к
+      <token>/music/</token> на
+      <token>/sections/arts/music/</token>.</quote> Это становится
+      очень полезным когда возникает необходимость поменять местами
+      части вашего сайта. Веб разработчики должны делать всё для того,
+      чтобы все ссылки работали.
+    </para>
+
+    <section id="&BASEID;.redirects.using">
+
+      <title id="&BASEID;.redirects.using.title">
+	Использование
+      </title>
+    
+      <para>
+	Для установки приложения выполните следующие шаги:
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Добавьте <token>django.contrib.redirects</token> в
+	      параметр конфигурации <token>INSTALLED_APPS</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Добавьте
+	      <token>django.contrib.redirects.middleware.RedirectFallbackMiddleware</token>
+	      в параметр конфигурации
+	      <token>MIDDLEWARE_CLASSES</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Выполните команду <command>manage.py syncdb</command>
+	      для установки единственной необходимой таблицы в вашу
+	      базу данных.
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+
+      <para>
+	Команда <command>manage.py syncdb</command> создаёт таблицу
+	<token>django_redirect</token> в вашей базе данных. Это
+	простая таблица с полями <token>site_id</token>,
+	<token>old_path</token> и <token>new_path</token>.
+      </para>
+
+      <para>
+	Вы можете создавать перенаправления как через интерфейс
+	администратора Django, так и через API для работы с базой
+	данных. Подробности описаны в разделе <quote><xref
+	linkend="&BASEID;.redirects.manage"
+	endterm="&BASEID;.redirects.manage.title"/></quote>.
+      </para>
+
+      <para>
+	После установки средств управления перенаправлениями всю
+	работу будет выполнять класс
+	<classname>RedirectFallbackMiddleware</classname>. При каждом
+	вызове ошибки 404, в качестве последнего действия, этот класс
+	будет проверять наличие в базе данных соответствующего
+	перенаправления для запрашиваемого URL. Следует отметить, что
+	производится проверка для перенаправления по указанному в
+	<token>old_path</token> пути для соответствующего сайта,
+	<token>SITE_ID</token>. (Обратитесь к разделу <quote><xref
+	linkend="&BASEID;.sites"
+	endterm="&BASEID;.sites.title"/></quote> для подробностей по
+	параметру <token>SITE_ID</token> и среде управления сайтами.)
+	Затем выполняются следующие действия:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Если найдено совпадение и поле <token>new_path</token>
+	      содержит что-нибудь, то производится перенаправление по
+	      пути из поля <token>new_path</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если найдено совпадение, а поле <token>new_path</token>
+	      не содержит ничего, производится отправка заголовка HTTP
+	      410 (Gone).
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если совпадение не найдено, запрос продолжает
+	      обрабатываться как обычно.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Класс <classname>RedirectFallbackMiddleware</classname>
+	обрабатывает только ошибки 404, остальное игнорируется.
+      </para>
+
+      <para>
+	Следует отметить, что порядок записей в конфигурационном
+	параметре <token>MIDDLEWARE_CLASSES</token> имеет
+	значение. Обычно <token>RedirectFallbackMiddleware</token>
+	располагают поближе к концу списка, так как перенаправление
+	является последним действием при обработке ошибки 404.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.redirects.manage">
+
+      <title id="&BASEID;.redirects.manage.title">
+	Добавление, изменение и удаление
+      </title>
+    
+      <para>
+	Вы можете добавлять, изменять и удалять перенаправления двумя
+	способами:
+      </para>
+
+      <section id="&BASEID;.redirects.manage.via-iface">
+      
+	<title id="&BASEID;.redirects.manage.via-iface.title">
+	  Через интерфейс администратора
+	</title>
+      
+	<para>
+	  Если вы активировали автоматический интерфейс администратора
+	  Django, вы должны увидеть на его главной странице раздел
+	  <quote>Redirects</quote>. Редактирование перенаправлений
+	  производится аналогично редактированию любого объекта
+	  системы.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.redirects.manage.via-api">
+      
+	<title id="&BASEID;.redirects.manage.via-api.title">
+	  Через Python API
+	</title>
+      
+	<para>
+	  Как было описано ранее, статические страницы представлены в
+	  виде стандартной Django модели, которая расположена в
+	  <filename>django/contrib/redirects/models.py</filename>.
+	  Следовательно, вы можете получить доступ к объектам через
+	  API работы с базой данных, например:
+	  <screen>
+	    <![CDATA[
+>>> from django.contrib.redirects.models import Redirect
+>>> from django.contrib.sites.models import Site
+>>> red = Redirect(
+...     site=Site.objects.get(id=1),
+...     old_path='/music/',
+...     new_path='/sections/arts/music/',
+... )
+>>> red.save()
+>>> Redirect.objects.get(old_path='/music/')
+<Redirect: /music/ ---> /sections/arts/music/>
+	    ]]>
+	  </screen>
+	</para>
+
+      </section>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.csrf">
+
+    <title id="&BASEID;.csrf.title">
+      Защита от CSRF
+    </title>
+    
+    <para>
+      Пакет <token>django.contrib.csrf</token> защищает от атак типа
+      <quote>подделка HTTP запросов</quote> (Cross-Site Request
+      Forgery), далее CSRF.
+    </para>
+
+    <para>
+      CSRF, также известная как <quote>session riding</quote> FIXME,
+      является дырой в системе безопасности веб сайта. Она случается
+      когда вредоносный сайт заставляет пользователя, незаметно для
+      него, загрузить URL с сайта, на котором пользователь уже
+      авторизован. Это непросто понять сначала, поэтому мы разберём
+      пару примеров.
+    </para>
+      
+    <section id="&BASEID;.csrf.example1">
+
+      <title id="&BASEID;.csrf.example1.title">
+	Простой пример
+      </title>
+      
+      <para>
+	Допустим вы зашли в свою почту на сайте
+	<token>example.com</token>. Интерфейс почтовой системы имеет
+	кнопку <guibutton>Log out</guibutton>, которая вызывает URL
+	<token>example.com/logout</token>. Таким образом для того,
+	чтобы выйти из своей почты достаточно посетить страницу
+	<token>example.com/logout</token>.
+      </para>
+
+      <para>
+	Вредоносный сайт может заставить вас посетить URL
+	<token>example.com/logout</token> с помощью скрытого тэга
+	<![CDATA[<iframe>]]> на своей странице. Таким образом, если вы
+	были авторизованы на почтовом интерфейсе
+	<token>example.com</token> и посетили вредоносную страницу,
+	которая выполнила через <![CDATA[<iframe>]]> обращение к
+	<token>example.com/logout</token>, ваша авторизация на
+	почтовом интерфейсе будет прекращена.
+      </para>
+
+      <para>
+	Очевидно, что выход из почтового интерфейса вопреки вашей воли
+	не является ужасающем нарушением безопасности, но этот же
+	подход может использоваться для любого сайта, который
+	<quote>доверяет</quote> своим посетителям, например, сайт
+	банка или электронного алгоритма.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.csrf.example2">
+
+      <title id="&BASEID;.csrf.example2.title">
+	Более сложный пример
+      </title>
+      
+      <para>
+	В предыдущем примере сайт <token>example.com</token> был
+	частично скомпрометирован, потому что он позволял изменять
+	состояние (т.е. отменять авторизацию пользователя) через GET
+	запрос. Более практично требовать POST запрос для изменения
+	состояния на сайте. Но даже это не спасёт полностью от CSRF.
+      </para>
+
+      <para>
+	Предположим, что на сайте <token>example.com</token> провели
+	обновление функциональность и теперь для отмены авторизации
+	пользователя требуется нажать кнопку на форме, которая
+	отправит POST запрос к
+	<token>example.com/logout</token>. Более того, форма содержит
+	скрытое поле:
+	<screen>
+	  <![CDATA[
+<input type="hidden" name="confirm" value="true" />
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это даёт гарантию, что обычный POST запрос к
+	<token>example.com/logout</token> не отменит авторизацию
+	пользователя, для этого ещё должна передаваться переменная
+	<varname>confirm</varname> со значением <token>true</token>.
+      </para>
+
+      <para>
+	Несмотря на дополнительную безопасность этот механизм всё ещё
+	может быть скомпрометирован CSRF &mdash; вредоносной странице
+	просто потребуется сделать чуть больше работы. Атакующие могут
+	создать целую форму для вашего сайта, спрятав её в невидимом
+	<![CDATA[<iframe>]]>, а затем использовать JavaScript для
+	автоматической отправки этой формы.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.csrf.preventing">
+
+      <title id="&BASEID;.csrf.preventing.title">
+	Предотвращение
+      </title>
+      
+      <para>
+	Как может ваш сайт защитить себя от этого типа атак? Первым
+	шагом будет проверка того, что все GET запросы не содержат
+	побочные эффекты. Затем, если вредоносный сайт включает одну
+	из ваших страниц в <![CDATA[<iframe>]]>, это не будет
+	приводить к негативному эффекту.
+      </para>
+
+      <para>
+	Остались POST запросы. Вторым шагом будет добавление в каждую
+	форму скрытого поля, значение которого генерируется из
+	идентификатора пользователя. Затем, при обработки формы на
+	стороне сервера, следует проверять это поле и выдавать ошибку,
+	если проверка не удастся.
+      </para>
+
+      <para>
+	Именно это и делает Django для предотвращения CSRF. А
+	подробности далее.
+      </para>
+
+      <section id="&BASEID;.csrf.preventing.middleware">
+
+	<title id="&BASEID;.csrf.preventing.middleware.title">
+	  Использование класса CSRF
+	</title>
+      
+	<para>
+	  Пакет <token>django.contrib.csrf</token> содержит только
+	  один модуль &mdash;
+	  <filename>middleware.py</filename>. Модуль содержит класс
+	  Django, <classname>CsrfMiddleware</classname>, которые
+	  реализовывает защиту от CSRF.
+	</para>
+
+	<para>
+	  Для активации защиты от CSRF следует добавить
+	  <token>django.contrib.csrf.middleware.CsrfMiddleware</token>
+	  в параметр <token>MIDDLEWARE_CLASSES</token> вашего файла
+	  конфигурации. Этот модуль нужен для обработки отклика
+	  <emphasis>после</emphasis> <token>SessionMiddleware</token>,
+	  таким образом <token>CsrfMiddleware</token> должен быть
+	  помещён <emphasis>до</emphasis>
+	  <token>SessionMiddleware</token> в списке (потому что классы
+	  при обработки отклика применяются от конца списка к
+	  началу). Также следует обрабатывать отклик до его компрессии
+	  или других изменений. Таким образом,
+	  <token>CsrfMiddleware</token> должно быть указано после
+	  <token>GZipMiddleware</token>. Обратитесь к секции
+	  <quote><xref linkend="djangobook.chap13.order"
+	  endterm="djangobook.chap13.order.title"/></quote>.
+	</para>
+
+	<para>
+	  Если вам интересно, то вот как класс
+	  <classname>CsrfMiddleware</classname> работает. Он делает
+	  следующие две вещи:
+	  <orderedlist>
+	    <listitem>
+	      <para>
+		Класс изменяет отклик с помощью добавления скрытого
+		поля формы ко всем формам с методом POST. Поле имеет
+		имя <varname>csrfmiddlewaretoken</varname>, а значение
+		является хэшем для идентификатора сессии плюс
+		секретный ключ. Класс <emphasis>не</emphasis> изменяет
+		отклик, в котором отсутствует идентификатор сессии,
+		таким образом нет снижения производительности для
+		запросов не использующих механизм сессий.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Для всех POST запросов использующих механизм сессии
+		класс производит проверку наличия и правильности
+		<varname>csrfmiddlewaretoken</varname>. Если такого
+		поля у передаваемой формы нет, то пользователь
+		получает ошибку 403, на которой написано: <quote>Cross
+		Site Request Forgery detected. Request
+		aborted.</quote>
+	      </para>
+	    </listitem>
+	  </orderedlist>
+	</para>
+
+	<para>
+	  Такой подход гарантирует, что будут приняты во внимание
+	  только формы с вашего сайта.
+	</para>
+
+	<para>
+	  Данный класс умышленно нацелен только на POST запросы (и
+	  соответствующие формы с методами POST). Как мы объясняли,
+	  GET запросы не могут иметь побочных эффектов, проверить это
+	  &mdash; ваша задача.
+	</para>
+
+	<para>
+	  POST запросы, не использующие механизм сессий, не
+	  защищаются. Их и <emphasis>не надо</emphasis> защищать,
+	  потому что вредоносные сайты могут выполнить такой запрос в
+	  любом случае.
+	</para>
+
+	<para>
+	  Чтобы исключить внесение изменений в не-HTML запросы класс
+	  проверяет заголовок <token>Content-Type</token> отклика
+	  перед его модификацией. Только страницы с типами
+	  <token>text/html</token> или
+	  <token>application/xml+xhtml</token> подвергаются обработке.
+	</para>
+
+      </section>
+
+      <section id="&BASEID;.csrf.preventing.limitations">
+
+	<title id="&BASEID;.csrf.preventing.limitations.title">
+	  Ограничения класса
+	</title>
+      
+	<para>
+	  Класс <classname>CsrfMiddleware</classname> требует наличия
+	  механизма управления сессиями для своей работы. (Обратитесь
+	  к разделу <quote><xref linkend="djangobook.chap12"
+	  endterm="djangobook.chap12.title"/></quote> для
+	  подробностей.) Если вы используете свой собственный механизм
+	  управления сессиями или аутентификацией, которые изменяют
+	  cookie сессий, данный класс вам не поможет.
+	</para>
+
+	<para>
+	  Если ваше приложение создаёт HTML страницы и формы необычным
+	  способом (т.е., если оно отправляет фрагменты HTML в
+	  JavaScript оператор <token>document.write</token>), вы
+	  можете пропустить фильтр, который добавляет скрытое поле к
+	  форме. В этом случае отправка формы всегда будет
+	  неудачна. (Это будет происходить, потому что класс
+	  <classname>CsrfMiddleware</classname> использует регулярное
+	  выражения для добавления поля
+	  <token>csrfmiddlewaretoken</token> в ваш HTML перед
+	  отправкой страницы клиенту, а регулярное выражение иногда не
+	  может обработать уродский HTML.) Если вы предполагаете
+	  возможность такой ситуации, просто просмотрите код в вашем
+	  браузере и проверьте наличие поля
+	  <token>csrfmiddlewaretoken</token> у формы.
+	</para>
+
+	<para>
+	  Для получения информации по CSRF обратитесь к <ulink
+	  url="http://en.wikipedia.org/wiki/CSRF"/>.
+	</para>
+
+      </section>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.humanizing">
+    
+    <title id="&BASEID;.humanizing.title">
+      Очеловечивание данных
+    </title>
+    
+    <para>
+      Это приложение содержит набор шаблонных фильтров Django, которые
+      полезны для придания <quote>человеческого вида</quote>
+      данным. Для активации этих фильтров добавьте
+      <token>django.contrib.humanize</token> в конфигурационный
+      параметр <token>INSTALLED_APPS</token>. Затем следует
+      использовать <token>{% load humanize %}</token> в шаблоне для
+      получения доступа к фильтрам.
+    </para>
+
+    <section id="&BASEID;.humanizing.apnumber">
+    
+      <title id="&BASEID;.humanizing.apnumber.title">
+	apnumber
+      </title>
+    
+      <para>
+	Для чисел от 1 до 9 этот фильтр возвращает письменную форму.
+      </para>
+
+      <para>
+	Примеры:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      1 преобразуется в <quote>one</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      2 преобразуется в <quote>two</quote>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      10 преобразуется в <quote>10</quote>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Вы можете передавать как целое, так и строковое представление
+	целого.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.humanizing.intcomma">
+    
+      <title id="&BASEID;.humanizing.intcomma.title">
+	intcomma
+      </title>
+    
+      <para>
+	Этот фильтр преобразовывает целое в строку с разделением
+	разрядов запятой.
+      </para>
+
+      <para>
+	Примеры:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      4500 станет <quote>4,500</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      45000 станет <quote>45,000</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      450000 станет <quote>450,000</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      4500000 станет <quote>4,500,000</quote>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Вы можете передавать как целое, так и строковое представление
+	целого.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.humanizing.intword">
+    
+      <title id="&BASEID;.humanizing.intword.title">
+	intword
+      </title>
+    
+      <para>
+	Этот фильтр преобразовывает большое целое в удобное текстовой
+	представление. Хорошо подходит для чисел больше одного
+	миллиона.
+      </para>
+
+      <para>
+	Примеры:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      1000000 станет <quote>1.0 million</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      1200000 станет <quote>1.2 million</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      1200000000 станет <quote>1.2 billion</quote>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Поддерживаются значение до одного квадриллиона
+	(1,000,000,000,000,000)/
+      </para>
+
+      <para>
+	Вы можете передавать как целое, так и строковое представление
+	целого.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.humanizing.ordinal">
+    
+      <title id="&BASEID;.humanizing.ordinal.title">
+	ordinal
+      </title>
+    
+      <para>
+	Этот фильтр преобразовывает целые в их порядковое
+	представление.
+      </para>
+
+      <para>
+	Примеры:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      1 становится <quote>1st</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      2 становится <quote>2nd</quote>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      3 становится <quote>3rd</quote>
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Вы можете передавать как целое, так и строковое представление
+	целого.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.markup">
+    
+    <title id="&BASEID;.markup.title">
+      Фильтры разметки
+    </title>
+    
+    <para>
+      Следующая коллекция шаблонных фильтров обрабатывает общие языки
+      разметки:
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <token>textile</token>: Обрабатывает Textile (<ulink
+	    url="http://en.wikipedia.org/wiki/Textile_(markup_language)"/>).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>markdown</token>: Обрабатывает Markdown (<ulink
+	    url="http://en.wikipedia.org/wiki/Markdown"/>).
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <token>restructuredtext</token>: Обрабатывает ReStructured
+	    Text (<ulink
+	    url="http://en.wikipedia.org/wiki/ReStructuredText"/>).
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+
+    <para>
+      В каждом случае фильтр ожидает отформатированную разметку в виде
+      строки и возвращает строковое представление размеченного
+      текста. Например, фильтр <token>textile</token> преобразовывает
+      текст в формате Textile в HTML:
+      <screen>
+	<![CDATA[
+{% load markup %}
+{{ object.content|textile }}
+	]]>
+      </screen>
+    </para>
+
+    <para>
+      Для активации этих фильтров следует добавить
+      <token>django.contrib.markup</token> в конфигурационный параметр
+      <token>INSTALLED_APPS</token>. Затем следует использовать
+      <token>{% load markup %}</token> в шаблоне для получения доступа
+      к фильтрам. Более подробную документацию можно получить, читая
+      исходный код файла
+      <filename>django/contrib/markup/templatetags/markup.py</filename>.
+    </para>
+
+  </section>
+
+</chapter>
