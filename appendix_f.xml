@@ -12,13 +12,3932 @@
   </title>
 
   <para>
-    Эта глава ждёт своего переводчика.
+    Перевод &copy; Константин Хлызов &lt;kostik.vento &bull; gmail&gt;
   </para>
 
   <para>
-    В ожидании пока это произойдёт, <ulink
-    url="http://djangobook.com/en/1.0/appendixF/">читаем
-    оригинал</ulink>.
+    В этом документе описаны стандартные теги и фильтры шаблонной
+    системы Джанго. Рекомендуется по возможности использовать
+    автоматическую документацию, которая содержит дополнительные
+    сведения обо всех установленных пользовательских тегах и фильтрах.
   </para>
+
+  <section id="&BASEID;.builtin_tags">
+
+    <title id="&BASEID;.builtin_tags.title">
+      Справочник по стандартным тегам
+    </title>
+
+    <section id="&BASEID;.builtin_tags.autoescape">
+
+      <title id="&BASEID;.builtin_tags.autoescape.title">
+	autoescape
+      </title>
+
+      <para>
+	Добавлен в версии 1.0.
+      </para>
+
+      <para>
+	Управляет поведением встроенного механизма автоматического
+	экранирования символов
+	(<emphasis>autoescape</emphasis>). Принимает в качестве
+	аргумента одно из значений <token>on</token> или <token>off</token>
+	(соответственно включить либо выключить экранирование внутри
+	данного блока).
+      </para>
+
+      <para>
+	Когда автоматическое экранирование включено, ко всем вставленным
+	значениям применяется HTML-экранирование (непосредственно перед
+	выводом данных в шаблон, но уже после всех фильтров), что
+	эквивалентно применению фильтра <token>escape</token> к каждой
+	переменной в отдельности.
+      </para>
+
+      <para>
+	Действие этого тега не распространяется на переменные,
+	отмеченные как <quote>безопасные</quote> для экранирования либо
+	кодом, который присвоил значение этой переменной, либо
+	посредством применения фильтров <token>safe</token> или
+	<token>escape</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.block">
+
+      <title id="&BASEID;.builtin_tags.block.title">
+	block
+      </title>
+
+      <para>
+	Определяет блок, который может быть переопределен
+	шаблонами-потомками. Подробнее см. <quote>Наследование
+	шаблонов</quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.comment">
+
+      <title id="&BASEID;.builtin_tags.comment.title">
+	comment
+      </title>
+
+      <para>
+	Предписывает шаблонному процессору игнорировать все, что
+	заключено между тегами <token>{% comment %}</token> и <token>{%
+	endcomment %}</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.csrf_token">
+
+      <title id="&BASEID;.builtin_tags.csrf_token.title">
+	csrf_token
+      </title>
+
+      <para>
+	Добавлен в версии 1.1.2.
+      </para>
+
+      <para>
+	В версиях Джанго 1.1.X &mdash; тег-заглушка, возвращающий пустую
+	строку для совместимости с будущими версиями. В версиях Джанго
+	1.2 и более поздних используется для защиты от подделки
+	HTTP-запросов (см. документацию в разделе <quote>Cross Site
+	Request Forgeries</quote>).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.cycle">
+
+      <title id="&BASEID;.builtin_tags.cycle.title">
+	cycle
+      </title>
+
+      <para>
+	Добавлен в версии 1.0.
+      </para>
+
+      <para>
+	При каждом обращении к данному тегу шаблонный процессор по
+	очереди вставляет указанные строки или переменные.
+      </para>
+
+      <para>
+	Внутри цикла каждый раз использует следующую из переданных
+	строк:
+	<screen>
+	  <![CDATA[
+{% for o in some_list %}
+  <tr class="{% cycle 'row1' 'row2' %}">
+    ...
+  </tr>
+{% endfor %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Также можно использовать переменные. Например, если у вас есть
+	две шаблонные переменные, <token>rowvalue1</token> и
+	<token>rowvalue2</token>, вы можете по очереди использовать их
+	значения:
+	<screen>
+	  <![CDATA[
+{% for o in some_list %}
+  <tr class="{% cycle rowvalue1 rowvalue2 %}">
+    ...
+  </tr>
+{% endfor %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Да, в одном теге можно использовать и строки, и переменные:
+	<screen>
+	  <![CDATA[
+{% for o in some_list %}
+  <tr class="{% cycle 'row1' rowvalue2 'row3' %}">
+    ...
+  </tr>
+{% endfor %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В некоторых случаях вам может понадобиться использовать
+	очередное значение циклической переменной вне цикла. Для этого
+	требуется всего лишь дать имя тегу <token>{% cycle %}</token>,
+	используя слово <quote>as</quote> следующим образом:
+	<screen>
+	  <![CDATA[
+{% cycle 'row1' 'row2' as rowcolors %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	После такого объявления можно вставлять текущее значение цикла в
+	любом месте шаблона:
+	<screen>
+	  <![CDATA[
+<tr class="{% cycle rowcolors %}">...</tr>
+<tr class="{% cycle rowcolors %}">...</tr>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В теге <token>{% cycle %}</token> можно указывать любое
+	количество значений, разделенных пробелами. Значения,
+	заключенные в одинарные (<token>'</token>) или двойные
+	(<token><![CDATA["]]></token>) кавычки, считаются строковыми
+	литералами, а значения без кавычек &mdash; шаблонными
+	переменными.
+      </para>
+
+      <para>
+	Обратите внимание, что переменные, переданные в цикл, при выводе
+	не экранируются, поскольку по умолчанию теги не экранируют свое
+	содержимое. Любой код (HTML или Javascript), переданный в
+	переменной, будет выведен <quote>как есть</quote>, что
+	потенциально может привести к уязвимостям.
+      </para>
+
+      <para>
+	Если вам требуется экранировать переменные в цикле, вы должны
+	явно это указать:
+	<screen>
+	  <![CDATA[
+{% filter force_escape %}
+  {% cycle var1 var2 var3 %}
+{% endfilter %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Для обратной совместимости тег <token>{% cycle %}</token>
+	поддерживает устаревший ограниченный синтаксис из предыдущих
+	версий Джанго. Не используйте старый синтаксис в своих новых
+	проектах и на всякий случай посмотрите, как это было:
+	<screen>
+	  <![CDATA[
+{% cycle row1,row2,row3 %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В этом случае каждое значение интерпретируется как строковый
+	литерал и вы никак не можете использовать переменные. И запятые
+	внутри строк тоже не можете. Как и пробелы. Мы уже сказали вам
+	не использовать этот синтаксис в новых проектах?
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.debug">
+
+      <title id="&BASEID;.builtin_tags.debug.title">
+	debug
+      </title>
+
+      <para>
+	Выводит полный набор отладочной информации, включая текущий
+	контекст и импортированные модули.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.extends">
+
+      <title id="&BASEID;.builtin_tags.extends.title">
+	extends
+      </title>
+
+      <para>
+	Сообщает, что данный шаблон является расширением родительского
+	шаблона.
+      </para>
+
+      <para>
+	Используется двумя способами:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>{% extends "base.html" %}</token> (с кавычками)
+	      использует постоянное значение <token>"base.html"</token>
+	      в качестве имени расширяемого родительского шаблона.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>{% extends variable %}</token> использует значение
+	      переменной <token>variable</token>. Если значение является
+	      строкой, Джанго использует ее в качестве имени
+	      родительского шаблона. Если значение является объектом
+	      шаблона <token>Template</token>, в качестве родительского
+	      шаблона Джанго использует этот объект.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Подробнее см. <quote>Наследование шаблонов</quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.filter">
+
+      <title id="&BASEID;.builtin_tags.filter.title">
+	filter
+      </title>
+
+      <para>
+	Преобразует содержимое блока в соответствии с указанным
+	фильтром.
+      </para>
+
+      <para>
+	Фильтры могут быть применены последовательно друг за другом и им
+	могут быть переданы аргументы &mdash; так же, как в синтаксисе
+	переменных.
+      </para>
+
+      <para>
+	Пример использования:
+	<screen>
+	  <![CDATA[
+{% filter force_escape|lower %}
+  Этот текст будет экранирован (для HTML) и приведен к нижнему регистру.
+{% endfilter %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.firstof">
+
+      <title id="&BASEID;.builtin_tags.firstof.title">
+	firstof
+      </title>
+
+      <para>
+	Выводит первую переменную из переданных, которая не приводится к
+	False. Не экранирует вывод. Если все переменные приводятся к
+	False, не выводит ничего.
+      </para>
+
+      <para>
+	Пример использования:
+	<screen>
+	  <![CDATA[
+{% firstof var1 var2 var3 %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это эквивалентно следующему коду:
+	<screen>
+	  <![CDATA[
+{% if var1 %}
+  {{ var1|safe }}
+{% else %}{% if var2 %}
+  {{ var2|safe }}
+{% else %}{% if var3 %}
+  {{ var3|safe }}
+{% endif %}{% endif %}{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Допускается использование строкового литерала в качестве
+	запасного значения, если все переданные переменные приведутся к
+	<token>False</token>:
+
+	<screen>
+	  <![CDATA[
+{% firstof var1 var2 var3 "запасное значение" %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Обратите внимание, что переменные, указанные в теге, при выводе
+	не экранируются, поскольку теги сами по себе не экранируют свое
+	содержимое. Любой код (HTML или Javascript), переданный в
+	переменной, будет выведен как есть, что потенциально может
+	привести к уязвимостям.
+      </para>
+
+      <para>
+	Если вам требуется экранировать переменные в теге, вы должны
+	явно это указать:
+	<screen>
+	  <![CDATA[
+{% filter force_escape %}
+  {% firstof var1 var2 var3 "запасное значение" %}
+{% endfilter %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.for">
+
+      <title id="&BASEID;.builtin_tags.for.title">
+	for
+      </title>
+
+      <para>
+	Организует цикл по всем элементам переданного массива
+	(итератора). Например, выведем данные об атлетах, перечисленных
+	в списке <token>athlete_list</token>:
+
+	<screen>
+	  <![CDATA[
+<ul>
+  {% for athlete in athlete_list %}
+    <li>{{ athlete.name }}</li>
+  {% endfor %}
+</ul>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Можно указать обратный порядок прохождения массива, используя
+	конструкцию <token>{% for obj in list reversed %}</token>.
+      </para>
+
+      <para>
+	Добавлено в версии 1.0.
+      </para>
+
+      <para>
+	Если элементами перебираемого списка являются тоже списки, их
+	можно распаковывать в отдельные переменные. Допустим, каждый
+	элемент списка представляет собой пару координат (x,y),
+	описывающих <token>точки</token>, тогда вы можете вывести список
+	этих точек следующим образом:
+	<screen>
+	  <![CDATA[
+{% for x, y in points %}
+  Имеется точка с координатами {{ x }},{{ y }}
+{% endfor %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Также это может быть полезно, если вам требуется перебирать
+	элементы словаря. Например, если в контексте имеется словарь
+	<token>data</token>, нижеприведенный код выведет ключи и значения
+	этого словаря:
+	<screen>
+	  <![CDATA[
+{% for key, value in data.items %}
+  {{ key }}: {{ value }}
+{% endfor %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Цикл for определяет несколько переменных, доступных внутри
+	цикла:
+
+	<table id="&BASEID;.tbl1" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl1.title">
+	    Переменные цикла
+	  </title>
+
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="6cm"/>
+	    <colspec colname="c2" colwidth="8cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Переменная</entry>
+		<entry>Описание</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>forloop.counter</token></entry>
+		<entry>Номер текущей итерации цикла (начиная с
+		1).</entry>
+	      </row>
+
+	      <row>
+		<entry><token>forloop.counter0</token></entry>
+		<entry>Номер текущей итерации цикла (начиная с
+		0).</entry>
+	      </row>
+
+	      <row>
+		<entry><token>forloop.revcounter</token></entry>
+		<entry>Число итераций цикла, оставшихся до окончания
+		перебора (завершая единицей).</entry>
+	      </row>
+
+	      <row>
+		<entry><token>forloop.revcounter0</token></entry>
+		<entry>Число итераций цикла, оставшихся до окончания
+		перебора (завершая нулем).</entry>
+	      </row>
+
+	      <row>
+		<entry><token>forloop.first</token></entry>
+		<entry><token>True</token>, если это первая итерация
+		цикла.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>forloop.last</token></entry>
+		<entry><token>True</token>, если это последняя итерация
+		цикла.</entry>
+	      </row>
+
+	      <row>
+		<entry><token>forloop.parentloop</token></entry>
+		<entry>Для вложенных циклов указывает на родительский
+		цикл текущего цикла.</entry>
+	      </row>
+	    </tbody>
+
+	  </tgroup>
+	</table>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.forempty">
+
+      <title id="&BASEID;.builtin_tags.forempty.title">
+	for ... empty
+      </title>
+
+      <para>
+	Добавлено с 1.1.
+      </para>
+
+      <para>
+	Тег <token>for</token> может содержать необязательную ветвь
+	<token>{% empty %}</token>, которая будет выведена, если
+	указанный массив пуст либо не найден:
+	<screen>
+	  <![CDATA[
+<ul>
+  {% for athlete in athlete_list %}
+    <li>{{ athlete.name }}</li>
+  {% empty %}
+    <li>Извините, в списке нет атлетов.</li>
+  {% endfor %}
+<ul>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Этот код делает то же самое, что и нижеприведенный, однако он
+	короче, проще и порой быстрее:
+	<screen>
+	  <![CDATA[
+<ul>
+  {% if athlete_list %}
+    {% for athlete in athlete_list %}
+      <li>{{ athlete.name }}</li>
+    {% endfor %}
+  {% else %}
+    <li>Извините, в списке нет атлетов.</li>
+  {% endif %}
+</ul>
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_tags.if">
+
+      <title id="&BASEID;.builtin_tags.if.title">
+	if
+      </title>
+
+      <para>
+	Тег <token>{% if %}</token> вычисляет значение переменной и,
+	если эта переменная приводится к <token>True</token>
+	(т.е. существует, не является пустой и не равна логическому
+	значению <token>false</token>), выводит содержимое блока между
+	<token>{% if %}</token> и <token>{% endif %}</token>:
+	<screen>
+	  <![CDATA[
+{% if athlete_list %}
+  Число атлетов: {{ athlete_list|length }}
+{% else %}
+  Атлетов нет.
+{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В описанном случае, если массив <token>athlete_list</token> не
+	пуст, переменная <token>{{ athlete_list|length }}</token>
+	выведет число атлетов (длину массива).
+      </para>
+
+      <para>
+	Как вы уже увидели, тег <token>if</token> может иметь
+	необязательную ветвь <token>{% else %}</token>, которая будет
+	выведена, если условие не соблюдено.
+      </para>
+
+      <section id="&BASEID;.builtin_tags.if.logic">
+
+	<title id="&BASEID;.builtin_tags.if.logic.title">
+	  Логические операторы
+	</title>
+
+	<para>
+	  В тегах <token>if</token> можно использовать
+	  <token>and</token> или <token>or</token> для проверки
+	  нескольких переменных и <token>not</token> для отрицания
+	  данной переменной:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list and coach_list %}
+  Есть и атлеты, и тренеры.
+{% endif %}
+
+{% if not athlete_list %}
+  Атлетов нет.
+{% endif %}
+
+{% if athlete_list or coach_list %}
+  Кто-то из атлетов или тренеров точно есть.
+{% endif %}
+
+{% if not athlete_list or coach_list %}
+  То ли нет атлетов, то ли есть тренеры (ну да, перевод
+  с логического на русский выглядит довольно глупо,
+  но мы не виноваты).
+{% endif %}
+
+{% if athlete_list and not coach_list %}
+  Есть несколько атлетов и ни одного тренера.
+{% endif %}
+	    ]]>
+	  </screen>
+	</para>
+
+	<para>
+	  Добавлено с 1.2.
+	</para>
+
+	<para>
+	  Внутри одного тега допускается использование одновременно
+	  условий <token>and</token> и <token>or</token>, при этом
+	  <token>and</token> имеет больший приоритет, чем
+	  <token>or</token>, например:
+	  <screen>
+	    <![CDATA[
+{% if athlete_list and coach_list or cheerleader_list %}
+	    ]]>
+	  </screen>
+	  обрабатывается как:
+	  <screen>
+if (athlete_list and coach_list) or cheerleader_list
+	  </screen>
+	</para>
+
+	<para>
+	  Явное использование скобок в теге <token>if</token> не
+	  допускается. Для указания порядка действий используйте
+	  вложенные теги <token>if</token>.
+	</para>
+
+	<para>
+	  В тегах <token>if</token> также допускаются операторы
+	  <token>==</token>, <token>!=</token>, <token>&lt;</token>,
+	  <token>&gt;</token>, <token>&lt;=</token>,
+	  <token>&gt;=</token> и <token>in</token>, которые работают
+	  следующим образом:
+	</para>
+
+	<section id="&BASEID;.builtin_tags.if.logic.eq">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.eq.title">
+	    Оператор <token>==</token>
+	  </title>
+
+	  <para>
+	    Равенство. Пример:
+	    <screen>
+	      <![CDATA[
+{% if somevar == "x" %}
+  Это предложение будет выведено, если переменная somevar равна строке "x"
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.noteq">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.noteq.title">
+	    Оператор <token>!=</token>
+	  </title>
+
+	  <para>
+	    Неравенство. Пример:
+	    <screen>
+	      <![CDATA[
+{% if somevar != "x" %}
+  Это предложение будет выведено, если переменная somevar не равна строке "x"
+  или вообще не найдена в контексте.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.lower">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.lower.title">
+	    Оператор <token>&lt;</token>
+	  </title>
+
+	  <para>
+	    Меньше. Пример:
+	    <screen>
+	      <![CDATA[
+{% if somevar < 100 %}
+  Это предложение будет выведено, если переменная somevar меньше 100.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.greater">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.greater.title">
+	    Оператор <token>&gt;</token>
+	  </title>
+
+	  <para>
+	    Больше. Пример:
+	    <screen>
+	      <![CDATA[
+{% if somevar > 0 %}
+  Это предложение будет выведено, если переменная somevar больше 0.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.lowereq">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.lowereq.title">
+	    Оператор <token>&lt;=</token>
+	  </title>
+
+	  <para>
+	    Меньше или равно. Пример:
+	    <screen>
+	      <![CDATA[
+{% if somevar <= 100 %}
+  Это предложение будет выведено, если переменная somevar меньше или равна 100.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.greatereq">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.greatereq.title">
+	    Оператор <token>&gt;=</token>
+	  </title>
+
+	  <para>
+	    Больше или равно. Пример:
+	    <screen>
+	      <![CDATA[
+{% if somevar >= 1 %}
+  Это предложение будет выведено, если переменная somevar больше или равна 1.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.in">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.in.title">
+	    Оператор <token>in</token>
+	  </title>
+
+	  <para>
+	    Содержится в. Этот оператор поддерживается многими
+	    контейнерами Python для проверки принадлежности данного
+	    значения данному контейнеру. Далее приводятся несколько
+	    примеров интерпретации выражения <token>x in y</token>:
+	    <screen>
+	      <![CDATA[
+{% if "bc" in "abcdef" %}
+  Это предложение выводится, поскольку "bc" является подстрокой "abcdef"
+{% endif %}
+
+{% if "hello" in greetings %}
+  Если greetings представляет собой список или множество, одним из
+  элементов которого является "hello", это предложение будет выведено.
+{% endif %}
+
+{% if user in users %}
+  Если users представляет собой множество типа QuerySet, это предложение
+  будет выведено, если экземпляр user входит в это множество.
+{% endif %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+	<section id="&BASEID;.builtin_tags.if.logic.notin">
+
+	  <title id="&BASEID;.builtin_tags.if.logic.notin.title">
+	    Оператор <token>not in</token>
+	  </title>
+
+	  <para>
+	    Не содержится в. Отрицание оператора <token>in</token>.
+	  </para>
+
+	  <para>
+	    Операторы сравнения нельзя записывать цепочкой, как в Python
+	    или в математической записи. Например, вместо записи:
+	    <screen>
+	      <![CDATA[
+{% if a > b > c %}  (WRONG)
+	      ]]>
+	    </screen>
+	    следует писать:
+	    <screen>
+	      <![CDATA[
+{% if a > b and b > c %}
+	      ]]>
+	    </screen>
+	  </para>
+
+	</section>
+
+      </section>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters">
+
+      <title id="&BASEID;.builtin_filters.title">
+	Фильтры
+      </title>
+
+      <para>
+	В выражении <token>if</token> можно использовать фильтры,
+	например:
+	<screen>
+	  <![CDATA[
+{% if messages|length >= 100 %}
+  Сегодня у вас туча сообщений!
+{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.pipes">
+
+      <title id="&BASEID;.builtin_filters.pipes.title">
+	Составные выражения
+      </title>
+
+      <para>
+	Все вышеперечисленные операторы можно объединять в составные
+	выражения. В этом случае важно учитывать порядок действий
+	выражений (даны в порядке возрастания приоритета):
+	<itemizedlist>
+	  <listitem>
+	    <para><token>or</token></para>
+	  </listitem>
+
+	  <listitem>
+	    <para><token>and</token></para>
+	  </listitem>
+
+	  <listitem>
+	    <para><token>not</token></para>
+	  </listitem>
+
+	  <listitem>
+	    <para><token>in</token></para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>==</token>, <token>!=</token>,
+	      <token>&lt;</token>,
+	      <token>&gt;</token>,<token>&lt;=</token>,
+	      <token>&gt;=</token>
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	(Точно так же, как и в Python). Таким образом, тег
+	<token>if</token> в следующем примере:
+	<screen>
+	  <![CDATA[
+		   {% if a == b or c == d and e %}
+	  ]]>
+	</screen>
+	... будет интерпретирован как:
+	<screen>
+	  <![CDATA[
+		   (a == b) or ((c == d) and e)
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если вам нужен другой порядок действий, пишите вложенные
+	теги. Порой для ясности лучше так и делать (во имя тех, кто
+	незнаком с порядком действий по умолчанию).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.ifchanged">
+
+      <title id="&BASEID;.builtin_filters.ifchanged.title">
+	ifchanged
+      </title>
+
+      <para>
+	Проверяет, изменилось ли значение переменной на очередной
+	итерации цикла.
+      </para>
+
+      <para>
+	Блочный тег <token>ifchanged</token> используется внутри
+	циклов и имеет два варианта применения.
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Сверяет свое содержимое с его предыдущим состоянием и
+	      отображает содержимое только тогда, когда оно
+	      меняется. Например, показывая список дней, показывает
+	      название месяца только если в очередной записи он
+	      изменился:
+	      <screen>
+		<![CDATA[
+<h1>Архив за {{ year }} год</h1>
+
+{% for date in days %}
+  {% ifchanged %}<h3>{{ date|date:"F" }}</h3>{% endifchanged %}
+  <a href="{{ date|date:"M/d"|lower }}/">{{ date|date:"j" }}</a>
+{% endfor %}
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Если в тег передана переменная, проверяет, изменилась ли
+	      она. Например, следующий код показывает дату каждый раз,
+	      когда она изменяется, но показывает час только если
+	      изменились и час, и дата:
+	      <screen>
+		<![CDATA[
+{% for date in days %}
+  {% ifchanged date.date %} {{ date.date }} {% endifchanged %}
+  {% ifchanged date.hour date.date %}
+    {{ date.hour }}
+  {% endifchanged %}
+{% endfor %}
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Тег <token>ifchanged</token> также может иметь
+	      необязательную ветвь <token>{% else %}</token>, которая
+	      будет выведена, если значение не изменилось:
+	      <screen>
+		<![CDATA[
+{% for match in matches %}
+  <div style="background-color:
+    {% ifchanged match.ballot_id %}
+      {% cycle "red" "blue" %}
+    {% else %}
+      grey
+    {% endifchanged %}
+  ">{{ match }}</div>
+{% endfor %}
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.ifequal">
+
+      <title id="&BASEID;.builtin_filters.ifequal.title">
+	ifequal
+      </title>
+
+      <para>
+	Выводит содержимое блока, если два переданных аргумента равны.
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+{% ifequal user.id comment.user_id %}
+  ...
+{% endifequal %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Как и с тегом <token>{% if %}</token> , можно использовать
+	необязательную ветвь <token>{% else %}</token>.
+      </para>
+
+      <para>
+	Аргументы могут быть строковыми константами, то есть возможен
+	такой вариант:
+	<screen>
+	  <![CDATA[
+{% ifequal user.username "adrian" %}
+  ...
+{% endifequal %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Аргументы сравниваются только с переменными шаблона или со
+	строковыми константами. Нельзя проверить переменную на
+	равенство с Python-объектами типа <token>True</token> или
+	<token>False</token>. Если вам нужно проверить истинность или
+	ложность переменной, лучше примените для этого тег
+	<token>if</token>.
+      </para>
+
+      <para>
+	Добавлено с 1.2.
+      </para>
+
+      <para>
+	Альтернативой тегу <token>ifequal</token> является
+	использование тега <token>if</token> с оператором
+	<token>==</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.ifnotequal">
+
+      <title id="&BASEID;.builtin_filters.ifnotequal.title">
+	ifnotequal
+      </title>
+
+      <para>
+	То же самое, что и <token>ifequal</token>, только проверяет
+	аргументы на неравенство.
+      </para>
+
+      <para>
+	Добавлено с 1.2.
+      </para>
+
+      <para>
+	Альтернативой тегу <token>ifnotequal</token> является
+	использование тега <token>if</token> с оператором
+	<token>!=</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.include">
+
+      <title id="&BASEID;.builtin_filters.include.title">
+	include
+      </title>
+
+      <para>
+	Загружает шаблон и обрабатывает его в текущем контексте. Таким
+	способом можно <quote>включать</quote> другие шаблоны в данный
+	шаблон.
+      </para>
+
+      <para>
+	Имя шаблона может быть как переменной, так и строковой
+	константой (в одинарных или двойных кавычках).
+      </para>
+
+      <para>
+	В следующем примере подключается содержимое шаблона
+	<token>"foo/bar.html"</token>:
+	<screen>
+	  <![CDATA[
+{% include "foo/bar.html" %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	А в этом примере подключается содержимое шаблона, имя которого
+	содержит переменная <token>template_name</token>:
+	<screen>
+	  <![CDATA[
+{% include template_name %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Включенный шаблон обрабатывается с учетом контекста шаблона, в
+	который он включен. Следующий пример выводит <token>"Hello,
+	John"</token>:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Контекст: переменная <token>person</token> содержит
+	      значение <token>"john"</token>.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Основной шаблон:
+	      <screen>
+		<![CDATA[
+{% include "name_snippet.html" %}
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Включаемый шаблон <token>name_snippet.html</token>:
+	      <screen>
+		<![CDATA[
+Hello, {{ person }}
+		]]>
+	      </screen>
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	См. также: <token>{% ssi %}</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.load">
+
+      <title id="&BASEID;.builtin_filters.load.title">
+	load
+      </title>
+
+      <para>
+	Загружает набор пользовательских тегов.
+      </para>
+
+      <para>
+	Подробнее см. <quote>Библиотеки пользовательских тегов и
+	фильтров</quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.now">
+
+      <title id="&BASEID;.builtin_filters.now.title">
+	now
+      </title>
+
+      <para>
+	Выводит текущую дату, отформатированную в соответствии с
+	указанной строкой.
+      </para>
+
+      <para>
+	Использует несколько расширенный формат PHP-функции
+	<token>date()</token> (http://php.net/date).
+	<!-- FIXME: FORMAT HERE -->
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+Сейчас {% now "jS F Y H:i" %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Обратите внимание на необходимость экранировать буквы,
+	входящие в набор символов формата, если они являются частью
+	текста. В примере ниже буква <quote>f</quote> экранирована
+	обратным слэшем, поскольку иначе будет восприниматься как
+	символ формата, выводящий время. Букву <quote>o</quote>
+	экранировать не требуется, поскольку она не относится к
+	символам форматирования:
+	<screen>
+	  <![CDATA[
+It is the {% now "jS o\f F" %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Такой код выведет:
+	<screen>
+	  <![CDATA[
+It is the 4th of September
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.regroup">
+
+      <title id="&BASEID;.builtin_filters.regroup.title">
+	regroup
+      </title>
+
+      <para>
+	Группирует список похожих элементов по одинаковому признаку.
+      </para>
+
+      <para>
+	Действие этого составного тега проще объяснить на примере:
+	допустим, переменная <token>people</token> является списком
+	людей, каждый из которых представлен словарем с ключами
+	<token>first_name</token>, <token>last_name</token> и
+	<token>gender</token>:
+	<screen>
+	  <![CDATA[
+people = [
+  {'first_name': 'George', 'last_name': 'Bush', 'gender': 'Male'},
+  {'first_name': 'Bill', 'last_name': 'Clinton', 'gender': 'Male'},
+  {'first_name': 'Margaret', 'last_name': 'Thatcher', 'gender': 'Female'},
+  {'first_name': 'Condoleezza', 'last_name': 'Rice', 'gender': 'Female'},
+  {'first_name': 'Pat', 'last_name': 'Smith', 'gender': 'Unknown'},
+]
+	  ]]>
+	</screen>
+	... и вы хотите вывести двухуровневый список, сгруппировав
+	людей по полу, например, вот так:
+	<screen>
+	  <![CDATA[
+* Male:
+* George Bush
+* Bill Clinton
+* Female:
+* Margaret Thatcher
+* Condoleezza Rice
+* Unknown:
+* Pat Smith
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Это можно сделать при помощи тега <token>{% regroup
+	%}</token>. Код шаблона для этой операции показан ниже:
+	<screen>
+	  <![CDATA[
+{% regroup people by gender as gender_list %}
+
+<ul>
+  {% for gender in gender_list %}
+    <li>{{ gender.grouper }}
+      <ul>
+        {% for item in gender.list %}
+          <li>{{ item.first_name }} {{ item.last_name }}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Рассмотрим этот пример подробнее. Тег <token>{% regroup
+	%}</token> принимает три аргумента: список для группировки,
+	признак, по которому нужно сгруппировать элементы, и имя
+	полученного списка. В данном случае мы группируем список
+	<token>people</token> по атрибуту <token>gender</token> и
+	полученный результат называем <token>gender_list</token>.
+      </para>
+
+      <para>
+	Результатом работы <token>{% regroup %}</token> является
+	список (в данном случае — <token>gender_list</token>)
+	<emphasis>групповых объектов</emphasis>. У каждого
+	группового объекта есть два атрибута:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token>grouper</token> &mdash; значение признака, по
+	      которому была произведена группировка (например, строка
+	      <quote>Male</quote> или <quote>Female</quote>).
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token>list</token> &mdash; список всех элементов в этой
+	      группе (в данном случае, список всех людей с полом
+	      <quote>Male</quote>).
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Имейте в виду, что <token>{% regroup %}</token> не
+	упорядочивает обрабатываемый список! В нашем примере мы
+	предполагаем, что список <token>people</token> был изначально
+	упорядочен по атрибуту <token>gender</token>. Если элементы
+	списка <token>people</token> <emphasis>не</emphasis>
+	упорядочены по атрибуту <token>gender</token>, перегруппировка
+	простодушно покажет несколько групп для одного и того же
+	пола. Допустим, что наш список <token>people</token> изначально
+	был вот таким (заметьте, что в этом списке мужчины не
+	находятся рядом):
+	<screen>
+	  <![CDATA[
+people = [
+  {'first_name': 'Bill', 'last_name': 'Clinton', 'gender': 'Male'},
+  {'first_name': 'Pat', 'last_name': 'Smith', 'gender': 'Unknown'},
+  {'first_name': 'Margaret', 'last_name': 'Thatcher', 'gender': 'Female'},
+  {'first_name': 'George', 'last_name': 'Bush', 'gender': 'Male'},
+  {'first_name': 'Condoleezza', 'last_name': 'Rice', 'gender': 'Female'},
+]
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	При таком значении переменной <token>people</token>,
+	вышеприведенный пример шаблона с тегом <token>{% regroup
+	%}</token> выдаст следующее:
+	<screen>
+	  <![CDATA[
+* Male:
+* Bill Clinton
+* Unknown:
+* Pat Smith
+* Female:
+* Margaret Thatcher
+* Male:
+* George Bush
+* Female:
+* Condoleezza Rice
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Проще всего обойти такое нежелательно поведение, если
+	обеспечить требуемый порядок элементов списка заранее, еще в
+	коде представления.
+      </para>
+
+      <para>
+	Если нужные данные представлены в виде списка словарей, то
+	можно отсортировать данные прямо в шаблоне, применив фильтр
+	<token>dictsort</token>:
+	<screen>
+	  <![CDATA[
+{% regroup people|dictsort:"gender" by gender as gender_list %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.spaceless">
+
+      <title id="&BASEID;.builtin_filters.spaceless.title">
+	spaceless
+      </title>
+
+      <para>
+	Удаляет пробельные символы между HTML-тегами, в т.ч. символы
+	табуляции и новой строки.
+      </para>
+
+      <para>
+	Пример использования:
+	<screen>
+	  <![CDATA[
+{% spaceless %}
+  <p>
+    <a href="foo/">Foo</a>
+  </p>
+{% endspaceless %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Этот шаблон выведет следующий HTML-код:
+	<screen>
+	  <![CDATA[
+<p><a href="foo/">Foo</a></p>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Удаляются только пробелы между <emphasis>тегами</emphasis>,
+	пробелы между тегами и текстом не удаляются. В следующем
+	примере, пробелы вокруг слова <token>Hello</token> останутся
+	нетронутыми:
+	<screen>
+	  <![CDATA[
+{% spaceless %}
+  <strong>
+    Hello
+  </strong>
+{% endspaceless %}
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.ssi">
+
+      <title id="&BASEID;.builtin_filters.ssi.title">
+	ssi
+      </title>
+
+      <para>
+	Выводит на страницу содержимое указанного файла.
+      </para>
+
+      <para>
+	Подобно тегу <token>include</token>, <token>{% ssi %}</token>
+	включает в данную страницу содержимое другого файла (указанный
+	путь к файлу должен быть абсолютным):
+	<screen>
+	  <![CDATA[
+{% ssi /home/html/ljworld.com/includes/right_generic.html %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если указан необязательный параметр <token>parsed</token>,
+	содержимое указанного файла обрабатывается как шаблон с
+	использованием текущего контекста:
+	<screen>
+	  <![CDATA[
+{% ssi /home/html/ljworld.com/includes/right_generic.html parsed %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Перед применением тега <token>{% ssi %}</token> в целях
+	безопасности необходимо определить константу
+	<token>ALLOWED_INCLUDE_ROOTS</token> в настройках Джанго.
+      </para>
+
+      <para>
+	См. также тег <token>{% include %}</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.templatetag">
+
+      <title id="&BASEID;.builtin_filters.templatetag.title">
+	templatetag
+      </title>
+
+      <para>
+	Выводит одну из последовательностей символов, используемых для
+	указания тегов в шаблоне.
+      </para>
+
+      <para>
+	Поскольку в шаблонной системе Джанго не предусмотрено понятие
+	<quote>экранирования</quote>, то для вывода последовательности
+	символов, используемых для указания тегов в шаблоне, нужно
+	использовать тег <token>{% templatetag %}</token>.
+      </para>
+
+      <para>
+	Аргумент тега указывает, какую именно последовательность
+	символов нужно вывести:
+
+	<table id="&BASEID;.tbl2" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl2.title">
+	    Список аргументов
+	  </title>
+
+	  <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="6cm"/>
+	    <colspec colname="c2" colwidth="8cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Аргумент</entry>
+		<entry>Вывод</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>openblock</token></entry>
+		<entry><token>{%</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>closeblock</token></entry>
+		<entry><token>%}</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>openvariable</token></entry>
+		<entry><token>{{</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>closevariable</token></entry>
+		<entry><token>}}</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>openbrace</token></entry>
+		<entry><token>{</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>closebrace</token></entry>
+		<entry><token>}</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>opencomment</token></entry>
+		<entry><token>{#</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>closecomment</token></entry>
+		<entry><token>#}</token></entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.url">
+
+      <title id="&BASEID;.builtin_filters.url.title">
+	url
+      </title>
+
+      <para>
+	Возвращает абсолютный URL (т.е. URL без имени домена),
+	соответствующий указанной функции представления и
+	необязательным параметрам. Использование этого тега позволяет
+	выводить ссылки, не нарушая принцип DRY указанием конкретных
+	ссылок в шаблонах:
+	<screen>
+	  <![CDATA[
+{% url path.to.some_view v1 v2 %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Первый аргумент тега &mdash; путь к функции представления в
+	виде <token>package.package.module.function</token>. Остальные
+	аргументы необязательны и представляют собой разделенные
+	пробелами значения аргументов для указанного URL. Пример выше
+	показывает передачу позиционных аргументов функции. Можно
+	также передавать именованные аргументы:
+	<screen>
+	  <![CDATA[
+{% url path.to.some_view arg1=v1 arg2=v2 %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Не используйте позиционные и именованные аргументы в одном
+	вызове. Обязательно указывайте все аргументы, требуемые в
+	схеме URL.
+      </para>
+
+      <para>
+	Рассмотрим пример. Допустим, у вас есть функция представления
+	<token>app_views.client</token>, схема URL которой принимает
+	ID клиента (в данном случае, <token>client()</token> &mdash;
+	это метод в файле представлений
+	<token>app_views.py</token>). Соответствующая строка в схеме
+	URL может выглядеть так:
+	<screen>
+	  <![CDATA[
+('^client/(\d+)/$', 'app_views.client')
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если схема URL данного приложения включена в схему URL всего
+	проекта подобным образом:
+	<screen>
+	  <![CDATA[
+('^clients/', include('project_name.app_name.urls'))
+	  ]]>
+	</screen>
+	...то в шаблоне вы можете указать ссылку на это представление
+	вот так:
+	<screen>
+	  <![CDATA[
+{% url app_views.client client.id %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Тег шаблона выведет строку <token>/clients/client/123/</token>.
+      </para>
+
+      <para>
+	Добавлено с 1.0.
+      </para>
+
+      <para>
+	В случае использования именованных URL-паттернов вместо
+	указания пути к функции представления достаточно сослаться на
+	имя паттерна в теге <token>url</token>.
+      </para>
+
+      <para>
+	Имейте в виду, что если URL, который вы пытаетесь вычислить,
+	не существует, Джанго вызовет исключение
+	<token>NoReverseMatch</token>, что приведет к отображению
+	страницы ошибки вашего сайта.
+      </para>
+
+      <para>
+	Если вам требуется получить URL, не отображая его, немного
+	измените вызов тега:
+	<screen>
+	  <![CDATA[
+{% url path.to.view arg arg2 as the_url %}
+
+<a href="{{ the_url }}">Я ссылаюсь на {{ the_url }}</a>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Синтаксис <token>{% url ... as var %}</token>
+	<emphasis>не</emphasis> вызывает ошибку, если искомое
+	представление отсутствует. На практике можно использовать
+	такой вызов для ссылки на необязательные представления:
+	<screen>
+	  <![CDATA[
+{% url path.to.view as the_url %}
+{% if the_url %}
+  <a href="{{ the_url }}">Ссылка на что-нибудь необязательное</a>
+{% endif %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Добавлено с 1.1.
+      </para>
+
+      <para>
+	Если вам нужно получить URL в определенном пространстве имен,
+	укажите полное имя представления:
+	<screen>
+	  <![CDATA[
+{% url myapp:view-name %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В этом случае используется стандартная стратегия
+	разрешения URL в пространстве имен с учетом возможных
+	нюансов, определенных в данном контексте, применительно к
+	текущему приложению.
+      </para>
+
+      <para>
+	Добавлено с 1.2.
+      </para>
+
+      <para>
+	Для обратной совместимости тег <token>{% url %}</token>
+	поддерживает использование запятой для разделения
+	аргументов. Не используйте этот синтаксис в новых проектах и
+	на всякий случай посмотрите, как это выглядело:
+	<screen>
+	  <![CDATA[
+{% url path.to.view arg,arg2 %}
+{% url path.to.view arg, arg2 %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В этом случае нельзя использовать внутри строковых аргументов
+	запятые и знаки равенства. Мы уже сказали вам не использовать
+	этот синтаксис в новых проектах?
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.widthratio">
+
+      <title id="&BASEID;.builtin_filters.widthratio.title">
+	widthratio
+      </title>
+
+      <para>
+	Для создания диаграмм и т.п. рассчитывает отношение текущего
+	значения к максимальному и применяет это отношение к указанной
+	константе.
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+<img src="bar.gif" height="10" width="{% widthratio this_value max_value 100 %}" />
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>this_value</token> равно 175, а
+	<token>max_value</token> равно 200, то ширина рисунка
+	<quote>bar.gif</quote> будет 88 точек (поскольку 175/200 =
+	.875; .875 * 100 = 87.5, округленно 88).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.builtin_filters.with">
+
+      <title id="&BASEID;.builtin_filters.with.title">
+	with
+      </title>
+
+      <para>
+	Добавлено с 1.0.
+      </para>
+
+      <para>
+	Кэширует составную переменную под отдельным именем. Полезно в
+	случаях многократного обращения к
+	<quote>дорогостоящему</quote> методу (использующему
+	вычислительные ресурсы, например, доступ к базе данных).
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+{% with business.employees.count as total %}
+  {{ total }} employee{{ total|pluralize }}
+{% endwith %}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Переменная, получившая значение (в данном примере
+	<token>total</token>), доступна только между тегами <token>{%
+	with %}</token> и <token>{% endwith %}</token>.
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.filters_info">
+
+    <title id="&BASEID;.filters_info.title">
+      Справочник по стандартным фильтрам
+    </title>
+
+    <section id="&BASEID;.filters_info.add">
+
+      <title id="&BASEID;.filters_info.add.title">
+	add
+      </title>
+
+      <para>
+	Добавляет аргумент к обрабатываемому значению.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|add:"2" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>4</token>, результатом
+	действия фильтра будет <token>6</token>.
+      </para>
+
+      <para>
+	Добавлено с 1.2.
+      </para>
+
+      <para>
+	Первым делом данный фильтр пытается привести оба значения к
+	целым числам. Если это не удается, то выполняется обычное
+	сложение. Для некоторых типов данных это удается (строки,
+	списки и т.д.), для других нет. В случае неудачи результатом
+	будет пустая строка.
+      </para>
+
+      <para>
+	Например, если мы применим фильтр:
+	<screen>
+	  <![CDATA[
+{{ first|add:second }}
+	  ]]>
+	</screen>
+	где <token>first</token> содержит список <token>[1, 2,
+	3]</token>, а <token>second</token> &mdash; список <token>[4,
+	5, 6]</token>, результатом будет список <token>[1, 2, 3, 4, 5,
+	6]</token>.
+      </para>
+
+      <para>
+	<note>
+	  <para>
+	    Имейте в виду, что если оба значения представляют собой
+	    строки, которые приводятся к целым числам, то будет
+	    выполнено <emphasis>сложение</emphasis>, а не конкатенация
+	    (см. первый пример).
+	  </para>
+	</note>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.addslashes">
+
+      <title id="&BASEID;.filters_info.addslashes.title">
+	addslashes
+      </title>
+
+      <para>
+	Добавляет слэши перед кавычками. В частности, полезно для
+	экранирования строк в формате CSV.
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+{{ value|addslashes }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>I'm using
+	Django</token>, фильтр выведет <token>I\'m using
+	Django</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.capfirst">
+
+      <title id="&BASEID;.filters_info.capfirst.title">
+	capfirst
+      </title>
+
+      <para>
+	Делает первый символ переменной заглавным.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|capfirst }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>django</token>, фильтр
+	выведет <token>Django</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.center">
+
+      <title id="&BASEID;.filters_info.center.title">
+	center
+      </title>
+
+      <para>
+	Центрирует значение в поле данной ширины.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+"{{ value|center:"15" }}"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно
+	<token><![CDATA["Django"]]></token>, результатом действия
+	фильтра будет <token><![CDATA[" Django "]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.cut">
+
+      <title id="&BASEID;.filters_info.cut.title">
+	cut
+      </title>
+
+      <para>
+	Удаляет все вхождения переданного аргумента из обрабатываемого
+	значения.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|cut:" "}}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["String with
+	spaces"]]></token>, фильтр выведет
+	<token><![CDATA["Stringwithspaces"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.date">
+
+      <title id="&BASEID;.filters_info.date.title">
+	date
+      </title>
+
+      <para>
+	Форматирует дату в заданном формате.
+      </para>
+
+      <para>
+	Формат может быть задан предопределенными константами:
+	<token>DATE_FORMAT</token>, <token>DATETIME_FORMAT</token>,
+	<token>SHORT_DATE_FORMAT</token> либо
+	<token>SHORT_DATETIME_FORMAT</token>, а также строкой формата
+	(см. тег <token><xref linkend="&BASEID;.builtin_filters.now"
+	endterm="&BASEID;.builtin_filters.now.title"/></token>). Имейте
+	в виду, что действие предопределенных констант может зависить
+	от локали.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|date:"D d M Y" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является объектом
+	<token>datetime</token> (т.е. результатом функции
+	<token>datetime.datetime.now()</token>), фильтр выведет
+	<token>'Wed 09 Jan 2008'</token>.
+      </para>
+
+      <para>
+	Другой пример:
+      </para>
+
+      <para>
+	Допустим, параметр <token>USE_L10N</token> равен
+	<token>True</token>, а <token>LANGUAGE_CODE</token>, например,
+	<token><![CDATA["es"]]></token>, тогда результатом действия
+	фильтра:
+	<screen>
+	  <![CDATA[
+{{ value|date:"SHORT_DATE_FORMAT" }}
+	  ]]>
+	</screen>
+	будет строка <token><![CDATA["09/01/2008"]]></token>
+	(т.к. <token><![CDATA["SHORT_DATE_FORMAT"]]></token> в локали
+	<token>es</token> использует строку формата
+	<token><![CDATA["d/m/Y"]]></token>).
+      </para>
+
+      <para>
+	Если формат не указан:
+	<screen>
+	  <![CDATA[
+{{ value|date }}
+	  ]]>
+	</screen>
+	то будет использована строка формата, определенная в параметре
+	<token>DATE_FORMAT</token>, без учета локализации.
+      </para>
+
+      <para>
+	Добавлено в 1.2.
+      </para>
+
+      <para>
+	Текущая локаль теперь влияет на предопределенные форматы.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.default">
+
+      <title id="&BASEID;.filters_info.default.title">
+	default
+      </title>
+
+      <para>
+	Если значение вычисляется как <token>False</token>, выводит
+	указанный аргумент как значение по умолчанию. В противном
+	случае выводит само значение.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|default:"nothing" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA[""]]></token>
+	(пустая строка), фильтр выведет <token>nothing</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.default_if_none">
+
+      <title id="&BASEID;.filters_info.default_if_none.title">
+	default_if_none
+      </title>
+
+      <para>
+	Если (и только если) значение равно <token>None</token>,
+	выводит указанный аргумент как значение по умолчанию. В
+	противном случае выводит само значение.
+      </para>
+
+      <para>
+	Если значение является пустой строкой, аргумент по умолчанию
+	<emphasis>не</emphasis> будет использован.  Для замены пустых
+	строк используйте фильтр <token>default</token>.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|default_if_none:"nothing" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>None</token>, фильтр
+	выведет строку <token><![CDATA["nothing"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.dictsort">
+
+      <title id="&BASEID;.filters_info.dictsort.title">
+	dictsort
+      </title>
+
+      <para>
+	Принимает список словарей и возвращает список, отсортированный
+	по ключу, указанному в качестве аргумента.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|dictsort:"name" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является списком:
+	<screen>
+	  <![CDATA[
+[
+  {'name': 'zed', 'age': 19},
+  {'name': 'amy', 'age': 22},
+  {'name': 'joe', 'age': 31},
+]
+	  ]]>
+	</screen>
+	то такой фильтр вернет список:
+	<screen>
+	  <![CDATA[
+[
+  {'name': 'amy', 'age': 22},
+  {'name': 'joe', 'age': 31},
+  {'name': 'zed', 'age': 19},
+]
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.dictsortreversed">
+
+      <title id="&BASEID;.filters_info.dictsortreversed.title">
+	dictsortreversed
+      </title>
+
+      <para>
+	Принимает список словарей и возвращает список, отсортированный
+	в обратном порядке по ключу, указанному в качестве
+	аргумента. Действует аналогично предыдущему фильтру, но
+	полученный список будет в обратном порядке.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.divisibleby">
+
+      <title id="&BASEID;.filters_info.divisibleby.title">
+	divisibleby
+      </title>
+
+      <para>
+	Возвращает <token>True</token>, если значение делится на
+	указанный аргумент.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|divisibleby:"3" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>21</token>, фильтр
+	выведет <token>True</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.escape">
+
+      <title id="&BASEID;.filters_info.escape.title">
+	escape
+      </title>
+
+      <para>
+	Заменяет символы, используемые в HTML, на соответствующие
+	HTML-сущности, а именно:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <token><![CDATA[<]]></token> заменяется на
+	      <token><![CDATA[&lt;]]></token>;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token><![CDATA[>]]></token> заменяется на
+	      <token><![CDATA[&gt;]]></token>;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token><![CDATA[']]></token> (одинарная кавычка)
+	      заменяется на <token><![CDATA[&#39;]]></token>;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token><![CDATA["]]></token> (двойная кавычка)
+	      заменяется на <token><![CDATA[&quot;]]></token>;
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <token><![CDATA[&]]></token> заменяется на
+	      <token><![CDATA[&amp;]]></token>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+      <para>
+	Замена производится непосредственно перед выводом результата,
+	поэтому положение <token>escape</token> в цепочке фильтров не
+	имеет значения: он всегда будет применен последним. Если
+	порядок применения этого фильтра важен, используйте фильтр
+	<token>force_escape</token>.
+      </para>
+
+      <para>
+	Применение фильтра <token>escape</token> к переменной, которая
+	будет экранирована автоматически, в любом случае приведет к
+	однократному экранированию. Таким образом, применение этого
+	фильтра безопасно. Если требуется неоднократная замена
+	HTML-символов, используйте фильтр <token>force_escape</token>.
+      </para>
+
+      <para>
+	Изменено в 1.0.
+      </para>
+
+      <para>
+	В связи с автоматическим экранированием поведение этого
+	фильтра несколько изменено.  Замены осуществляются только один
+	раз, после применения всех имеющихся фильтров (расположенных
+	как до, так и после данного фильтра).
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.escapejs">
+
+      <title id="&BASEID;.filters_info.escapejs.title">
+	escapejs
+      </title>
+
+      <para>
+	Добавлено в 1.0.
+      </para>
+
+      <para>
+	Экранирует символы для использования в
+	JavaScript-строках. Этот фильтр <emphasis>не</emphasis> делает
+	строку безопасной для HTML, а лишь защищает от синтаксических
+	ошибок при генерации кода JavaScript/JSON.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|escapejs }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно
+	<token><![CDATA["testing\r\njavascript \'string"
+	<b>escaping</b>"]]></token>, в результате получится
+	<token><![CDATA["testing\\u000D\\u000Ajavascript
+	\\u0027string\\u0022
+	\\u003Cb\\u003Eescaping\\u003C/b\\u003E"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.filesizeformat">
+
+      <title id="&BASEID;.filters_info.filesizeformat.title">
+	filesizeformat
+      </title>
+
+      <para>
+	Форматирует значение в виде <quote>человекопонятного</quote>
+	размера файла (т.е. <token>13 KB</token>, <token>4.1
+	MB</token>, <token>102 bytes</token>, и т.п.).
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|filesizeformat }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно 123456789, фильтр выведет
+	<token>117.7 MB</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.first">
+
+      <title id="&BASEID;.filters_info.first.title">
+	first
+      </title>
+
+      <para>
+	Возвращает первый элемент списка.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|first }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> содержит список
+	<token><![CDATA[['a', 'b', 'c']]]></token>, результатом
+	действия фильтра будет <token><![CDATA['a']]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.fix_ampersands">
+
+      <title id="&BASEID;.filters_info.fix_ampersands.title">
+	fix_ampersands
+      </title>
+
+      <para>
+	Изменено с 1.0.
+      </para>
+
+      <para>
+	Используется редко, т.к. амперсанды экранируются
+	автоматически. Подробнее см. <token><xref
+	linkend="&BASEID;.filters_info.escape"
+	endterm="&BASEID;.filters_info.escape.title"/></token>.
+      </para>
+
+      <para>
+	Заменяет амперсанды на сущности
+	<token><![CDATA[&amp;]]></token>.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|fix_ampersands }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA[Tom &
+	Jerry]]></token>, будет выведено<token><![CDATA[Tom &amp;
+	Jerry]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.floatformat">
+
+      <title id="&BASEID;.filters_info.floatformat.title">
+	floatformat
+      </title>
+
+      <para>
+	При использовании без аргумента выводит дробное число с одним
+	знаком после запятой &mdash; если имеется дробная
+	часть. Например:
+
+	<table id="&BASEID;.tbl3" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl3.title">
+	    Без аргументов
+	  </title>
+
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="3cm"/>
+	    <colspec colname="c2" colwidth="3cm"/>
+	    <colspec colname="c3" colwidth="8cm"/>
+
+	    <thead>
+	      <row>
+		<entry><token>value</token></entry>
+		<entry>Шаблон</entry>
+		<entry>Вывод</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>34.23234</token></entry>
+		<entry><token>{{ value|floatformat }}</token></entry>
+		<entry><token>34.2</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>34.00000</token></entry>
+		<entry><token>{{ value|floatformat }}</token></entry>
+		<entry><token>34</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>34.26000</token></entry>
+		<entry><token>{{ value|floatformat }}</token></entry>
+		<entry><token>34.3</token></entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+      <para>
+	Если указан целочисленный положительный аргумент,
+	<token>floatformat</token> округляет число до указанного числа
+	знаков после запятой и выводит их все. Например:
+
+	<table id="&BASEID;.tbl4" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl4.title">
+	    Положительный аргумент
+	  </title>
+
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="3cm"/>
+	    <colspec colname="c2" colwidth="3cm"/>
+	    <colspec colname="c3" colwidth="8cm"/>
+
+	    <thead>
+	      <row>
+		<entry><token>value</token></entry>
+		<entry>Шаблон</entry>
+		<entry>Вывод</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>34.23234</token></entry>
+		<entry><token>{{ value|floatformat:3 }}</token></entry>
+		<entry><token>34.232</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>34.00000</token></entry>
+		<entry><token>{{ value|floatformat:3 }}</token></entry>
+		<entry><token>34.000</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>34.26000</token></entry>
+		<entry><token>{{ value|floatformat:3 }}</token></entry>
+		<entry><token>34.260</token></entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+      <para>
+	Если аргумент отрицательный, то <token>floatformat</token>
+	округляет число до указанного числа знаков после запятой и
+	выводит их все, если имеется дробная часть. Например:
+
+	<table id="&BASEID;.tbl5" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl5.title">
+	    Отрицательный аргумент
+	  </title>
+
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="3cm"/>
+	    <colspec colname="c2" colwidth="3cm"/>
+	    <colspec colname="c3" colwidth="8cm"/>
+
+	    <thead>
+	      <row>
+		<entry><token>value</token></entry>
+		<entry>Шаблон</entry>
+		<entry>Вывод</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>34.23234</token></entry>
+		<entry><token>{{ value|floatformat:-3 }}</token></entry>
+		<entry><token>34.232</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>34.00000</token></entry>
+		<entry><token>{{ value|floatformat:-3 }}</token></entry>
+		<entry><token>34</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>34.26000</token></entry>
+		<entry><token>{{ value|floatformat:-3 }}</token></entry>
+		<entry><token>34.260</token></entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+      <para>
+	Вызов <token>floatformat</token> без аргумента эквивалентен
+	вызову с аргументом <token>-1</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.force_escape">
+
+      <title id="&BASEID;.filters_info.force_escape.title">
+	force_escape
+      </title>
+
+      <para>
+	Добавлено с 1.0.
+      </para>
+
+      <para>
+	Экранирует HTML-символы в строке (подробнее см. описание
+	фильтра <token>escape</token>).  Применяется
+	<emphasis>немедленно</emphasis> и возвращает новую,
+	экранированную строку, что полезно в тех редких случаях, кога
+	требуется неоднократное экранирование или применение ряда
+	фильтров к уже экранированной строке. Обычно же достаточно
+	фильтра <token>escape</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.get_digit">
+
+      <title id="&BASEID;.filters_info.get_digit.title">
+	get_digit
+      </title>
+
+      <para>
+	Принимая аргумент-число, возвращает цифру соответствующего
+	порядка: последнюю цифру, если аргумент равен 1,
+	предпоследнюю, если 2 и т.д.  Если значение или аргумент не
+	являются целыми числами или аргумент меньше 1, не производит
+	никакого эффекта.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|get_digit:"2" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>123456789</token>,
+	фильтр вернет <token>8</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.iriencode">
+
+      <title id="&BASEID;.filters_info.iriencode.title">
+	iriencode
+      </title>
+
+      <para>
+	Преобразует IRI (Internationalized Resource Identifier) в
+	строку, которую можно включить в URL. Это полезно в случае,
+	если в предполагаемом адресе содержатся символы, не входящие в
+	набор ASCII.
+      </para>
+
+      <para>
+	Применение этого фильтра для строк, пропущенных через фильтр
+	<token>urlencode</token>, безопасно.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|iriencode }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно
+	<token><![CDATA["?test=1&me=2"]]></token>, результат будет
+	<token><![CDATA["?test=1&amp;me=2"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.join">
+
+      <title id="&BASEID;.filters_info.join.title">
+	join
+      </title>
+
+      <para>
+	Соединяет элементы списка в строку, используя аргумент как
+	разделитель (аналогично Python-функции
+	<token>str.join(list)</token>).
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|join:" // " }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является списком
+	<token><![CDATA[['a', 'b', 'c']]]></token>, фильтр выведет
+	строку <token><![CDATA["a // b // c"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.last">
+
+      <title id="&BASEID;.filters_info.last.title">
+	last
+      </title>
+
+      <para>
+	Добавлено в 1.0.
+      </para>
+
+      <para>
+	Возвращает последний элемент списка.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|last }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является списком
+	<token><![CDATA[['a', 'b', 'c', 'd']]]></token>, фильтр выведет
+	строку <token><![CDATA["d"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.length">
+
+      <title id="&BASEID;.filters_info.length.title">
+	length
+      </title>
+
+      <para>
+	Возвращает длину переменной. Работает для как для строк, так и
+	для списков.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|length }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является списком
+	<token><![CDATA[['a', 'b', 'c', 'd']]]></token>, фильтр
+	выведет <token>4</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.length_is">
+
+      <title id="&BASEID;.filters_info.length_is.title">
+	length_is
+      </title>
+
+      <para>
+	Возвращает <token>True</token>, если длина значения равна
+	указанному аргументу, в противном случае возвращает
+	<token>False</token>.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|length_is:"4" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является списком
+	<token><![CDATA[['a', 'b', 'c', 'd']]]></token>, фильтр
+	выведет <token>True</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.linebreaks">
+
+      <title id="&BASEID;.filters_info.linebreaks.title">
+	linebreaks
+      </title>
+
+      <para>
+	Заменяет переносы строк в простом тексте на соответствующий
+	HTML; новая строка заменяется на тег <token><![CDATA[<br
+	/>]]></token>, а новая строка с последующей пустой строкой
+	&mdash; тегом <token><![CDATA[</p>]]></token>.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|linebreaks }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>Joel\nis a
+	slug</token>, фильтр выведет <token><![CDATA[<p>Joel<br />is a
+	slug</p>]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.linebreaksbr">
+
+      <title id="&BASEID;.filters_info.linebreaksbr.title">
+	linebreaksbr
+      </title>
+
+      <para>
+	Преобразует все переносы строк в тег <token><![CDATA[<br
+	/>]]></token>.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|linebreaksbr }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>Joel\nis a
+	slug</token>, фильтр выведет <token><![CDATA[Joel<br />is a
+	slug]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.linenumbers">
+
+      <title id="&BASEID;.filters_info.linenumbers.title">
+	linenumbers
+      </title>
+
+      <para>
+	Выводит текст с номерами строк.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|linenumbers }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно:
+	<screen>
+	  <![CDATA[
+one
+two
+three
+	  ]]>
+	</screen>
+	фильтр выведет:
+	<screen>
+	  <![CDATA[
+1. one
+2. two
+3. three
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.ljust">
+
+      <title id="&BASEID;.filters_info.ljust.title">
+	ljust
+      </title>
+
+      <para>
+	Выравнивает текст влево в поле заданной ширины. Аргумент:
+	ширина поля.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+"{{ value|ljust:"10" }}"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>Django</token>,
+	результат будет <token><![CDATA["Django "]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.lower">
+
+      <title id="&BASEID;.filters_info.lower.title">
+	lower
+      </title>
+
+      <para>
+	Приводит строку к нижнему регистру.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|lower }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>Still MAD At
+	Yoko</token>, фильтр выведет <token>still mad at yoko</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.make_list">
+
+      <title id="&BASEID;.filters_info.make_list.title">
+	make_list
+      </title>
+
+      <para>
+	Возвращает список, полученный из значения обрабатываемой
+	переменной. Целое число будет преобразовано в список цифр,
+	строка &mdash; в список букв.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|make_list }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является строкой
+	<token><![CDATA["Joel"]]></token>, результатом будет список
+	<token><![CDATA[[u'J', u'o', u'e', u'l']]]></token>. Если
+	<token>value</token> является числом <token>123</token>,
+	результатом будет список <token>[1, 2, 3]</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.phone2numeric">
+
+      <title id="&BASEID;.filters_info.phone2numeric.title">
+	phone2numeric
+      </title>
+
+      <para>
+	Преобразует телефонный номер (в т.ч. содержащий буквы) в
+	числовой формат.
+      </para>
+
+      <para>
+	Входное значение не проверяется на правильность формата
+	&mdash; любая строка будет преобразована.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|phone2numeric }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>800-COLLECT</token>,
+	фильтр вернет <token>800-2655328</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.pluralize">
+
+      <title id="&BASEID;.filters_info.pluralize.title">
+	pluralize
+      </title>
+
+      <para>
+	Возвращает окончание множественного числа, если значение не
+	равно 1. По умолчанию используется окончание
+	<token><![CDATA['s']]></token>.
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+You have {{ num_messages }} message{{ num_messages|pluralize }}.
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>num_messages</token> равно <token>1</token>,
+	фильтр выведет <token>You have 1 message</token>.
+      </para>
+
+      <para>
+	Если <token>num_messages</token> равно <token>2</token>,
+	фильтр выведет <token>You have 2 messages</token>.
+      </para>
+
+      <para>
+	Если множественное число требует другого окончания (не
+	<token><![CDATA['s']]></token>), укажите его в качестве
+	аргумента фильтра.
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+You have {{ num_walruses }} walrus{{ num_walruses|pluralize:"es" }}.
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если множественное число изменяет окончание слова, укажите
+	через запятую окончание единственного числа и окончание
+	множественного числа (фильтр заменит первое на второе).
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+You have {{ num_cherries }} cherr{{ num_cherries|pluralize:"y,ies" }}.
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.pprint">
+
+      <title id="&BASEID;.filters_info.pprint.title">
+	pprint
+      </title>
+
+      <para>
+	Обёртка для функции <function>pprint.pprint</function> &mdash;
+	применяется для отладки.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.random">
+
+      <title id="&BASEID;.filters_info.random.title">
+	random
+      </title>
+
+      <para>
+	Возвращает случайный элемент в списке.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|random }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является списком
+	<token><![CDATA[['a', 'b', 'c', 'd']]]></token>, результатом
+	может быть <token><![CDATA["b"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.removetags">
+
+      <title id="&BASEID;.filters_info.removetags.title">
+	removetags
+      </title>
+
+      <para>
+	Удаляет [X]HTML-теги, перечисленные в строке-аргументе через
+	пробел.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|removetags:"b span"|safe }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["<b>Joel</b>
+	<button>is</button> a <span>slug</span>"]]></token>, фильтр
+	выведет <token><![CDATA["Joel <button>is</button> a
+	slug"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.rjust">
+
+      <title id="&BASEID;.filters_info.rjust.title">
+	rjust
+      </title>
+
+      <para>
+	Выравнивает текст вправо в поле заданной ширины. Аргумент:
+	ширина поля.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+"{{ value|rjust:"10" }}"
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>Django</token>, фильтр
+	выведет <token><![CDATA[" Django"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.safe">
+
+      <title id="&BASEID;.filters_info.safe.title">
+	safe
+      </title>
+
+      <para>
+	Строка, отмеченная этим фильтром, не будет экранирована перед
+	выводом. Если автоматическое экранирование отключено, эффекта
+	не имеет.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.safeseq">
+
+      <title id="&BASEID;.filters_info.safeseq.title">
+	safeseq
+      </title>
+
+      <para>
+	Применяет фильтр <token>safe</token> к каждому элементу
+	последовательности. Полезно при использовании других фильтров,
+	воздействующих на последовательности, таких как
+	<token>join</token>. Например:
+	<screen>
+	  <![CDATA[
+{{ some_list|safeseq|join:", " }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	В этом случае нельзя использовать фильтр <token>safe</token>,
+	т.к. он вначале превратит переменную в строку, а не пометит
+	каждый элемент последовательности.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.slice">
+
+      <title id="&BASEID;.filters_info.slice.title">
+	slice
+      </title>
+
+      <para>
+	Возвращает срез списка.
+      </para>
+
+      <para>
+	Используется синтаксис Python для срезов. Ознакомиться с ним
+	можно на странице
+	http://diveintopython.org/native_data_types/lists.html#odbchelper.list.slice.
+      </para>
+
+      <para>
+	Пример:
+	<screen>
+	  <![CDATA[
+{{ some_list|slice:":2" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>some_list</token> равно <token><![CDATA[['a', 'b',
+	'c']]]></token>, фильтр выведет <token><![CDATA[['a',
+	'b']]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.slugify">
+
+      <title id="&BASEID;.filters_info.slugify.title">
+	slugify
+      </title>
+
+      <para>
+	Приводит переменную к нижнему регистру, оставляет только
+	буквы, цифры и символы подчеркивания, затем преобразует
+	пробелы в дефисы. Начальные и завершающие пробелы удаляются.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|slugify }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["Joel is a
+	slug"]]></token>, фильтр выведет
+	<token><![CDATA["joel-is-a-slug"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.stringformat">
+
+      <title id="&BASEID;.filters_info.stringformat.title">
+	stringformat
+      </title>
+
+      <para>
+	Форматирует переменную в соответствии с переданным аргументом,
+	представляющим собой спецификатор формата. В спецификаторе
+	используется синтаксис Python для строк формата, за
+	исключением служебного символа <quote>%</quote>.
+      </para>
+
+      <para>
+	Документацию по форматированию строк в Python см. на
+	http://docs.python.org/library/stdtypes.html#string-formatting-operations
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|stringformat:"s" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["Joel is a
+	slug"]]></token>, фильтр выведет <token><![CDATA["Joel is a
+	slug"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.striptags">
+
+      <title id="&BASEID;.filters_info.striptags.title">
+	striptags
+      </title>
+
+      <para>
+	Удаляет все [X]HTML-теги.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|striptags }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["<b>Joel</b>
+	<button>is</button> a <span>slug</span>"]]></token>, фильтр
+	вернет <token><![CDATA["Joel is a slug"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.time">
+
+      <title id="&BASEID;.filters_info.time.title">
+	time
+      </title>
+
+      <para>
+	Выводит время в указанном формате.
+      </para>
+
+      <para>
+	Формат может быт задан преопределенной константой
+	<token>TIME_FORMAT</token> (зависит от локальных настроек)
+	либо пользовательским форматом (см. тег <token>now</token>).
+      </para>
+
+      <para>
+	По понятным причинам данный фильтр принимает только формат,
+	определяющий вывод времени, а не даты. Для вывода даты
+	используйте фильтр <token>date</token>.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|time:"H:i" }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> эквивалентно
+	<token>datetime.datetime.now()</token>, фильтр выведет строку
+	<token><![CDATA["01:23"]]></token>.
+      </para>
+
+      <para>
+	Еще один пример:
+      </para>
+
+      <para>
+	Допустим, параметр <token>USE_L10N</token> равен
+	<token>True</token>, а <token>LANGUAGE_CODE</token>, например,
+	<token><![CDATA["de"]]></token>, тогда результатом фильтра:
+	<screen>
+	  <![CDATA[
+{{ value|date:"TIME_FORMAT" }}
+	  ]]>
+	</screen>
+	будет строка <token><![CDATA["01:23:00"]]></token>
+	(т.к. <token><![CDATA["TIME_FORMAT"]]></token> в локали
+	<token>de</token> использует строку формата
+	<token><![CDATA["H:i:s"]]></token>).
+      </para>
+
+      <para>
+	Если формат не указан:
+	<screen>
+	  <![CDATA[
+{{ value|date }}
+	  ]]>
+	</screen>
+	то будет использована строка формата, определенная в параметре
+	<token>TIME_FORMAT</token>, без учета локализации.
+      </para>
+
+      <para>
+	Добавлено в 1.2.
+      </para>
+
+      <para>
+	Текущая локаль теперь влияет на предопределенные форматы.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.timesince">
+
+      <title id="&BASEID;.filters_info.timesince.title">
+	timesince
+      </title>
+
+      <para>
+	Форматирует дату в виде периода времени, прошедшего с того
+	момента (например, <quote>4 days, 6 hours</quote>).
+      </para>
+
+      <para>
+	Принимает необязательный аргумент, содержащий дату окончания
+	периода (без этого аргумента окончанием периода считается
+	<emphasis>сейчас</emphasis>). Например, если
+	<token>blog_date</token> содержит дату, указывающую на полночь
+	1 июня 2006 года, а <token>comment_date</token> указывает на
+	08:00 1 июня 2006 года, то <token>{{
+	blog_date|timesince:comment_date }}</token> вернет <quote>8
+	hours</quote>.
+      </para>
+
+      <para>
+	Сравнение дат, для одной из которых смещение указано, а для
+	другой не указано, вернет пустую строку.
+      </para>
+
+      <para>
+	Результат округляется до целого числа полных минут. Если
+	начальная дата периода позже конечной, результат будет
+	<quote>0 minutes</quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.timeuntil">
+
+      <title id="&BASEID;.filters_info.timeuntil.title">
+	timeuntil
+      </title>
+
+      <para>
+	Аналогично <token>timesince</token>, но вычисляет период до
+	указанного момента. Например, если сегодня 1 июня 2006 года, а
+	<token>conference_date</token> указывает на дату 29 июня 2006
+	года, то <token>{{ conference_date|timeuntil }}</token> вернет
+	<quote>4 weeks</quote>.
+      </para>
+
+      <para>
+	Принимает необязательный аргумент, содержащий дату начала
+	периода (вместо <emphasis>сейчас</emphasis>). Например, если
+	<token>from_date</token> указывает на 22 июня 2006, то
+	<token>{{ conference_date|timeuntil:from_date }}</token>
+	вернет <quote>1 week</quote>.
+      </para>
+
+      <para>
+	Сравнение дат, для одной из которых смещение указано, а для
+	другой не указано, вернет пустую строку.
+      </para>
+
+      <para>
+	Результат округляется до целого числа полных минут. Если
+	конечная дата периода раньше начальной, результат будет
+	<quote>0 minutes</quote>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.titlefilter">
+
+      <title id="&BASEID;.filters_info.titlefilter.title">
+	title
+      </title>
+
+      <para>
+	Делает заглавными первые буквы слов в строке.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|title }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["my first
+	post"]]></token>, фильтр выведет <token><![CDATA["My First
+	Post"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.truncatewords">
+
+      <title id="&BASEID;.filters_info.truncatewords.title">
+	truncatewords
+      </title>
+
+      <para>
+	Обрезает строку после указанного числа слов. Аргумент:
+	Максимальное число выводимых слов.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|truncatewords:2 }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["Joel is a
+	slug"]]></token>, фильтр выведет <token><![CDATA["Joel is
+	..."]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.truncatewords_html">
+
+      <title id="&BASEID;.filters_info.truncatewords_html.title">
+	truncatewords_html
+      </title>
+
+      <para>
+	Аналогично <token>truncatewords</token>, но с учетом
+	HTML-тегов. Закрывает все теги, не закрытые к моменту усечения
+	строки.
+      </para>
+
+      <para>
+	Работает медленнее, чем <token>truncatewords</token>, поэтому
+	рекомендуется использовать только для обработки HTML-текстов.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|truncatewords_html:2 }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["<p>Joel is a
+	slug</p>"]]></token>, фильтр выведет <token><![CDATA["<p>Joel
+	is ...</p>"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.unordered_list">
+
+      <title id="&BASEID;.filters_info.unordered_list.title">
+	unordered_list
+      </title>
+
+      <para>
+	Превращает список списков (любой вложенности) в HTML-список
+	(БЕЗ обрамляющего тега <![CDATA[<ul>]]>).
+      </para>
+
+      <para>
+	Измененов в 1.0.
+      </para>
+
+      <para>
+	Добавлена поддержка более простого формата списка.
+      </para>
+
+      <para>
+	Список должен быть правильно сформирован. Например, если
+	<token>var</token> содержит список <token><![CDATA[['States',
+	['Kansas', ['Lawrence', 'Topeka'], 'Illinois']]]]></token>, то
+	<token>{{ var|unordered_list }}</token> вернет:
+	<screen>
+	  <![CDATA[
+<li>States
+  <ul>
+    <li>Kansas
+      <ul>
+        <li>Lawrence</li>
+        <li>Topeka</li>
+      </ul>
+    </li>
+    <li>Illinois</li>
+  </ul>
+</li>
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Примечание: поддержка предыдущего формата (более строгого, но
+	точного) сохранена: <token><![CDATA[['States', [['Kansas',
+	[['Lawrence', []], ['Topeka', []]]], ['Illinois',
+	[]]]]]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.upper">
+
+      <title id="&BASEID;.filters_info.upper.title">
+	upper
+      </title>
+
+      <para>
+	Приводит строку к верхнему регистру.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|upper }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["Joel is a
+	slug"]]></token>, фильтр выведет <token><![CDATA["JOEL IS A
+	SLUG"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.urlencode">
+
+      <title id="&BASEID;.filters_info.urlencode.title">
+	urlencode
+      </title>
+
+      <para>
+	Экранирует строку для использования в адресе URL.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|urlencode }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является строкой
+	<token><![CDATA["http://www.example.org/foo?a=b&c=d"]]></token>,
+	фильтр вернет
+	<token><![CDATA["http%3A//www.example.org/foo%3Fa%3Db%26c%3Dd"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.urlize">
+
+      <title id="&BASEID;.filters_info.urlize.title">
+	urlize
+      </title>
+
+      <para>
+	Заменяет ссылки в обычном тексте на активные HTML-ссылки.
+      </para>
+
+      <para>
+	Имейте в виду, что применение фильтра <token>urlize</token> к
+	тексту, в котором уже содежится HTML-разметка, может привести
+	к неправильным результатам. Применяйте этот фильтр только к
+	<emphasis>простому</emphasis> тексту.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|urlize }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является строкой
+	<token><![CDATA["Check out www.djangoproject.com"]]></token>,
+	результатом будет строка <token><![CDATA["Check out <a
+	href="http://www.djangoproject.com">www.djangoproject.com</a>"]]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.urlizetrunc">
+
+      <title id="&BASEID;.filters_info.urlizetrunc.title">
+	urlizetrunc
+      </title>
+
+      <para>
+	Заменяет ссылки в обычном тексте на активные HTML-ссылки,
+	усекая их текст до указанного числа символов.
+      </para>
+
+      <para>
+	Как и urlize_, применяется только к
+	<emphasis>простому</emphasis> тексту. Аргумент: Максимальная
+	длина текста ссылки.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|urlizetrunc:15 }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> является строкой
+	<token><![CDATA["Check out www.djangoproject.com"]]></token>,
+	результатом будет строка <token><![CDATA['Check out <a
+	href="http://www.djangoproject.com">www.djangopr...</a>']]></token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.wordcount">
+
+      <title id="&BASEID;.filters_info.wordcount.title">
+	wordcount
+      </title>
+
+      <para>
+	Возвращает число слов.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|wordcount }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token><![CDATA["Joel is a
+	slug"]]></token>, фильтр выведет <token>4</token>.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.wordwrap">
+
+      <title id="&BASEID;.filters_info.wordwrap.title">
+	wordwrap
+      </title>
+
+      <para>
+	Переносит слова с учетом указанной длины строки. Аргумент:
+	число, задающее длину строки.
+      </para>
+
+      <para>
+	Например:
+	<screen>
+	  <![CDATA[
+{{ value|wordwrap:5 }}
+	  ]]>
+	</screen>
+      </para>
+
+      <para>
+	Если <token>value</token> равно <token>Joel is a slug</token>,
+	фильтр вернет:
+	<screen>
+	  <![CDATA[
+Joel
+is a
+slug
+	  ]]>
+	</screen>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.yesno">
+
+      <title id="&BASEID;.filters_info.yesno.title">
+	yesno
+      </title>
+
+      <para>
+	Превращает значения <token>true</token>, <token>false</token>
+	и (необязательно) <token>None</token> в соответствующую
+	строку, указанную в аргументе:
+
+	<table id="&BASEID;.tbl6" frame="all" pgwide="1">
+
+	  <title id="&BASEID;.tbl6.title">
+	    Пример
+	  </title>
+
+	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
+	    <colspec colname="c1" colwidth="3cm"/>
+	    <colspec colname="c2" colwidth="3cm"/>
+	    <colspec colname="c3" colwidth="8cm"/>
+
+	    <thead>
+	      <row>
+		<entry>Значение</entry>
+		<entry>Аргумент</entry>
+		<entry>Результат</entry>
+	      </row>
+	    </thead>
+
+	    <tbody>
+	      <row>
+		<entry><token>True</token></entry>
+		<entry><token>да, нет, может быть</token></entry>
+		<entry><token>да</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>False</token></entry>
+		<entry><token>да, нет, может быть</token></entry>
+		<entry><token>нет</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>None</token></entry>
+		<entry><token>да, нет, может быть</token></entry>
+		<entry><token>может быть</token></entry>
+	      </row>
+
+	      <row>
+		<entry><token>None</token></entry>
+		<entry><token>да, нет</token></entry>
+		<entry><token>нет</token> (если значение для None не
+		указано, берёт строку для False)</entry>
+	      </row>
+	    </tbody>
+	  </tgroup>
+	</table>
+      </para>
+
+    </section>
+
+  </section>
+
+  <section id="&BASEID;.additional">
+
+    <title id="&BASEID;.additional.title">
+      Дополнительные библиотеки тегов и фильтров
+    </title>
+
+    <para>
+      В состав Джанго входят несколько дополнительных библиотек тегов
+      и фильтров. Для использования их нужно подключить в разделе
+      настроек <token>INSTALLED_APPS</token> и загрузить в шаблоне
+      посредством тега <token>{% load %}</token>.
+    </para>
+
+    <section id="&BASEID;.filters_info.additional.humanize">
+
+      <title id="&BASEID;.filters_info.additional.humanize.title">
+	django.contrib.humanize
+      </title>
+
+      <para>
+	Набор фильтров для представления данных в более привычном для
+	человека формате.
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.additional.markup">
+
+      <title id="&BASEID;.filters_info.additional.markup.title">
+	django.contrib.markup
+      </title>
+
+      <para>
+	Набор фильтров, реализующих обработку некоторых языков разметки:
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Textile
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Markdown
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      ReST (ReStructured Text)
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+
+    </section>
+
+    <section id="&BASEID;.filters_info.additional.webdesign">
+
+      <title id="&BASEID;.filters_info.additional.webdesign.title">
+	django.contrib.webdesign
+      </title>
+
+      <para>
+	Набор тегов, полезных для веб-дизайнеров, например, генератор
+	текста <quote>Lorem Ipsum</quote>.
+      </para>
+
+    </section>
+
+  </section>
 
 </appendix>
