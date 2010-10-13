@@ -10,10 +10,10 @@
 
 <book lang="ru" >
   <title>DjangoBook</title>
-  
+
   <bookinfo>
     <corpname>Руслан Попов</corpname>
-    <date>2009</date>
+    <date>2008-2010</date>
   </bookinfo>
 
   <para>
@@ -30,70 +30,71 @@
 
 <!--
   <para>
-    Владелец данной копии &mdash; Плессер Олег Сергеевич
-    <token><![CDATA[<oleg@plesser.ru>]]></token>.
+    Владелец данной копии &mdash; Денисов Денис
+    <token><![CDATA[<desigens@gmail.com>]]></token>.
   </para>
--->  
+//-->
+
   <para>
     Последнее обновление произведено __LAST_UPDATE__.
   </para>
-  
+
   <toc/>
-  
+
   <glossentry/>
 
   <xi:include
-      href="chap01.xml"  
+      href="chap01.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap02.xml"  
+      href="chap02.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap03.xml"  
+      href="chap03.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap04.xml"  
+      href="chap04.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap05.xml"  
+      href="chap05.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap06.xml"  
+      href="chap06.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap07.xml"  
+      href="chap07.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap08.xml"  
+      href="chap08.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap09.xml"  
+      href="chap09.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap10.xml"  
+      href="chap10.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap11.xml"  
+      href="chap11.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
@@ -128,12 +129,12 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap18.xml"  
+      href="chap18.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
   <xi:include
-      href="chap19.xml"  
+      href="chap19.xml"
       parse="xml"
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
@@ -183,5 +184,3 @@
       xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
 </book>
-
-
