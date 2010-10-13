@@ -61,7 +61,7 @@ def hello(request):
     </para>
 
     <section id="&BASEID;.get-data-from-request.url-info">
-      
+
       <title id="&BASEID;.get-data-from-request.url-info.title">
 	Информация об URL
       </title>
@@ -69,9 +69,9 @@ def hello(request):
       <para>
 	<classname>HttpRequest</classname> объекты содержат информацию
 	о запрошенном URL:
-	
+
 	<table id="&BASEID;.tbl1" frame="all" pgwide="1">
-	  
+
 	  <title id="&BASEID;.tbl1.title">
 	    Информация об URL
 	  </title>
@@ -80,7 +80,7 @@ def hello(request):
 	    <colspec colname="c1" colwidth="4cm"/>
 	    <colspec colname="c2" colwidth="6cm"/>
 	    <colspec colname="c3" colwidth="4cm"/>
-	    
+
 	    <thead>
 	      <row>
 		<entry>Атрибут/Метод</entry>
@@ -139,7 +139,7 @@ def current_url_view_good(request):
     </section>
 
     <section id="&BASEID;.get-data-from-request.other-info">
-      
+
       <title id="&BASEID;.get-data-from-request.other-info.title">
 	Остальная информация о запросе
       </title>
@@ -153,7 +153,7 @@ def current_url_view_good(request):
 	посланы браузером посетителя и какие заголовки были
 	установлены веб-сервером. Перечислим несколько стандартных
 	ключей этого словаря:
-	
+
 	<itemizedlist>
 	  <listitem>
 	    <para>
@@ -245,7 +245,7 @@ def display_meta(request):
     </section>
 
     <section id="&BASEID;.get-data-from-request.submit-info">
-      
+
       <title id="&BASEID;.get-data-from-request.submit-info.title">
 	Информация о переданных данных
       </title>
@@ -303,10 +303,10 @@ def display_meta(request):
 
     </section>
 
-  </section>	    
+  </section>
 
   <section id="&BASEID;.example-simple-form">
-    
+
     <title id="&BASEID;.example-simple-form.title">
       Пример обработки простой формы
     </title>
@@ -603,7 +603,7 @@ def search(request):
   </section>
 
   <section id="&BASEID;.example-improved-form">
-    
+
     <title id="&BASEID;.example-improved-form.title">
       Усовершенствование примера обработки простой формы
     </title>
@@ -759,7 +759,7 @@ def search(request):
   </section>
 
   <section id="&BASEID;.simple-validation">
-    
+
     <title id="&BASEID;.simple-validation.title">
       Простая проверка данных
     </title>
@@ -950,7 +950,7 @@ def search(request):
   </section>
 
   <section id="&BASEID;.making-contact-form">
-    
+
     <title id="&BASEID;.making-contact-form.title">
       Создание формы для контактной информации
     </title>
@@ -1010,7 +1010,7 @@ def search(request):
       используем <token>method="post"</token>, так как форма имеет
       сторонний эффект (side effect FIXME) &mdash; она отправляет
       сообщение. Также мы скопировали код, отвечающий за отображение
-      ошиюки из нашего предыдущего шаблона
+      ошибки из нашего предыдущего шаблона
       <filename>search_form.html</filename>.
     </para>
 
@@ -1268,7 +1268,7 @@ def contact(request):
   </section>
 
   <section id="&BASEID;.first-form-class">
-    
+
     <title id="&BASEID;.first-form-class.title">
       Ваш первый класс формы
     </title>
@@ -1409,8 +1409,8 @@ class ContactForm(forms.Form):
       который соответствует именам полей формы:
       <screen>
 	<![CDATA[
->>> f = ContactForm({'subject': 'Hello', 
-                     'email': 'adrian@example.com', 
+>>> f = ContactForm({'subject': 'Hello',
+                     'email': 'adrian@example.com',
 		     'message': 'Nice site!'})
 	]]>
       </screen>
@@ -1525,7 +1525,7 @@ True
   </section>
 
   <section id="&BASEID;.use-form-with-view">
-    
+
     <title id="&BASEID;.use-form-with-view.title">
       Используем формы в представлениях
     </title>
@@ -1609,7 +1609,7 @@ def contact(request):
   </section>
 
   <section id="&BASEID;.fields-rendering">
-    
+
     <title id="&BASEID;.fields-rendering.title">
       Изменения способа отображения полей
     </title>
@@ -1646,9 +1646,9 @@ class ContactForm(forms.Form):
     </para>
 
   </section>
-	
+
   <section id="&BASEID;.maximum-length">
-    
+
     <title id="&BASEID;.maximum-length.title">
       Установка максимального размера поля
     </title>
@@ -1679,7 +1679,7 @@ class ContactForm(forms.Form):
   </section>
 
   <section id="&BASEID;.initial-values">
-    
+
     <title id="&BASEID;.initial-values.title">
       Установка начальных значений
     </title>
@@ -1735,7 +1735,7 @@ def contact(request):
   </section>
 
   <section id="&BASEID;.validation-rules">
-    
+
     <title id="&BASEID;.validation-rules.title">
       Собственные правила проверки
     </title>
@@ -1819,7 +1819,7 @@ class ContactForm(forms.Form):
   </section>
 
   <section id="&BASEID;.specifying-labels">
-    
+
     <title id="&BASEID;.specifying-labels.title">
       Определение меток
     </title>
@@ -1853,7 +1853,7 @@ class ContactForm(forms.Form):
   </section>
 
   <section id="&BASEID;.form-design">
-    
+
     <title id="&BASEID;.form-design.title">
       Настройка дизайна формы
     </title>
@@ -1978,7 +1978,7 @@ class ContactForm(forms.Form):
   </section>
 
   <section id="&BASEID;.what-is-next">
-    
+
     <title id="&BASEID;.what-is-next.title">
       Что дальше?
     </title>
