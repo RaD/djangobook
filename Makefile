@@ -19,7 +19,7 @@ WORDML_NAME=$(BASE_NAME).wordml.xml
 
 PROFPARAMS= --stringparam "profile.os" "$(OSNAME)" \
 	--stringparam "profile.vendor" "$(DBNAME)" \
-	--stringparam "profile.lang" "$(DOCLANG)" 
+	--stringparam "profile.lang" "$(DOCLANG)"
 
 XML_SOURCES=chap01.xml chap02.xml chap03.xml chap04.xml \
 	chap05.xml chap06.xml chap07.xml chap08.xml \
@@ -39,6 +39,23 @@ html: $(HTML_NAME)
 pdf: $(PDF_NAME)
 
 wordml: $(WORDML_NAME)
+
+DJZIP=djangobook.html.zip
+
+zip:
+	mkdir ./zip;
+	for i in HTML/$(BASE_NAME)/*.html; do \
+	    echo `basename $$i`; \
+	    cat $$i | \
+	    sed 's/^.*<body[^>]*>//' | \
+	    sed 's/<\/body>.*$$//' \
+	    > ./zip/`basename $$i`; \
+	done;
+	cp -r HTML/$(BASE_NAME)/toc.py HTML/$(BASE_NAME)/pics ./zip/;
+	cd ./zip; \
+	zip --move --quiet --recurse-paths ../$(DJZIP) ./*; \
+	cd -; \
+	rmdir ./zip; \
 
 koi2utf: $(XML_NAME) $(XML_SOURCES)
 	for i in $(XML_NAME) $(XML_SOURCES); do \
