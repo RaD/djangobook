@@ -134,7 +134,7 @@ Cookie: PREF=ID=5b14f22bdaf1e81c:TM=1167000671:LM=1167000671
       <title id="&BASEID;.cookies.get-set.title">
 	Получение и установка
       </title>
-      
+
       <para>
 	Для сохранения состояний в Django большую часть времени вы
 	пожелаете использовать высокоуровневые сессии и/или среду
@@ -203,7 +203,7 @@ def set_color(request):
 	  <title id="&BASEID;.tbl1.title">
 	    Опции cookie
 	  </title>
-	  
+
 	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
 
 	    <colspec colname="c1" colwidth="2cm"/>
@@ -217,7 +217,7 @@ def set_color(request):
 		<entry>Описание</entry>
 	      </row>
 	    </thead>
-	    
+
 	    <tbody>
 	      <row>
 		<entry><token>max_age</token></entry>
@@ -299,7 +299,7 @@ def set_color(request):
       <title id="&BASEID;.cookies.blessing.title">
 	Всеобщее счастье
       </title>
-      
+
       <para>
 	Вы могли отметить ряд потенциальных проблем методики работы с
 	cookie. Взглянем на наиболее важные из них:
@@ -378,13 +378,13 @@ def set_color(request):
     </section>
 
   </section>
-  
+
   <section id="&BASEID;.session">
-    
+
     <title id="&BASEID;.session.title">
       Сессии
     </title>
-    
+
     <para>
       Если принять во внимание все эти ограничения и потенциальные
       дыры в безопасности, становится очевидно, что cookie и
@@ -410,11 +410,11 @@ def set_color(request):
     </para>
 
     <section id="&BASEID;.session.enable">
-      
+
       <title id="&BASEID;.session.enable.title">
 	Активация
       </title>
-      
+
       <para>
 	Сессии реализованы с помощью отдельного модуля (см. главу
 	<quote><xref linkend="djangobook.chap15"
@@ -460,11 +460,11 @@ def set_color(request):
     </section>
 
     <section id="&BASEID;.session.views">
-      
+
       <title id="&BASEID;.session.views.title">
 	Использование в функциях представления
       </title>
-      
+
       <para>
 	После активации <token>SessionMiddleware</token> каждый объект
 	<classname>HttpRequest</classname> &mdash; первый аргумент
@@ -476,8 +476,8 @@ def set_color(request):
 # Установим значение ключа в сессии:
 request.session["fav_color"] = "blue"
 
-# Получим значение ключа из сессии -- можно это сделать в 
-# другом представлении или через несколько запросов 
+# Получим значение ключа из сессии -- можно это сделать в
+# другом представлении или через несколько запросов
 # (или и то и другое):
 fav_color = request.session["fav_color"]
 
@@ -598,11 +598,11 @@ def logout(request):
     </section>
 
     <section id="&BASEID;.session.cookie">
-      
+
       <title id="&BASEID;.session.cookie.title">
 	Установка тестовых cookie
       </title>
-      
+
       <para>
 	Как было сказано ранее, вы не можете полагаться на то, что
 	каждый браузер будет принимать cookie. Таким образом, для
@@ -644,7 +644,7 @@ def login(request):
             # Браузер принимает, удаляем тестовый cookie.
             request.session.delete_test_cookie()
 
-            # На практике нам потребуется некая логика для проверки 
+            # На практике нам потребуется некая логика для проверки
 	    # логина и пароля, но так как это всего лишь пример...
             return HttpResponse("You're logged in.")
 
@@ -653,7 +653,7 @@ def login(request):
         else:
             return HttpResponse("Please enable cookies and try again.")
 
-    # Если мы не отсылали форму, отправляем тестовое cookie 
+    # Если мы не отсылали форму, отправляем тестовое cookie
     # вместе с формой аутентификации.
     request.session.set_test_cookie()
     return render_to_response('foo/login_form.html')
@@ -664,7 +664,7 @@ def login(request):
       <para>
 	<note>
 	  <para>
-	    И снова, встроенные функции аутентификации выполнят это
+	    И снова, встроенные функции аутентификации выполнят эту
 	    проверку за вас.
 	  </para>
 	</note>
@@ -673,11 +673,11 @@ def login(request):
     </section>
 
     <section id="&BASEID;.session.out-of-views">
-      
+
       <title id="&BASEID;.session.out-of-views.title">
 	Использование сессий вне функций представления
       </title>
-      
+
       <para>
 	С точки зрения реализации, каждая сессия является обычной
 	моделью Django, определённой в
@@ -710,14 +710,14 @@ datetime.datetime(2005, 8, 20, 13, 35, 12)
 	</screen>
       </para>
 
-    </section>	
-	
+    </section>
+
     <section id="&BASEID;.session.saving">
-      
+
       <title id="&BASEID;.session.saving.title">
 	Когда сессии сохраняются
       </title>
-      
+
       <para>
 	По умолчанию Django сохраняет информацию в базе данных только
 	когда в сессию были внесены изменения, т.е. когда были
@@ -761,11 +761,11 @@ request.session['foo']['bar'] = 'baz'
     </section>
 
     <section id="&BASEID;.session.expiration">
-      
+
       <title id="&BASEID;.session.expiration.title">
 	Время жизни сессий
       </title>
-      
+
       <para>
 	Вы могли отметить, что cookie, которую нам прислал Google
 	содержала <token>expires=Sun, 17-Jan-2038 19:14:07
@@ -799,11 +799,11 @@ request.session['foo']['bar'] = 'baz'
     </section>
 
     <section id="&BASEID;.session.other">
-      
+
       <title id="&BASEID;.session.other.title">
 	Другие параметры сессии
       </title>
-      
+
       <para>
 	Кроме уже рассмотренных параметров есть ещё несколько, которые
 	влияют на то как Django работает с сессиями, используя
@@ -829,7 +829,7 @@ request.session['foo']['bar'] = 'baz'
 		<entry>Описание</entry>
 	      </row>
 	    </thead>
-	    
+
 	    <tbody>
 	      <row>
 		<entry><token>SESSION_COOKIE_DOMAIN</token></entry>
@@ -945,11 +945,11 @@ request.session['foo']['bar'] = 'baz'
   </section>
 
   <section id="&BASEID;.authentication">
-      
+
     <title id="&BASEID;.authentication.title">
       Аутентификация пользователей
     </title>
-      
+
     <para>
       Сейчас вы находитесь на половине пути, соединяющим браузер с
       <emphasis>Реальными Людьми</emphasis>&trade;. Сессии
@@ -1040,11 +1040,11 @@ request.session['foo']['bar'] = 'baz'
     </para>
 
     <section id="&BASEID;.authentication.enable">
-      
+
       <title id="&BASEID;.authentication.enable.title">
 	Активация
       </title>
-      
+
       <para>
 	Подобно среде управления сессиями, поддержка аутентификации
 	поставляется в виде Django приложения в
@@ -1106,11 +1106,11 @@ else:
     </section>
 
     <section id="&BASEID;.authentication.users">
-      
+
       <title id="&BASEID;.authentication.users.title">
 	Использование объекта User
       </title>
-      
+
       <para>
 	Как только вы получили объект <token>User</token> &mdash; чаще
 	всего от <token>request.user</token>, но возможно и с помощью
@@ -1144,7 +1144,7 @@ else:
 		<entry>Описание</entry>
 	      </row>
 	    </thead>
-	    
+
 	    <tbody>
 	      <row>
 		<entry><token>username</token></entry>
@@ -1227,7 +1227,7 @@ else:
 		<entry>Описание</entry>
 	      </row>
 	    </thead>
-	    
+
 	    <tbody>
 	      <row>
 		<entry><token>is_authenticated()</token></entry>
@@ -1370,11 +1370,11 @@ myuser.permissions.clear()
     </section>
 
     <section id="&BASEID;.authentication.log-in-out">
-      
+
       <title id="&BASEID;.authentication.log-in-out.title">
 	Авторизация и выход
       </title>
-      
+
       <para>
 	Django предоставляет встроенные функции представления для
 	работы с авторизацией и выходом пользователя (а так же ещё для
@@ -1545,11 +1545,11 @@ urlpatterns = patterns('',
     </section>
 
     <section id="&BASEID;.authentication.limits">
-      
+
       <title id="&BASEID;.authentication.limits.title">
 	Ограничение доступа авторизованным пользователям
       </title>
-      
+
       <para>
 	Причиной же, ради которой мы прорываемся сквозь лес проблем,
 	является необходимость ограничения доступа к разделам нашего
@@ -1625,11 +1625,11 @@ def my_view(request):
     </section>
 
     <section id="&BASEID;.authentication.limits-test">
-      
+
       <title id="&BASEID;.authentication.limits-test.title">
 	Ограничение доступа определённым пользователям
       </title>
-      
+
       <para>
 	Процедура ограничения доступа, основанная на наличии
 	определённых прав или на какой-дибо другой проверке, или на
@@ -1746,11 +1746,11 @@ def limited_object_detail(*args, **kwargs):
     </section>
 
     <section id="&BASEID;.authentication.manage">
-      
+
       <title id="&BASEID;.authentication.manage.title">
 	Управление пользователями, правами и группами
       </title>
-      
+
       <para>
 	Самым простым способом управления системой аутентификации
 	является интерфейс администратора. В главе <quote><xref
@@ -1768,11 +1768,11 @@ def limited_object_detail(*args, **kwargs):
       </para>
 
       <section id="&BASEID;.authentication.manage.create">
-      
+
 	<title id="&BASEID;.authentication.manage.create.title">
 	  Создание пользователей
 	</title>
-	
+
 	<para>
 	  Создать пользователя можно с помощью функции
 	  <function>create_user()</function>:
@@ -1803,11 +1803,11 @@ def limited_object_detail(*args, **kwargs):
       </section>
 
       <section id="&BASEID;.authentication.manage.passwd">
-      
+
 	<title id="&BASEID;.authentication.manage.passwd.title">
 	  Изменение пароля
 	</title>
-	
+
 	<para>
 	  Изменить пароль пользователя можно с помощью функции
 	  <function>set_password()</function>:
@@ -1922,11 +1922,11 @@ sha1$a1976$a36cc8cbf81742a8fb52e221aaeab48ed7f58ab4
       </section>
 
       <section id="&BASEID;.authentication.manage.registration">
-      
+
 	<title id="&BASEID;.authentication.manage.registration.title">
 	  Управление регистрацией
 	</title>
-	
+
 	<para>
 	  Мы можем использовать эти низкоуровневые инструменты для
 	  создания представлений, которые позволяют пользователям
@@ -2030,11 +2030,11 @@ def register(request):
     </section>
 
     <section id="&BASEID;.authentication.using-data">
-      
+
       <title id="&BASEID;.authentication.using-data.title">
 	Использование данных аутентификации в шаблонах
       </title>
-      
+
       <para>
 	После авторизации пользователя вся информация о нём и о его
 	правах становится доступной в контексте шаблона при
@@ -2110,24 +2110,24 @@ def register(request):
     </section>
 
   </section>
-  
+
   <section id="&BASEID;.other-bits">
-      
+
     <title id="&BASEID;.other-bits.title">
       Остальное: права, группы, сообщения и профайлы
     </title>
-    
+
     <para>
       Кое-что о системе аутентификации и авторизации мы ещё не
       рассказали. Это время пришло.
     </para>
 
     <section id="&BASEID;.other-bits.permissions">
-      
+
       <title id="&BASEID;.other-bits.permissions.title">
 	Права
       </title>
-	
+
       <para>
 	Права являются простым способом <emphasis>наделения
 	полномочиями</emphasis> пользователей и группы, разрешая им
@@ -2175,7 +2175,7 @@ def register(request):
 	имеют определённый статус, дату публикации и
 	идентификатор</quote>.
       </para>
-      
+
       <para>
 	Такие три основных права &mdash; добавление, изменение и
 	удаления &mdash; автоматически создаются для каждой модели
@@ -2194,7 +2194,7 @@ def register(request):
 	<token>polls.change_choice</token> и
 	<token>polls.delete_choice</token>.
       </para>
-	
+
       <para>
 	Следует отметить, что если ваша модель не имеет класса
 	<classname>Admin</classname> во время запуска
@@ -2223,7 +2223,7 @@ class USCitizen(models.Model):
 	  ]]>
 	</screen>
       </para>
-      
+
       <para>
 	Эти дополнительные права будут созданы только после выполнения
 	команды <command>syncdb</command>, после этого можно проверить
@@ -2241,11 +2241,11 @@ class USCitizen(models.Model):
     </section>
 
     <section id="&BASEID;.other-bits.groups">
-      
+
       <title id="&BASEID;.other-bits.groups.title">
 	Группы
       </title>
-	
+
       <para>
 	Группы являются базовым способом категоризации пользователей и
 	могут быть использованы для назначения прав для этих
@@ -2260,7 +2260,7 @@ class USCitizen(models.Model):
 	<token>can_edit_home_page</token>, любой пользователь входящий
 	в эту группу, получает это право.
       </para>
-      
+
       <para>
 	Группы также являются удобным способом для назначения
 	пользователя некоторой расширенной функциональности. Например,
@@ -2278,15 +2278,15 @@ class USCitizen(models.Model):
 	всегда можете использовать API для работы с базой данных для
 	взаимодействия с группами на на низком уровне.
       </para>
-      
+
     </section>
-    
+
     <section id="&BASEID;.other-bits.messages">
-      
+
       <title id="&BASEID;.other-bits.messages.title">
 	Сообщения
       </title>
-	
+
       <para>
 	Система сообщений &mdash; это простой способ организации
 	очереди сообщений для определённых пользователей. Сообщение
@@ -2345,7 +2345,7 @@ def create_playlist(request, songs):
 	  ]]>
 	</screen>
       </para>
-      
+
       <para>
 	При использовании <token>RequestContext</token> информация об
 	авторизованном пользователе и его сообщениях становятся
@@ -2381,11 +2381,11 @@ def create_playlist(request, songs):
     </section>
 
     <section id="&BASEID;.other-bits.profiles">
-      
+
       <title id="&BASEID;.other-bits.profiles.title">
 	Профайлы
       </title>
-	
+
       <para>
 	Последним элементом головоломки является система
 	профайлов. Для того, чтобы понять, что такое профайл, следует
@@ -2455,7 +2455,7 @@ AUTH_PROFILE_MODULE = "myapp.mysiteprofile"
       </para>
 
     </section>
-    
+
   </section>
 
 </chapter>

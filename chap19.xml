@@ -175,7 +175,7 @@ SELECT * FROM user_contacts WHERE username = '' OR 'a' = 'a';
       запрос:
       <screen>
 	<![CDATA[
-SELECT * FROM user_contacts WHERE username = ''; 
+SELECT * FROM user_contacts WHERE username = '';
 DELETE FROM user_contacts WHERE 'a' = 'a';
 	]]>
       </screen>
@@ -186,13 +186,13 @@ DELETE FROM user_contacts WHERE 'a' = 'a';
     </para>
 
     <section id="&BASEID;.sql-injection.solution">
-      
+
       <title id="&BASEID;.sql-injection.solution.title">
 	Решение
       </title>
 
       <para>
-	Несмотря на то, что данная проблема является не очевидной,
+	Несмотря на то, что данная проблема является неочевидной,
 	решение для неё будет простым: <emphasis>никогда</emphasis> не
 	доверяйте пользовательским данным и
 	<emphasis>всегда</emphasis> экранируйте всё, что вы
@@ -474,7 +474,7 @@ def say_hello(request):
     </para>
 
   </section>
-	    
+
   <section id="&BASEID;.session">
 
     <title id="&BASEID;.session.title">
@@ -585,11 +585,11 @@ def say_hello(request):
     </para>
 
     <section id="&BASEID;.session.solution">
-      
+
       <title id="&BASEID;.session.solution.title">
 	Решение
       </title>
-      
+
       <para>
 	Существует целый ряд основных принципов, следование которым
 	может защитить вас от этих атак:
@@ -674,13 +674,13 @@ def say_hello(request):
     </section>
 
   </section>
-	    
+
   <section id="&BASEID;.email">
-      
+
     <title id="&BASEID;.email.title">
       Внедрение E-mail заголовка
     </title>
-      
+
     <para>
       Внедрение SQL является менее известным аналогом
       <emphasis>внедрения Email заголовка</emphasis>, которое крадёт
@@ -730,11 +730,11 @@ cc: spamvictim@example.com
     </para>
 
     <section id="&BASEID;.email.solution">
-      
+
       <title id="&BASEID;.email.solution.title">
 	Решение
       </title>
-      
+
       <para>
 	Мы можем предотвратить такую атаку также как мы предотвращаем
 	внедрение SQL &mdash; всегда экранируйте или проверяйте
@@ -763,17 +763,17 @@ cc: spamvictim@example.com
 	<classname>SafeMIMEText</classname> в
 	<token>django.core.mail</token>.
       </para>
-    
+
     </section>
 
   </section>
 
   <section id="&BASEID;.traversal">
-      
+
     <title id="&BASEID;.traversal.title">
       Directory Traversal
     </title>
-      
+
     <para>
       <emphasis>Directory Traversal FIXME</emphasis> является другим
       типом атак на внедрение своей информации. В этом случае
@@ -828,11 +828,11 @@ def dump_file(request):
     </para>
 
     <section id="&BASEID;.traversal.solution">
-      
+
       <title id="&BASEID;.traversal.solution.title">
 	Решение
       </title>
-      
+
       <para>
 	Если ваш код действительно должен читать или записывать файлы,
 	основываясь на вводе пользователя, вам потребуется проверять
@@ -895,11 +895,11 @@ for part in path.split('/'):
   </section>
 
   <section id="&BASEID;.error-messages">
-      
+
     <title id="&BASEID;.error-messages.title">
       Открытые сообщения об ошибках
     </title>
-      
+
     <para>
       Во время разработки наличие возможности просматривать
       трассировочную информацию и ошибки в браузере является
@@ -934,11 +934,11 @@ for part in path.split('/'):
     </para>
 
     <section id="&BASEID;.error-messages.solution">
-      
+
       <title id="&BASEID;.error-messages.solution.title">
 	Решение
       </title>
-      
+
       <para>
 	Django использует простой флаг, который управляет отображением
 	сообщений об ошибках. Если параметр <varname>DEBUG</varname>
@@ -977,11 +977,11 @@ PythonDebug Off
   </section>
 
   <section id="&BASEID;.final-word">
-      
+
     <title id="&BASEID;.final-word.title">
       Заключительное слово о безопасности
     </title>
-      
+
     <para>
       Мы надеемся, что всё рассказанное здесь не слишком испугало
       вас. Интернет может быть диким и опасным миром, но немного

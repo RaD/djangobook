@@ -68,7 +68,7 @@ def current_datetime(request):
   </para>
 
   <para>
-    По этим причинам гораздо проще и более удобно разделять дизай
+    По этим причинам гораздо проще и более удобно разделять дизайн
     страницы от кода, обеспечивающего её работу. Мы можем сделать это
     с помощью <emphasis>шаблонной системы</emphasis> Django, которую
     мы обсудим в этой главе.
@@ -79,7 +79,7 @@ def current_datetime(request):
     <title id="&BASEID;.basics.title">
       Основы шаблонной системы
     </title>
-    
+
     <para>
       Шаблон Django &mdash; это строка текста, которая предназначена
       для разделения представления документа от его данных. Шаблон
@@ -214,7 +214,7 @@ ship on {{ ship_date|date:"F j, Y" }}.</p>
     <title id="&BASEID;.usage.title">
       Использование шаблонной системы
     </title>
-    
+
     <para>
       Давайте рассмотрим шаблонную систему Django подробнее, вы
       сможете увидеть как она работает, но <emphasis>пока</emphasis>
@@ -275,7 +275,7 @@ My name is Fred.
     </para>
 
     <section id="&BASEID;.usage.create">
-      
+
       <title id="&BASEID;.usage.create.title">
 	Создание шаблонных объектов
       </title>
@@ -451,7 +451,7 @@ django.template.TemplateSyntaxError: Invalid block tag: 'notatag'
     </section>
 
     <section id="&BASEID;.usage.render">
-      
+
       <title id="&BASEID;.usage.render.title">
 	Обработка шаблона
       </title>
@@ -593,7 +593,7 @@ inevitably stop working.</p>\n\n\n<p>Sincerely,<br />Outdoor Equipment
 	    <para>
 	      Мы импортируем модуль <token>datetime</token> из
 	      стандартной библиотеки Python, так как нам он
-	      понадобится в далее.
+	      понадобится в дальнейшем.
 	    </para>
 	  </listitem>
 
@@ -655,11 +655,11 @@ inevitably stop working.</p>\n\n\n<p>Sincerely,<br />Outdoor Equipment
 	<classname>Context</classname> и вызовите метод
 	<function>render()</function>.
       </para>
-    
+
     </section>
 
     <section id="&BASEID;.usage.many-contexts">
-      
+
       <title id="&BASEID;.usage.many-contexts.title">
 	Множество контекстов и единственный шаблон
       </title>
@@ -694,7 +694,7 @@ for name in ('John', 'Julie', 'Pat'):
     </section>
 
     <section id="&BASEID;.usage.lookup">
-      
+
       <title id="&BASEID;.usage.lookup.title">
 	Поиск контекстной переменной
       </title>
@@ -885,13 +885,13 @@ u'SALLY is 43 years old.'
 	  ]]>
 	</screen>
       </para>
-    
+
       <section id="&BASEID;.usage.lookup.method-call">
-      
+
 	<title id="&BASEID;.usage.lookup.method-call.title">
 	  Вызов методов
 	</title>
-	
+
 	<para>
 	  Вызовы методов являются более сложным процессом, чем другие
 	  типы <quote>точечного</quote> поиска. Ниже представлены
@@ -987,11 +987,11 @@ delete.alters_data = True
       </section>
 
       <section id="&BASEID;.usage.lookup.invalid-vars">
-      
+
 	<title id="&BASEID;.usage.lookup.invalid-vars.title">
 	  Обработка неправильных переменных
 	</title>
-	
+
 	<para>
 	  По умолчанию, если переменная не существует, шаблонная
 	  система отобразит такую переменную как пустую
@@ -1026,11 +1026,11 @@ u'Your name is .'
     </section>
 
     <section id="&BASEID;.usage.playing">
-      
+
       <title id="&BASEID;.usage.playing.title">
 	Играем с контекстными объектами
       </title>
-    
+
       <para>
 	Большую часть времени, вы будете создавать объекты
 	<classname>Context</classname> передавая готовый словарь в
@@ -1061,11 +1061,11 @@ KeyError: 'foo'
   </section>
 
   <section id="&BASEID;.tags-and-filters">
-    
+
     <title id="&BASEID;.tags-and-filters.title">
       Основные шаблонные теги и фильтры
     </title>
-    
+
     <para>
       Как мы уже говорили ранее, шаблонная система поставляется со
       встроенными тегами и фильтрами. Следующие разделы описывают
@@ -1073,13 +1073,13 @@ KeyError: 'foo'
     </para>
 
     <section id="&BASEID;.tags-and-filters.tags">
-    
+
       <title id="&BASEID;.tags-and-filters.tags.title">
 	Теги
       </title>
 
       <section id="&BASEID;.tags-and-filters.tags.if-else">
-	
+
 	<title id="&BASEID;.tags-and-filters.tags.if-else.title">
 	  if/else
 	</title>
@@ -1273,7 +1273,7 @@ KeyError: 'foo'
       </section>
 
       <section id="&BASEID;.tags-and-filters.tags.for">
-	
+
 	<title id="&BASEID;.tags-and-filters.tags.for.title">
 	  for
 	</title>
@@ -1369,7 +1369,7 @@ KeyError: 'foo'
 
 	<para>
 	  Нет стандартной возможности прекратить цикл до окончания
-	  обработки списка. Если вам надо это сделать, создайтё
+	  обработки списка. Если вам надо это сделать, создайте
 	  переменную, которая будет содержать список только с теми
 	  значениями, которые нужны. Аналогично, нет поддержки
 	  оператора <token>continue</token>, который бы позволил
@@ -1550,7 +1550,7 @@ Favorite places:
       </section>
 
       <section id="&BASEID;.tags-and-filters.tags.ifequal-ifnotequal">
-	
+
 	<title id="&BASEID;.tags-and-filters.tags.ifequal-ifnotequal.title">
 	  ifequal/ifnotequal
 	</title>
@@ -1651,11 +1651,11 @@ Favorite places:
 	  логическому значению, используйте тег <token>{% if
 	  %}</token> вместо <token>{% ifequal %}</token>.
 	</para>
-	  
+
       </section>
 
       <section id="&BASEID;.tags-and-filters.tags.comments">
-	
+
 	<title id="&BASEID;.tags-and-filters.tags.comments.title">
 	  Комментарии
 	</title>
@@ -1703,13 +1703,13 @@ multi-line comment.
 	    ]]>
 	  </screen>
 	</para>
-	  
+
       </section>
 
     </section>
 
     <section id="&BASEID;.tags-and-filters.filters">
-    
+
       <title id="&BASEID;.tags-and-filters.filters.title">
 	Фильтры
       </title>
@@ -1806,7 +1806,7 @@ multi-line comment.
   </section>
 
   <section id="&BASEID;.limitations">
-    
+
     <title id="&BASEID;.limitations.title">
       Философия и ограничения
     </title>
@@ -1934,7 +1934,7 @@ multi-line comment.
   </section>
 
   <section id="&BASEID;.usage-templates">
-    
+
     <title id="&BASEID;.usage-templates.title">
       Использование шаблонов в представлениях
     </title>
@@ -2055,7 +2055,7 @@ def current_datetime(request):
   </section>
 
   <section id="&BASEID;.loading-templates">
-    
+
     <title id="&BASEID;.loading-templates.title">
       Загрузка шаблонов
     </title>
@@ -2318,7 +2318,7 @@ def current_datetime(request):
     </para>
 
     <section id="&BASEID;.loading-templates.render-to-response">
-    
+
       <title id="&BASEID;.loading-templates.render-to-response.title">
 	render_to_response()
       </title>
@@ -2403,7 +2403,7 @@ def current_datetime(request):
     </section>
 
     <section id="&BASEID;.loading-templates.locals-trick">
-    
+
       <title id="&BASEID;.loading-templates.locals-trick.title">
 	Трюк с locals()
       </title>
@@ -2471,7 +2471,7 @@ def current_datetime(request):
     </section>
 
     <section id="&BASEID;.loading-templates.subdirs">
-    
+
       <title id="&BASEID;.loading-templates.subdirs.title">
 	Подкаталоги в get_template()
       </title>
@@ -2523,7 +2523,7 @@ t = get_template('dateapp/current_datetime.html')
     </section>
 
     <section id="&BASEID;.loading-templates.include">
-    
+
       <title id="&BASEID;.loading-templates.include.title">
 	Шаблонный тег include
       </title>
@@ -2638,11 +2638,11 @@ t = get_template('dateapp/current_datetime.html')
   </section>
 
   <section id="&BASEID;.template-inheritance">
-    
+
     <title id="&BASEID;.template-inheritance.title">
       Наследование шаблонов
     </title>
-    
+
     <para>
       До этого момента наши примеры шаблонов содержали крошечные
       фрагменты HTML, но в реальном проекте, вы будете использовать

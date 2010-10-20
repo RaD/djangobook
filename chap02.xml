@@ -77,7 +77,7 @@
 
 	<note>
 	  <title>Django и Python 3.0</title>
-	 
+
 	  <para>
 	    Во время написания книги был выпущен Python 3.0, но Django
 	    пока не поддерживает его. Python 3.0 имеет значительное
@@ -127,7 +127,7 @@ Type "help", "copyright", "credits" or "license" for more information.
     </section>
 
   </section>
-      
+
   <section id="&BASEID;.install-django">
 
     <title id="&BASEID;.install-django.title">
@@ -149,7 +149,7 @@ Type "help", "copyright", "credits" or "license" for more information.
       значть, что существует версия для разработчиков, так как вы
       найдёте упоминания о ней в документации и в сообществе.
     </para>
-    
+
     <section id="&BASEID;.install-django-release">
 
       <title id="&BASEID;.install-django-release.title">
@@ -370,7 +370,7 @@ svn update
 (1, 1, 0, 'alpha', 0)
 	]]>
       </screen>
-      
+
       <note>
 	<title>
 	  Примеры интерактивного интерпретатора
@@ -397,7 +397,7 @@ svn update
 	  выравниваются с помощью трёх точек (<token>...</token>), вот
 	  так:
 	  <screen>
-	    <![CDATA[ 
+	    <![CDATA[
 >>> print """This is a
 ... string that spans
 ... three lines."""
@@ -411,7 +411,7 @@ hello
 	    ]]>
 	  </screen>
 	</para>
-	
+
 	<para>
 	  Эти три точки в начале дополнительных строк добавляются
 	  интерпретатором, они не являются частью нашего ввода. Мы не
@@ -448,7 +448,7 @@ hello
     </para>
 
     <para>
-      Django поддерживает четыре базы данных:
+      Django поддерживает четыре системы управления базами данных:
       <itemizedlist>
 	<listitem>
 	  <para>
@@ -483,7 +483,7 @@ hello
       PostgreSQL, чем с другими базами данных. Если вы не привязаны к
       какой-либо унаследованной системе и у вас есть свобода выбора
       базы данных, мы рекомендуем PostgreSQL, который имеет отличный
-      балан между стоимостью, возможностями, скоростью и
+      баланс между стоимостью, возможностями, скоростью и
       стабильностью.
     </para>
 
@@ -529,7 +529,7 @@ hello
       начинать работу с Django, используя Python версии 2.5 и его
       поддержку SQLite.
     </para>
-    
+
     <section id="&BASEID;.setdb.pgsql">
 
       <title id="&BASEID;.setdb.pgsql.title">
@@ -665,13 +665,13 @@ apt-get install python-pysqlite2
     </section>
 
   </section>
-      
+
   <section id="&BASEID;.startproject">
 
     <title id="&BASEID;.startproject.title">
       Новый проект
     </title>
-    
+
     <para>
       После того как вы установили Python, Django и (возможно) сервер
       баз данных и библиотеку Python для него, вы можете сделать
@@ -822,7 +822,7 @@ mysite/
       <title id="&BASEID;.running-devserver.title">
 	Запуск сервера разработки
       </title>
-      
+
       <para>
 	Для проверки правильности установки Django давайте запустим
 	сервер разработки, чтобы посмотреть на наше приложение в
@@ -939,12 +939,12 @@ python manage.py runserver 0.0.0.0:8000
     <title id="&BASEID;.debugging.title">
       Отладка
     </title>
-    
+
     <para>
       По материалам сайта <ulink
       url="http://simonwillison.net/2008/May/22/debugging/"/>.
     </para>
-    
+
     <para>
       Стандартная страница ошибки Django &mdash; великолепна. Она
       предоставляет детальную трассировку, предоставляя локальные
@@ -992,11 +992,11 @@ assert False, request.GET
     </para>
 
     <section id="&BASEID;.debugging.console">
-      
+
       <title id="&BASEID;.debugging.console.title">
 	Журналирование на консоль сервера разработки
       </title>
-    
+
       <para>
 	Если необходимо иметь информацию о том, что происходит при
 	выполнении функции представления, самым быстрым способом будет
@@ -1104,13 +1104,13 @@ def my_buggy_function(arg):
       </para>
 
     </section>
-    
+
     <section id="&BASEID;.debugging.debugger">
-      
+
       <title id="&BASEID;.debugging.debugger.title">
 	Использование отладчика
       </title>
-    
+
       <para>
 	Наиболее мощным оружием в процессе отладки является
 	соответствующий отладчик &mdash; <ulink
@@ -1218,7 +1218,7 @@ import pdb; pdb.set_trace()
 	  <![CDATA[
 >>> def function_that_raises_an_exception():
 ...   assert False
-... 
+...
 >>> function_that_raises_an_exception()
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
@@ -1258,11 +1258,11 @@ python -i manage.py buggy_command
     </section>
 
     <section id="&BASEID;.debugging.production">
-      
+
       <title id="&BASEID;.debugging.production.title">
 	Обработка ошибок в <quote>боевом</quote> режиме
       </title>
-    
+
       <para>
 	Стандартным поведением Django в <quote>боевом</quote> режиме
 	(т.е., когда параметр <token>DEBUG</token> установлен в
@@ -1285,17 +1285,17 @@ python -i manage.py buggy_command
 	MD5 хэш от трассировки для объединения множества сообщений об
 	одной ошибке. Так же оно является отличным примером того, как
 	использовать обработчик <token>process_exception</token>
-	Django для своих целей.  
+	Django для своих целей.
       </para>
 
     </section>
 
     <section id="&BASEID;.debugging.middleware">
-      
+
       <title id="&BASEID;.debugging.middleware.title">
 	Ещё о полезном ПО
       </title>
-    
+
       <para>
 	<itemizedlist>
 	  <listitem>
@@ -1323,11 +1323,11 @@ python -i manage.py buggy_command
     </section>
 
     <section id="&BASEID;.debugging.test-client">
-      
+
       <title id="&BASEID;.debugging.test-client.title">
 	Тестовый клиент
       </title>
-    
+
       <para>
 	Завершим этот раздел по интерактивному исследованию вашего
 	приложения советом изучить использование <ulink
@@ -1396,7 +1396,7 @@ Content-Type: text/html; charset=utf-8
     <title id="&BASEID;.faststart.title">
       Быстрый старт
     </title>
-    
+
     <para>
       Каждый проект начинается с создания каталога:
       <screen>

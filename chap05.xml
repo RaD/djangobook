@@ -99,7 +99,7 @@ def book_list(request):
 	]]>
       </screen>
     </para>
-    
+
     <para>
       Такой подход работает, но вы должны немедленно столкнуться с
       некоторыми проблемами:
@@ -279,7 +279,7 @@ def book_list(request):
 	    <emphasis>T</emphasis> определено для
 	    <quote>Шаблона</quote> (Template), слоя представления
 	    данных. Этот слой принимает решения относительно
-	    представления данных: как и что должно отображаться на 
+	    представления данных: как и что должно отображаться на
 	    странице или в другом типе документа.
 	  </para>
 	</listitem>
@@ -777,7 +777,7 @@ DATABASE_HOST = '/var/run/mysql'
 	</tgroup>
       </table>
     </para>
-	    
+
   </section>
 
   <section id="&BASEID;.firstapp">
@@ -807,7 +807,7 @@ DATABASE_HOST = '/var/run/mysql'
 	    Проект &mdash; это экземпляр определённого набора кода
 	    Django-приложений и конфигурация для этих приложений.
 	  </para>
-	  
+
 	  <para>
 	    С технической точки зрения существует одно требование к
 	    проекту &mdash; наличие файла конфигурации, который
@@ -1474,7 +1474,7 @@ Installing index for books.Book model
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Во-первых, мы испортируем наш класс модели
+	    Во-первых, мы импортируем наш класс модели
 	    <classname>Publisher</classname>. Это позволит нам
 	    работать с таблицей базы данных, которая содержит
 	    информацию об издателях.
@@ -1527,7 +1527,7 @@ p1.save()
     <para>
       Если вам требуется создать объект и сохранить его в базе данных
       единой операцией, используйте метод
-      <function>objects.create()</function>. Следующие пример
+      <function>objects.create()</function>. Следующий пример
       эквивалентен предыдущему:
       <screen>
 	<![CDATA[
@@ -1757,7 +1757,7 @@ class Book(models.Model):
 
     <para>
       Этот пример создания экземпляра модели <emphasis>не</emphasis>
-      производит изменений в базе данных. Эта записть не сохраняется в
+      производит изменений в базе данных. Эта запись не сохраняется в
       базе данных пока не будет вызван метод
       <function>save()</function>:
       <screen>
@@ -2276,7 +2276,7 @@ ORDER BY name DESC;
       </para>
 
     </section>
-    
+
     <section id="&BASEID;.select.slice">
 
       <title id="&BASEID;.select.slice.title">
@@ -2448,7 +2448,7 @@ WHERE id = 52;
 	<classname>Publisher</classname>:
 	<screen>
 	  <![CDATA[
->>> Publisher.objects.all().update(country='USA')
+>>> Publisher.objects.all().filter(country='U.S.A.').update(country='USA')
 2
 	  ]]>
 	</screen>
@@ -2462,7 +2462,7 @@ WHERE id = 52;
     </section>
 
   </section>
-  
+
   <section id="&BASEID;.delete">
 
     <title id="&BASEID;.delete.title">
