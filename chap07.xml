@@ -1540,6 +1540,7 @@ True
       Файл <filename>views.py</filename>:
       <screen>
 	<![CDATA[
+from django.core.mail import send_mail
 from django.shortcuts import render_to_response
 from mysite.contact.forms import ContactForm
 
