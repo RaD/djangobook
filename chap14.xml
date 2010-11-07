@@ -206,7 +206,7 @@
       <title id="&BASEID;.standard-library.comments.title">
 	Среда управления комментариями
       </title>
-      
+
       <para>
 	Перевод статьи <ulink
 	url="http://code.djangoproject.com/wiki/UsingFreeComment"/>.
@@ -220,11 +220,11 @@
       </para>
 
       <section id="&BASEID;.standard-library.comments.setup">
-	
+
 	<title id="&BASEID;.standard-library.comments.setup.title">
 	  Настройка
 	</title>
-      
+
 	<para>
 	  Система комментариев является приложением
 	  Django. Следовательно, требуется прописать его в параметре
@@ -283,14 +283,14 @@ urlpatterns = patterns('',
 	  </screen>
 	</para>
 
-      </section>	
+      </section>
 
       <section id="&BASEID;.standard-library.comments.counts">
-	
+
 	<title id="&BASEID;.standard-library.comments.counts.title">
 	  Информация о количестве комментариев
 	</title>
-      
+
 	<para>
 	  Для получения доступа к комментариям объекта вам нужен
 	  только идентификатор этого объекта. При его наличии вы
@@ -299,11 +299,11 @@ urlpatterns = patterns('',
 	</para>
 
 	<section id="&BASEID;.standard-library.comments.counts.object-list">
-	
+
 	  <title id="&BASEID;.standard-library.comments.counts.object-list.title">
 	    django.views.generic.list_detail.object_list
 	  </title>
-	  
+
 	  <para>
 	    В шаблоне <token>object_list</token> вы можете делать
 	    следующее для того, чтобы добавить информацию о количестве
@@ -347,11 +347,11 @@ urlpatterns = patterns('',
 	</section>
 
 	<section id="&BASEID;.standard-library.comments.counts.archive-index">
-	
+
 	  <title id="&BASEID;.standard-library.comments.counts.archive-index.title">
 	    django.views.generic.date_based.archive_index
 	  </title>
-	  
+
 	  <para>
 	    Базовое представление <token>archive_index</token>
 	    работает почти так как описанное в предыдущей секции,
@@ -368,7 +368,7 @@ urlpatterns = patterns('',
 	      ]]>
 	    </screen>
 	  </para>
-	    
+
 	  <para>
 	    В архивах, отсортированных по дате (таких как
 	    <token>archive_year</token> или
@@ -384,11 +384,11 @@ urlpatterns = patterns('',
       </section>
 
       <section id="&BASEID;.standard-library.comments.detail-page">
-	
+
 	<title id="&BASEID;.standard-library.comments.detail-page.title">
 	  Добавление комментариев на страницу
 	</title>
-      
+
 	<para>
 	  Обычно добавление комментариев разрешено пользователям на
 	  страницах с детальной информацией об объекте. Можно
@@ -518,8 +518,8 @@ urlpatterns = patterns('',
 <em>{{ object.description }}</em>
 
 <div class="article_menu">
-  <b>Added on {{ object.add_date|date:"F j, Y" }}</b> 
-  <a href="{{ object.get_absolute_url }}#comments">{{ comment_count }} 
+  <b>Added on {{ object.add_date|date:"F j, Y" }}</b>
+  <a href="{{ object.get_absolute_url }}#comments">{{ comment_count }}
     Comment{{ comment_count|pluralize }}</a>
 </div>
 
@@ -534,8 +534,8 @@ urlpatterns = patterns('',
     </a>
   </span>
   <p>
-    <b>{{ comment.person_name|escape }}</b> commented, 
-    on {{ comment.submit_date|date:"F j, Y" }} 
+    <b>{{ comment.person_name|escape }}</b> commented,
+    on {{ comment.submit_date|date:"F j, Y" }}
     at {{ comment.submit_date|date:"P" }}:
   </p>
   {{ comment.comment|escape|urlizetrunc:40|linebreaks }}
@@ -551,11 +551,11 @@ urlpatterns = patterns('',
       </section>
 
       <section id="&BASEID;.standard-library.comments.templates">
-	
+
 	<title id="&BASEID;.standard-library.comments.templates.title">
 	  Шаблоны
 	</title>
-      
+
 	<para>
 	  Django поставляется со встроенными стандартными шаблонами
 	  для системы комментирования.
@@ -568,11 +568,11 @@ urlpatterns = patterns('',
 	</para>
 
 	<section id="&BASEID;.standard-library.comments.templates.freeform">
-	  
+
 	  <title id="&BASEID;.standard-library.comments.templates.freeform.title">
 	    Шаблон с формой отправки комментария
 	  </title>
-	  
+
 	  <para>
 	    Этот шаблон (<filename>freeform.html</filename>) содержит
 	    код формы, с помощью которой пользователь отправляет
@@ -611,11 +611,11 @@ urlpatterns = patterns('',
 	</section>
 
 	<section id="&BASEID;.standard-library.comments.templates.preview">
-	  
+
 	  <title id="&BASEID;.standard-library.comments.templates.preview.title">
 	    Шаблон для предварительного просмотра
 	  </title>
-	  
+
 	  <para>
 	    Этот шаблон
 	    (<filename>free_preview.html</filename>)используется при
@@ -658,11 +658,11 @@ urlpatterns = patterns('',
     <br />
     {{ comment_form.comment }}
   </p>
-        
+
   <input type="hidden" name="options" value="{{ options }}" />
   <input type="hidden" name="target" value="{{ target }}" />
   <input type="hidden" name="gonzo" value="{{ hash }}" />
-  
+
   <p>
     <input type="submit" name="preview" value="Preview revised comment" />
   </p>
@@ -674,11 +674,11 @@ urlpatterns = patterns('',
 	</section>
 
 	<section id="&BASEID;.standard-library.comments.templates.posted">
-	  
+
 	  <title id="&BASEID;.standard-library.comments.templates.posted.title">
 	    Шаблон для отправленного комментария
 	  </title>
-	  
+
 	  <para>
 	    Этот шаблон (<filename>posted.html</filename>)
 	    отображается после того как пользователь отправит
@@ -709,11 +709,11 @@ urlpatterns = patterns('',
       </section>
 
       <section id="&BASEID;.standard-library.comments.wrapping">
-	
+
 	<title id="&BASEID;.standard-library.comments.wrapping.title">
 	  Wrapping post_free_comment to change the redirect url
 	</title>
-      
+
 	<para>
 	  В настоящее время
 	  <token>django.contrib.comments.views.comments</token> в
@@ -736,15 +736,15 @@ from django.http import HttpResponseRedirect
 def my_post_free_comment(request):
     if request.has_key('url') and not request.has_key('preview'):
         response = post_free_comment(request)
-                
+
         # Check there's a url to redirect to, and that post_free_comment worked
-        if len(request['url'].strip()) > 0 and 
+        if len(request['url'].strip()) > 0 and
                isinstance(response, HttpResponseRedirect):
             return HttpResponseRedirect(request['url'])
-                
+
             # Fall back on the default post_free_comment response
             return response
-        
+
         return post_free_comment(request)
 	    ]]>
 	  </screen>
@@ -766,7 +766,7 @@ def my_post_free_comment(request):
 	    ]]>
 	  </screen>
 	</para>
-	
+
 	<para>
 	  Теперь надо добавить в форму скрытое поле с URL. Но как
 	  получить текущий URL в шаблонной переменной? Для этого
@@ -778,7 +778,7 @@ def my_post_free_comment(request):
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 TEMPLATE_CONTEXT_PROCESSORS += (
      'django.core.context_processors.request',
-) 
+)
 	    ]]>
 	  </screen>
 	</para>
@@ -835,7 +835,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
       </section>
 
       <section id="&BASEID;.standard-library.comments.other-examples">
-	
+
 	<title id="&BASEID;.standard-library.comments.other-examples.title">
 	  Другие примеры
 	</title>
@@ -850,11 +850,11 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 <p>
   {% if has_previous %}
-    <a href="?page={{ previous }}">Previous</a> | 
+    <a href="?page={{ previous }}">Previous</a> |
   {% endif %}
-        
-  Page {{ page }} of {{ pages }} 
-        
+
+  Page {{ page }} of {{ pages }}
+
   {% if has_next %}
     | <a href="?page={{ next }}">Next</a>
   {% endif %}
@@ -864,7 +864,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
   <div class="comment" id="c{{ comment.id }}">
     <h3>
       <a href="{{ comment.get_absolute_url }}">
-        {{ comment.person_name|escape }} 
+        {{ comment.person_name|escape }}
 	<span class="small quiet">
 	  {{ comment.submit_date|date:"F j, Y" }} at {{ comment.submit_date|date:"P" }}
 	</span>
@@ -876,11 +876,11 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 <p>
   {% if has_previous %}
-    <a href="?page={{ previous }}">Previous</a> | 
+    <a href="?page={{ previous }}">Previous</a> |
   {% endif %}
-        
-  Page {{ page }} of {{ pages }} 
-        
+
+  Page {{ page }} of {{ pages }}
+
   {% if has_next %}
     | <a href="?page={{ next }}">Next</a>
   {% endif %}
@@ -914,7 +914,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
       <title id="&BASEID;.sites.scenario1.title">
 	Сценарий 1: Использование данных на множестве сайтов
       </title>
-      
+
       <para>
 	Как мы рассказывали в главе <quote><xref
 	linkend="djangobook.chap01"
@@ -951,7 +951,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
       <title id="&BASEID;.sites.scenario2.title">
 	Сценарий 2: Хранение информации о сайте в одном месте
       </title>
-      
+
       <para>
 	Сайты LJWorld.com и Lawrence.com имеют функциональность для
 	уведомления пользователей по электронной почте о появившихся
@@ -984,7 +984,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
       <title id="&BASEID;.sites.how-to-use.title">
 	Как это использовать
       </title>
-      
+
       <para>
 	Среда управления сайтами больше походит на ряд удобств, чем на
 	полноценную среду. Всё основано на двух базовых концепциях:
@@ -1053,15 +1053,15 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 	  </listitem>
 	</orderedlist>
       </para>
-      
+
     </section>
-    
+
     <section id="&BASEID;.sites.capabilities">
 
       <title id="&BASEID;.sites.capabilities.title">
 	Возможности
       </title>
-      
+
       <para>
 	Следующие секции описывают различные варианты использования
 	среды управления сайтами.
@@ -1072,7 +1072,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 	<title id="&BASEID;.sites.capabilities.reusing-data.title">
 	  Повторное использование данных на сайтах
 	</title>
-	
+
 	<para>
 	  Для повторного использования данных на множестве сайтов, как
 	  было описано в <quote><xref
@@ -1137,7 +1137,7 @@ def article_detail(request, article_id):
 	<title id="&BASEID;.sites.capabilities.single-site.title">
 	  Ассоциирование данных с единственным сайтом
 	</title>
-	
+
 	<para>
 	  Аналогично, вы можете ассоциировать модель к
 	  <token>Site</token> как <token>многие-к-одному</token> с
@@ -1173,7 +1173,7 @@ class Article(models.Model):
 	<title id="&BASEID;.sites.capabilities.hooking-site-views.title">
 	  Изменение логики представления в зависимости от текущего сайта
 	</title>
-	
+
 	<para>
 	  На низком уровне, вы можете использовать среду управления
 	  сайтами в ваших представлениях для выполнения определённых
@@ -1461,7 +1461,7 @@ class Photo(models.Model):
 	</note>
       </para>
 
-    </section>	    
+    </section>
 
     <section id="&BASEID;.sites.django-users">
 
@@ -1560,7 +1560,7 @@ class Photo(models.Model):
     <title id="&BASEID;.flatpages.title">
       Статические страницы
     </title>
-    
+
     <para>
       Часто, при использовании веб приложений с базой данных,
       появляется необходимость вывода нескольких статических страниц,
@@ -1597,11 +1597,11 @@ class Photo(models.Model):
     </para>
 
     <section id="&BASEID;.flatpages.using">
-      
+
       <title id="&BASEID;.flatpages.using.title">
 	Использование
       </title>
-      
+
       <para>
 	Для установки приложения выполните следующие шаги:
 	<orderedlist>
@@ -1782,22 +1782,22 @@ class FlatPage(models.Model):
     </section>
 
     <section id="&BASEID;.flatpages.manage">
-      
+
       <title id="&BASEID;.flatpages.manage.title">
 	Добавление, изменение и удаление
       </title>
-      
+
       <para>
 	Вы можете добавлять, изменять и удалять страницы двумя
 	способами:
       </para>
 
       <section id="&BASEID;.flatpages.manage.via-iface">
-      
+
 	<title id="&BASEID;.flatpages.manage.via-iface.title">
 	  Через интерфейс администратора
 	</title>
-      
+
 	<para>
 	  Если вы активировали автоматический интерфейс администратора
 	  Django, вы должны увидеть на его главной странице раздел
@@ -1809,11 +1809,11 @@ class FlatPage(models.Model):
       </section>
 
       <section id="&BASEID;.flatpages.manage.via-api">
-      
+
 	<title id="&BASEID;.flatpages.manage.via-api.title">
 	  Через Python API
 	</title>
-      
+
 	<para>
 	  Как было описано ранее, статические страницы представлены в
 	  виде стандартной Django модели, которая расположена в
@@ -1845,11 +1845,11 @@ class FlatPage(models.Model):
     </section>
 
     <section id="&BASEID;.flatpages.templates">
-      
+
       <title id="&BASEID;.flatpages.templates.title">
 	Использование шаблонов
       </title>
-      
+
       <para>
 	По умолчанию статические страницы генерируются с
 	использованием шаблона
@@ -1899,7 +1899,7 @@ class FlatPage(models.Model):
     <title id="&BASEID;.redirects.title">
       Перенаправления
     </title>
-    
+
     <para>
       Средства Django для перенаправления позволяются вам легко
       управлять этим процессом, храня всю информацию в базе данных и
@@ -1918,7 +1918,7 @@ class FlatPage(models.Model):
       <title id="&BASEID;.redirects.using.title">
 	Использование
       </title>
-    
+
       <para>
 	Для установки приложения выполните следующие шаги:
 	<orderedlist>
@@ -2024,18 +2024,18 @@ class FlatPage(models.Model):
       <title id="&BASEID;.redirects.manage.title">
 	Добавление, изменение и удаление
       </title>
-    
+
       <para>
 	Вы можете добавлять, изменять и удалять перенаправления двумя
 	способами:
       </para>
 
       <section id="&BASEID;.redirects.manage.via-iface">
-      
+
 	<title id="&BASEID;.redirects.manage.via-iface.title">
 	  Через интерфейс администратора
 	</title>
-      
+
 	<para>
 	  Если вы активировали автоматический интерфейс администратора
 	  Django, вы должны увидеть на его главной странице раздел
@@ -2047,11 +2047,11 @@ class FlatPage(models.Model):
       </section>
 
       <section id="&BASEID;.redirects.manage.via-api">
-      
+
 	<title id="&BASEID;.redirects.manage.via-api.title">
 	  Через Python API
 	</title>
-      
+
 	<para>
 	  Как было описано ранее, статические страницы представлены в
 	  виде стандартной Django модели, которая расположена в
@@ -2085,7 +2085,7 @@ class FlatPage(models.Model):
     <title id="&BASEID;.csrf.title">
       Защита от CSRF
     </title>
-    
+
     <para>
       Пакет <token>django.contrib.csrf</token> защищает от атак типа
       <quote>подделка HTTP запросов</quote> (Cross-Site Request
@@ -2100,13 +2100,13 @@ class FlatPage(models.Model):
       авторизован. Это непросто понять сначала, поэтому мы разберём
       пару примеров.
     </para>
-      
+
     <section id="&BASEID;.csrf.example1">
 
       <title id="&BASEID;.csrf.example1.title">
 	Простой пример
       </title>
-      
+
       <para>
 	Допустим вы зашли в свою почту на сайте
 	<token>example.com</token>. Интерфейс почтовой системы имеет
@@ -2142,7 +2142,7 @@ class FlatPage(models.Model):
       <title id="&BASEID;.csrf.example2.title">
 	Более сложный пример
       </title>
-      
+
       <para>
 	В предыдущем примере сайт <token>example.com</token> был
 	частично скомпрометирован, потому что он позволял изменять
@@ -2188,7 +2188,7 @@ class FlatPage(models.Model):
       <title id="&BASEID;.csrf.preventing.title">
 	Предотвращение
       </title>
-      
+
       <para>
 	Как может ваш сайт защитить себя от этого типа атак? Первым
 	шагом будет проверка того, что все GET запросы не содержат
@@ -2200,7 +2200,7 @@ class FlatPage(models.Model):
       <para>
 	Остались POST запросы. Вторым шагом будет добавление в каждую
 	форму скрытого поля, значение которого генерируется из
-	идентификатора пользователя. Затем, при обработки формы на
+	идентификатора пользователя. Затем, при обработке формы на
 	стороне сервера, следует проверять это поле и выдавать ошибку,
 	если проверка не удастся.
       </para>
@@ -2215,7 +2215,7 @@ class FlatPage(models.Model):
 	<title id="&BASEID;.csrf.preventing.middleware.title">
 	  Использование класса CSRF
 	</title>
-      
+
 	<para>
 	  Пакет <token>django.contrib.csrf</token> содержит только
 	  один модуль &mdash;
@@ -2308,7 +2308,7 @@ class FlatPage(models.Model):
 	<title id="&BASEID;.csrf.preventing.limitations.title">
 	  Ограничения класса
 	</title>
-      
+
 	<para>
 	  Класс <classname>CsrfMiddleware</classname> требует наличия
 	  механизма управления сессиями для своей работы. (Обратитесь
@@ -2348,11 +2348,11 @@ class FlatPage(models.Model):
   </section>
 
   <section id="&BASEID;.humanizing">
-    
+
     <title id="&BASEID;.humanizing.title">
       Очеловечивание данных
     </title>
-    
+
     <para>
       Это приложение содержит набор шаблонных фильтров Django, которые
       полезны для придания <quote>человеческого вида</quote>
@@ -2364,11 +2364,11 @@ class FlatPage(models.Model):
     </para>
 
     <section id="&BASEID;.humanizing.apnumber">
-    
+
       <title id="&BASEID;.humanizing.apnumber.title">
 	apnumber
       </title>
-    
+
       <para>
 	Для чисел от 1 до 9 этот фильтр возвращает письменную форму.
       </para>
@@ -2404,11 +2404,11 @@ class FlatPage(models.Model):
     </section>
 
     <section id="&BASEID;.humanizing.intcomma">
-    
+
       <title id="&BASEID;.humanizing.intcomma.title">
 	intcomma
       </title>
-    
+
       <para>
 	Этот фильтр преобразовывает целое в строку с разделением
 	разрядов запятой.
@@ -2451,11 +2451,11 @@ class FlatPage(models.Model):
     </section>
 
     <section id="&BASEID;.humanizing.intword">
-    
+
       <title id="&BASEID;.humanizing.intword.title">
 	intword
       </title>
-    
+
       <para>
 	Этот фильтр преобразовывает большое целое в удобное текстовой
 	представление. Хорошо подходит для чисел больше одного
@@ -2498,11 +2498,11 @@ class FlatPage(models.Model):
     </section>
 
     <section id="&BASEID;.humanizing.ordinal">
-    
+
       <title id="&BASEID;.humanizing.ordinal.title">
 	ordinal
       </title>
-    
+
       <para>
 	Этот фильтр преобразовывает целые в их порядковое
 	представление.
@@ -2541,11 +2541,11 @@ class FlatPage(models.Model):
   </section>
 
   <section id="&BASEID;.markup">
-    
+
     <title id="&BASEID;.markup.title">
       Фильтры разметки
     </title>
-    
+
     <para>
       Следующая коллекция шаблонных фильтров обрабатывает общие языки
       разметки:
