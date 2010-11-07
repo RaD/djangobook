@@ -91,7 +91,7 @@
       данных. Не беспокойтесь о деталях, просто рассмотрите как он
       работает:
       <screen>
-	<![CDATA[
+	    <![CDATA[
 #!/usr/bin/env python
 
 import MySQLdb
@@ -113,7 +113,7 @@ print "</ul>"
 print "</body></html>"
 
 connection.close()
-	]]>
+	    ]]>
       </screen>
     </para>
 
@@ -172,7 +172,7 @@ connection.close()
 	</listitem>
 
 	<listitem>
-	  <para> 
+	  <para>
 	    Что произойдёт, если дизайнер, который не имеет опыта
 	    разработки на языке Python, пожелает поменять вид
 	    страницы? Один неверный символ может уронить целое
@@ -214,27 +214,27 @@ connection.close()
       Файл <filename>models.py</filename> описывает таблицу базы
       данных.
       <screen>
-	<![CDATA[
+	    <![CDATA[
 from django.db import models
 
 class Book(models.Model):
     name = models.CharField(max_length=50)
     pub_date = models.DateField()
-	]]>
+	    ]]>
       </screen>
     </para>
 
     <para>
       Файл <filename>views.py</filename> описывает логику приложения.
       <screen>
-	<![CDATA[
+	    <![CDATA[
 from django.shortcuts import render_to_response
 from models import Book
 
 def latest_books(request):
     book_list = Book.objects.order_by('-pub_date')[:10]
     return render_to_response('latest_books.html', {'book_list': book_list})
-	]]>
+	    ]]>
       </screen>
     </para>
 
@@ -242,14 +242,14 @@ def latest_books(request):
       Файл <filename>urls.py</filename> описывает соответствие URL
       логике приложения.
       <screen>
-	<![CDATA[
+	    <![CDATA[
 from django.conf.urls.defaults import *
 import views
 
 urlpatterns = patterns('',
     (r'^latest/$', views.latest_books),
 )
-	]]>
+	    ]]>
       </screen>
     </para>
 
@@ -257,7 +257,7 @@ urlpatterns = patterns('',
       Файл <filename>latest_books.html</filename> описывает HTML
       шаблон, используемый при выводе страницы.
       <screen>
-	<![CDATA[
+	    <![CDATA[
 <html><head><title>Книги</title></head>
 <body>
 <h1>Книги</h1>
@@ -267,7 +267,7 @@ urlpatterns = patterns('',
 {% endfor %}
 </ul>
 </body></html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -276,48 +276,48 @@ urlpatterns = patterns('',
       работает. Мы желаем лишь показать общую концепцию. Главной идеей
       в Django является <emphasis>разделение задач</emphasis>:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Файл <filename>models.py</filename> содержит описание
-	    таблицы базы данных, представленное в виде класса
-	    Python. Такой класс называется
-	    <emphasis>моделью</emphasis>. С помощью данного класса вы
-	    можете создавать, получать, обновлять и удалять записи в
-	    таблице вашей базы данных, используя простой код на языке
-	    Python вместо использования повторяющихся SQL команд.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Файл <filename>models.py</filename> содержит описание
+            таблицы базы данных, представленное в виде класса
+            Python. Такой класс называется
+            <emphasis>моделью</emphasis>. С помощью данного класса вы
+            можете создавать, получать, обновлять и удалять записи в
+            таблице вашей базы данных, используя простой код на языке
+            Python вместо использования повторяющихся SQL команд.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Файл <filename>views.py</filename> содержит логику
-	    отображения страницы, в функции
-	    <function>latest_books()</function>. Такая функция
-	    называется <emphasis>представлением</emphasis>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Файл <filename>views.py</filename> содержит логику
+            отображения страницы, в функции
+            <function>latest_books()</function>. Такая функция
+            называется <emphasis>представлением</emphasis>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Файл <filename>urls.py</filename> определяет какое именно
-	    представление будет вызвано для URL, заданного в виде
-	    шаблона. В данном случае URL <token>/latest/</token> будет
-	    обработано функцией
-	    <function>latest_books()</function>. Другими словами, если
-	    имя вашего домена <token>example.com</token>, то любой
-	    доступ к <ulink url="http://example.com/latest/"/> будет
-	    обработан функцией <function>latest_books()</function>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Файл <filename>urls.py</filename> определяет какое именно
+            представление будет вызвано для URL, заданного в виде
+            шаблона. В данном случае URL <token>/latest/</token> будет
+            обработано функцией
+            <function>latest_books()</function>. Другими словами, если
+            имя вашего домена <token>example.com</token>, то любой
+            доступ к <ulink url="http://example.com/latest/"/> будет
+            обработан функцией <function>latest_books()</function>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Файл <filename>latest_books.html</filename> является HTML
-	    шаблоном, который описывает дизайн страницы. Он использует
-	    шаблонный язык с основными логическими операторами &mdash;
-	    <token>{% for book in book_list %}</token>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Файл <filename>latest_books.html</filename> является HTML
+            шаблоном, который описывает дизайн страницы. Он использует
+            шаблонный язык с основными логическими операторами &mdash;
+            <token>{% for book in book_list %}</token>.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -374,42 +374,42 @@ urlpatterns = patterns('',
       который мы продемонстрировали ранее. Классический процесс
       разработки приложения выглядит так:
       <orderedlist>
-	<listitem>
-	  <para>
-	    Создать приложение с нуля.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Создать приложение с нуля.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Создать другое приложение с нуля.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Создать другое приложение с нуля.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Реализовать работу первого приложения со вторым.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Реализовать работу первого приложения со вторым.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Переработать код так, чтобы оба приложения использовали
-	    общие функции.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Переработать код так, чтобы оба приложения использовали
+            общие функции.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Повторить шаги 2-4 несколько раз.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Повторить шаги 2-4 несколько раз.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Вы изобрели среду разработки.
-	</para>
-	</listitem>
+        <listitem>
+          <para>
+            Вы изобрели среду разработки.
+          </para>
+        </listitem>
       </orderedlist>
     </para>
 
@@ -438,26 +438,26 @@ urlpatterns = patterns('',
 
     <para>
       <note>
-	<para>
-	  Рекомендуем ознакомиться с:
+        <para>
+          Рекомендуем ознакомиться с:
 
-	  <itemizedlist>
-	    <listitem>
-	      <para>
-		<ulink
-		url="http://www.python.org/dev/peps/pep-0008/">Руководство
-		по стилю кода на языке Python</ulink>.
-	      </para>
-	    </listitem>
+          <itemizedlist>
+            <listitem>
+              <para>
+                <ulink
+                url="http://www.python.org/dev/peps/pep-0008/">Руководство
+                по стилю кода на языке Python</ulink>.
+              </para>
+            </listitem>
 
-	    <listitem>
-	      <para>
-		<ulink
-		url="http://docs.python.org/tutorial/index.html">Туториал</ulink>.
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-	</para>
+            <listitem>
+              <para>
+                <ulink
+                url="http://docs.python.org/tutorial/index.html">Туториал</ulink>.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </para>
       </note>
     </para>
 
@@ -512,7 +512,7 @@ urlpatterns = patterns('',
       мотивируются своими собственными эгоистичными желаниями
       сэкономить своё время и наслаждаться своей работой.
     </para>
-      
+
   </section>
 
   <section id="&BASEID;.howtoread">
@@ -550,22 +550,22 @@ urlpatterns = patterns('',
     <section id="&BASEID;.howtoread.develknowledge">
 
       <title id="&BASEID;.howtoread.develknowledge.title">
-	Необходимые знания в программировании
+        Необходимые знания в программировании
       </title>
 
       <para>
-	Читатели должны понимать основы процедурного и
-	объекто-ориентированного программирования: управляющие
-	структуры (<token>if</token>, <token>while</token>,
-	<token>for</token>), структуры данных (списки, хэши/словари),
-	переменные, классы и объекты.
+        Читатели должны понимать основы процедурного и
+        объекто-ориентированного программирования: управляющие
+        структуры (<token>if</token>, <token>while</token>,
+        <token>for</token>), структуры данных (списки, хэши/словари),
+        переменные, классы и объекты.
       </para>
 
       <para>
-	Опыт разработки будет, как вы можете ожидать, очень полезным,
-	но не обязательным для понимания этой книги. По всей книге мы
-	пытаемся рекламировать лучшие подходы в программировании для
-	читателей у которых нет опыта в этой области.
+        Опыт разработки будет, как вы можете ожидать, очень полезным,
+        но не обязательным для понимания этой книги. По всей книге мы
+        пытаемся рекламировать лучшие подходы в программировании для
+        читателей у которых нет опыта в этой области.
       </para>
 
     </section>
@@ -573,39 +573,39 @@ urlpatterns = patterns('',
     <section id="&BASEID;.howtoread.pythonknowledge">
 
       <title id="&BASEID;.howtoread.pythonknowledge.title">
-	Необходимые знания языка Python
+        Необходимые знания языка Python
       </title>
 
       <para>
-	Если рассматривать ядро среды, Django является просто набором
-	библиотек, написанных на языке Python. При разработке сайта с
-	помощью Django вам придётся писать код на языке Python,
-	который использует эти библиотеки. Изучая Django важно
-	понимать как программировать на языке Python и понимать как
-	работают библиотеки Django.
+        Если рассматривать ядро среды, Django является просто набором
+        библиотек, написанных на языке Python. При разработке сайта с
+        помощью Django вам придётся писать код на языке Python,
+        который использует эти библиотеки. Изучая Django важно
+        понимать как программировать на языке Python и понимать как
+        работают библиотеки Django.
       </para>
 
       <para>
-	Если у вас есть опыт разработки на языке Python, вы не должны
-	будете испытывать проблемы. Более того, код Django не делает
-	чего-то магического (т.е. с помощью хитрых приёмов
-	программирования, которые трудно объяснить или понять). Для
-	вас изучение Django будет означать изучение соглашений и API
-	среды разработки.
+        Если у вас есть опыт разработки на языке Python, вы не должны
+        будете испытывать проблемы. Более того, код Django не делает
+        чего-то магического (т.е. с помощью хитрых приёмов
+        программирования, которые трудно объяснить или понять). Для
+        вас изучение Django будет означать изучение соглашений и API
+        среды разработки.
       </para>
 
       <para>
-	Если у вас нет опыта разработки на языке Python, ничего
-	страшного. Его легко изучить и прикольно использовать!
-	Несмотря на то, что эта книга не включает в себя обучение
-	языку Python, она подчёркивает возможности языка и его
-	функциональность. Мы рекомендуем прочитать официальные
-	документы по языку на <ulink
-	url="http://docs.python.org/tut/"/>. Мы также рекомендуем
-	прочитать книгу Марка Пилгрима <ulink
-	url="http://ru.diveintopython.org/toc.html">Вглубь языка
-	Python</ulink>, опубликованную издательством Apress и
-	переведённую Денисом Откидач.
+        Если у вас нет опыта разработки на языке Python, ничего
+        страшного. Его легко изучить и прикольно использовать!
+        Несмотря на то, что эта книга не включает в себя обучение
+        языку Python, она подчёркивает возможности языка и его
+        функциональность. Мы рекомендуем прочитать официальные
+        документы по языку на <ulink
+        url="http://docs.python.org/tut/"/>. Мы также рекомендуем
+        прочитать книгу Марка Пилгрима <ulink
+        url="http://ru.diveintopython.org/toc.html">Вглубь языка
+        Python</ulink>, опубликованную издательством Apress и
+        переведённую Денисом Откидач.
       </para>
 
     </section>
@@ -613,34 +613,34 @@ urlpatterns = patterns('',
     <section id="&BASEID;.howtoread.djangoversion">
 
       <title id="&BASEID;.howtoread.djangoversion.title">
-	Требуемая версия Django
+        Требуемая версия Django
       </title>
 
       <para>
-	Данная книга описывает серию релизов 1.х, т.е. версии 1.0,
-	1.0.2 или 1.1.
+        Данная книга описывает серию релизов 1.х, т.е. версии 1.0,
+        1.0.2 или 1.1.
       </para>
 
       <para>
-	Разработчики Django обеспечивают обратную совместимость с
-	основными версиями. Это означает, что если вы пишете
-	приложение для Django 1.0, оно будет работать с версиями 1.1,
-	1.2, 1.9 и со всеми другими версиями, которые начинаются с
-	<quote>1</quote>.
+        Разработчики Django обеспечивают обратную совместимость с
+        основными версиями. Это означает, что если вы пишете
+        приложение для Django 1.0, оно будет работать с версиями 1.1,
+        1.2, 1.9 и со всеми другими версиями, которые начинаются с
+        <quote>1</quote>.
       </para>
 
       <para>
-	Когда Django достигнет версии 2.0, может потребоваться
-	переписать ваше приложение &mdash; но до этого ещё
-	далеко. Например, путь до версии 1.0 занял три года. (Это
-	очень похоже на политику совместимости принятую для языка
-	Python &mdash; код, написанный для Python 2.0, работает в 2.6,
-	но это не гарантируется для Python 3.0).
+        Когда Django достигнет версии 2.0, может потребоваться
+        переписать ваше приложение &mdash; но до этого ещё
+        далеко. Например, путь до версии 1.0 занял три года. (Это
+        очень похоже на политику совместимости принятую для языка
+        Python &mdash; код, написанный для Python 2.0, работает в 2.6,
+        но это не гарантируется для Python 3.0).
       </para>
 
       <para>
-	Принимая описанное, данная книга охватывается все версии
-	Django 1.x и должна прослужить вам приличное время.
+        Принимая описанное, данная книга охватывается все версии
+        Django 1.x и должна прослужить вам приличное время.
       </para>
 
     </section>
@@ -648,33 +648,33 @@ urlpatterns = patterns('',
     <section id="&BASEID;.howtoread.gettinghelp">
 
       <title id="&BASEID;.howtoread.gettinghelp.title">
-	Получение помощи
+        Получение помощи
       </title>
 
       <para>
-	Одним из главных достоинств Django является его доброе и
-	полезное сообщество пользователей. Не стесняйтесь задавать
-	вопрос по любому аспекту работы с Django: инсталляция, дизайн
-	приложения, дизайн базы данных, установка на боевой сервер.
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Список рассылки <token>django-users</token> является
-	      местом где тысячи пользователей задают и отвечают на
-	      вопросы. Зарегистрируйтесь свободно на <ulink
-	      url="http://www.djangoproject.com/r/django-users"/>.
-	    </para>
-	  </listitem>
+        Одним из главных достоинств Django является его доброе и
+        полезное сообщество пользователей. Не стесняйтесь задавать
+        вопрос по любому аспекту работы с Django: инсталляция, дизайн
+        приложения, дизайн базы данных, установка на боевой сервер.
+        <itemizedlist>
+          <listitem>
+            <para>
+              Список рассылки <token>django-users</token> является
+              местом где тысячи пользователей задают и отвечают на
+              вопросы. Зарегистрируйтесь свободно на <ulink
+              url="http://www.djangoproject.com/r/django-users"/>.
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      IRC канал является местом где пользователи могут
-	      общаться друг с другом, помогая в реальном
-	      времени. Присоединяйтесь к каналу <token>#django</token>
-	      в FreeNode IRC.
-	    </para>
-	  </listitem>
-	</itemizedlist>
+          <listitem>
+            <para>
+              IRC канал является местом где пользователи могут
+              общаться друг с другом, помогая в реальном
+              времени. Присоединяйтесь к каналу <token>#django</token>
+              в FreeNode IRC.
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
 
     </section>
@@ -686,7 +686,7 @@ urlpatterns = patterns('',
     <title id="&BASEID;.coding-style.title">
       Стиль исходного кода
     </title>
-    
+
     <para>
       Перевод оригинальной статьи на <ulink
       url="http://www.djangoproject.com/documentation/contributing/#coding-style"/>.
@@ -696,119 +696,119 @@ urlpatterns = patterns('',
       Пожалуйста, следуйте следующим правилам при разработке своих
       приложений:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Если особо не оговорено иное, надо использовать стандарт
-	    <ulink url="http://www.python.org/peps/pep-0008.html">PEP
-	    8</ulink>.
-	  </para>
+        <listitem>
+          <para>
+            Если особо не оговорено иное, надо использовать стандарт
+            <ulink url="http://www.python.org/peps/pep-0008.html">PEP
+            8</ulink>.
+          </para>
 
-	  <para>
-	    Можно использовать утилиту аналогичную <ulink
-	    url="http://svn.browsershots.org/trunk/devtools/pep8/pep8.py">pep8.py</ulink>
-	    для проверки исходного кода.
-	  </para>
-	</listitem>
+          <para>
+            Можно использовать утилиту аналогичную <ulink
+            url="http://svn.browsershots.org/trunk/devtools/pep8/pep8.py">pep8.py</ulink>
+            для проверки исходного кода.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Для отступа следует использовать четыре пробела.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Для отступа следует использовать четыре пробела.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Пользуйтесь символами подчёркивания (<token>_</token>), а
-	    не выделениемРегистра при указании имён переменных,
-	    функций и методов (т.е.,
-	    <token>poll.get_unique_voters()</token>, а не
-	    <token>poll.getUniqueVoters()</token>).
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Пользуйтесь символами подчёркивания (<token>_</token>), а
+            не выделениемРегистра при указании имён переменных,
+            функций и методов (т.е.,
+            <token>poll.get_unique_voters()</token>, а не
+            <token>poll.getUniqueVoters()</token>).
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Используйте заглавные буквы в определении класса или
-	    функций, которые возвращают классы (например,
-	    <token>InitialCaps</token>).
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Используйте заглавные буквы в определении класса или
+            функций, которые возвращают классы (например,
+            <token>InitialCaps</token>).
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Подготовьте все строки к переводу. За дополнительной
-	    информацией обратитесь к главе <quote><xref
-	    linkend="djangobook.chap18"
-	    endterm="djangobook.chap18.title"/></quote>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Подготовьте все строки к переводу. За дополнительной
+            информацией обратитесь к главе <quote><xref
+            linkend="djangobook.chap18"
+            endterm="djangobook.chap18.title"/></quote>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    В строках документации используйте <quote>активные
-	    слова</quote>, например:
-	    <screen>
-	      <![CDATA[
+        <listitem>
+          <para>
+            В строках документации используйте <quote>активные
+            слова</quote>, например:
+            <screen>
+              <![CDATA[
 def foo():
     """
     Calculates something and returns the result.
     """
     pass
-	      ]]>
-	    </screen>
-	    а не:
-	    <screen>
-	      <![CDATA[
+              ]]>
+            </screen>
+            а не:
+            <screen>
+              <![CDATA[
 def foo():
     """
     Calculate something and return the result.
     """
     pass
-	      ]]>
-	    </screen>
-	  </para>
-	</listitem>
+              ]]>
+            </screen>
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Не указывайте своё имя в коде. Политика Django
-	    предусматривает хранение имён авторов кода в файле
-	    AUTHORS.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Не указывайте своё имя в коде. Политика Django
+            предусматривает хранение имён авторов кода в файле
+            AUTHORS.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
     <section id="&BASEID;.coding-style.templates">
 
       <title id="&BASEID;.coding-style.templates.title">
-	Шаблоны
+        Шаблоны
       </title>
-    
-      <para>
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      В шаблонах используйте только один пробел между
-	      фигурными скобками и содержимым тега.
-	    </para>
 
-	    <para>
-	      Делайте так:
-	      <screen>
-		<![CDATA[
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              В шаблонах используйте только один пробел между
+              фигурными скобками и содержимым тега.
+            </para>
+
+            <para>
+              Делайте так:
+              <screen>
+                <![CDATA[
 {{ foo }}
-		]]>
-	      </screen>
-	      а не так:
-	      <screen>
-		<![CDATA[
+                ]]>
+              </screen>
+              а не так:
+              <screen>
+                <![CDATA[
 {{foo}}
-		]]>
-	      </screen>
-	    </para>
-	  </listitem>
-	</itemizedlist>
+                ]]>
+              </screen>
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
 
     </section>
@@ -816,35 +816,35 @@ def foo():
     <section id="&BASEID;.coding-style.views">
 
       <title id="&BASEID;.coding-style.views.title">
-	Представления
+        Представления
       </title>
-    
-      <para>
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      В представлениях первым параметром всегда должен быть
-	      <token>request</token>.
-	    </para>
 
-	    <para>
-	      Делайте так:
-	      <screen>
-		<![CDATA[
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              В представлениях первым параметром всегда должен быть
+              <token>request</token>.
+            </para>
+
+            <para>
+              Делайте так:
+              <screen>
+                <![CDATA[
 def my_view(request, foo):
     # ...
-		]]>
-	      </screen>
-	      а не так:
-	      <screen>
-		<![CDATA[
+                ]]>
+              </screen>
+              а не так:
+              <screen>
+                <![CDATA[
 def my_view(req, foo):
     # ...
-		]]>
-	      </screen>
-	    </para>
-	  </listitem>
-	</itemizedlist>
+                ]]>
+              </screen>
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
 
     </section>
@@ -852,155 +852,155 @@ def my_view(req, foo):
     <section id="&BASEID;.coding-style.models">
 
       <title id="&BASEID;.coding-style.models.title">
-	Модели
+        Модели
       </title>
-    
-      <para>
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Имена полей должны определяться в нижнем регистре с
-	      использованием символа подчёркивания.
-	    </para>
 
-	    <para>
-	      Делайте так:
-	      <screen>
-		<![CDATA[
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Имена полей должны определяться в нижнем регистре с
+              использованием символа подчёркивания.
+            </para>
+
+            <para>
+              Делайте так:
+              <screen>
+                <![CDATA[
 class Person(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=40)
-		]]>
-	      </screen>
-	      а не так:
-	      <screen>
-		<![CDATA[
+                ]]>
+              </screen>
+              а не так:
+              <screen>
+                <![CDATA[
 class Person(models.Model):
     FirstName = models.CharField(max_length=20)
     Last_Name = models.CharField(max_length=40)
-		]]>
-	      </screen>
-	    </para>
-	  </listitem>
+                ]]>
+              </screen>
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      Класс <classname>Meta</classname> должен описываться
-	      <emphasis>после</emphasis> определения полей, отделённый
-	      от них пустой строкой.
-	    </para>
+          <listitem>
+            <para>
+              Класс <classname>Meta</classname> должен описываться
+              <emphasis>после</emphasis> определения полей, отделённый
+              от них пустой строкой.
+            </para>
 
-	    <para>
-	      Делайте так:
-	      <screen>
-		<![CDATA[
+            <para>
+              Делайте так:
+              <screen>
+                <![CDATA[
 class Person(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=40)
 
     class Meta:
         verbose_name_plural = 'people'
-		]]>
-	      </screen>
-	      а не так:
-	      <screen>
-		<![CDATA[
+                ]]>
+              </screen>
+              а не так:
+              <screen>
+                <![CDATA[
 class Person(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=40)
     class Meta:
         verbose_name_plural = 'people'
-		]]>
-	      </screen>
-	      и не так:
-	      <screen>
-		<![CDATA[
+                ]]>
+              </screen>
+              и не так:
+              <screen>
+                <![CDATA[
 class Person(models.Model):
     class Meta:
         verbose_name_plural = 'people'
 
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=40)
-		]]>
-	      </screen>
-	    </para>
-	  </listitem>
+                ]]>
+              </screen>
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      Порядок внутренних классов модели и стандартных методов
-	      должен быть таким (ничто из нижеперечисленного не
-	      является обязательным):
-	      <itemizedlist>
-		<listitem>
-		  <para>
-		    Определение всех полей класса.
-		  </para>
-		</listitem>
+          <listitem>
+            <para>
+              Порядок внутренних классов модели и стандартных методов
+              должен быть таким (ничто из нижеперечисленного не
+              является обязательным):
+              <itemizedlist>
+                <listitem>
+                  <para>
+                    Определение всех полей класса.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    <token>class Meta</token>.
-		  </para>
-		</listitem>
+                <listitem>
+                  <para>
+                    <token>class Meta</token>.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    <token>class Admin</token>.
-		  </para>
-		</listitem>
+                <listitem>
+                  <para>
+                    <token>class Admin</token>.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    <token>def __unicode__()</token>.
-		  </para>
-		</listitem>
+                <listitem>
+                  <para>
+                    <token>def __unicode__()</token>.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    <token>def __str__()</token>.
-		  </para>
-		</listitem>
+                <listitem>
+                  <para>
+                    <token>def __str__()</token>.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    <token>def save()</token>.
-		  </para>
-		</listitem>
+                <listitem>
+                  <para>
+                    <token>def save()</token>.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    <token>def get_absolute_url()</token>.
-		  </para>
-		</listitem>
+                <listitem>
+                  <para>
+                    <token>def get_absolute_url()</token>.
+                  </para>
+                </listitem>
 
-		<listitem>
-		  <para>
-		    Любые свои методы.
-		  </para>
-		</listitem>
-	      </itemizedlist>
-	    </para>
-	  </listitem>
+                <listitem>
+                  <para>
+                    Любые свои методы.
+                  </para>
+                </listitem>
+              </itemizedlist>
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      Если для модели определена опция <token>choices</token>,
-	      определите выбор в виде кортежа кортежей, использовав
-	      заглавные буквы для его имени. Определение лучше
-	      помещать в начале файла с моделями или перед
-	      классом. Пример:
-	      <screen>
-		<![CDATA[
+          <listitem>
+            <para>
+              Если для модели определена опция <token>choices</token>,
+              определите выбор в виде кортежа кортежей, использовав
+              заглавные буквы для его имени. Определение лучше
+              помещать в начале файла с моделями или перед
+              классом. Пример:
+              <screen>
+                <![CDATA[
 GENDER_CHOICES = (
     ('M', 'Male'),
     ('F', 'Female'),
 )
-		]]>
-	      </screen>
-	    </para>
-	  </listitem>
-	</itemizedlist>
+                ]]>
+              </screen>
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
 
     </section>
