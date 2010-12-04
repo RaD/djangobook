@@ -85,7 +85,7 @@
       подключения к базе данных MySQL, получения нескольких записей и
       помещения их в шаблон для отображения на странице сайта:
       <screen>
-	<![CDATA[
+	    <![CDATA[
 from django.shortcuts import render_to_response
 import MySQLdb
 
@@ -96,7 +96,7 @@ def book_list(request):
     names = [row[0] for row in cursor.fetchall()]
     db.close()
     return render_to_response('book_list.html', {'names': names})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -105,40 +105,40 @@ def book_list(request):
       некоторыми проблемами:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Мы жёстко определяем параметры соединения с базой
-	    данных. В идеале эти параметры должны храниться в
-	    конфигурации проекта Django.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Мы жёстко определяем параметры соединения с базой
+            данных. В идеале эти параметры должны храниться в
+            конфигурации проекта Django.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Мы должны писать нудный код: создать соединение,
-	    создать курсор, выполнить оператор и закрыть соединение. В
-	    идеале всё, что мы должны сделать &mdash; указать
-	    необходимый нам результат.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Мы должны писать нудный код: создать соединение, создать
+            курсор, выполнить оператор и закрыть соединение. В идеале
+            всё, что мы должны сделать &mdash; указать необходимый нам
+            результат.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Это привязывает нас к MySQL. Если, с течением времени, мы
-	    решим перейти с MySQL на PostgreSQL, нам потребуется
-	    использовать другой драйвер для базы данных (т.е.,
-	    <token>psycopg</token> вместо <token>MySQLdb</token>),
-	    изменить параметры соединения и, в зависимости от природы
-	    SQL операторов, возможно, переписать SQL запросы. В
-	    идеале, мы должны рассматривать сервер базы данных
-	    абстрактно, т.е., для смены сервера мы должны внести
-	    изменения в одно только место проекта. (Эта проблема имеет
-	    особое значение в случае, если вы работаете над
-	    приложением Django с открытым кодом, которое вы желаете
-	    распространить среди максимально возможного количества
-	    пользователей.)
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Это привязывает нас к MySQL. Если, с течением времени, мы
+            решим перейти с MySQL на PostgreSQL, нам потребуется
+            использовать другой драйвер для базы данных (т.е.,
+            <token>psycopg</token> вместо <token>MySQLdb</token>),
+            изменить параметры соединения и, в зависимости от природы
+            SQL операторов, возможно, переписать SQL запросы. В
+            идеале, мы должны рассматривать сервер базы данных
+            абстрактно, т.е., для смены сервера мы должны внести
+            изменения в одно только место проекта. (Эта проблема имеет
+            особое значение в случае, если вы работаете над
+            приложением Django с открытым кодом, которое вы желаете
+            распространить среди максимально возможного количества
+            пользователей.)
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -148,14 +148,14 @@ def book_list(request):
       надо изменить предыдущее представление для использования Django
       API для работы с базами данных:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.shortcuts import render_to_response
 from mysite.books.models import Book
 
 def book_list(request):
     books = Book.objects.order_by('name')
     return render_to_response('book_list.html', {'books': books})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -206,20 +206,20 @@ def book_list(request):
 
     <para>
       <note>
-	<title>
-	  Почему используется сокращение?
-	</title>
+        <title>
+          Почему используется сокращение?
+        </title>
 
-	<para>
-	  Целью чёткого определения сокращений, подобных MVC, является
-	  упорядочивание взаимодействия между разработчиками. Вместо
-	  того, чтобы сказать вашим сотрудникам: <quote>Давайте
-	  использовать абстрактный доступ к данным, затем создадим слой
-	  управления отображением данных и тогда создадим слой между
-	  ними, который всем этим управляет</quote> можно
-	  воспользоваться общим термином: <quote>Давайте здесь
-	  использовать подход MVC</quote>.
-	</para>
+        <para>
+          Целью чёткого определения сокращений, подобных MVC, является
+          упорядочивание взаимодействия между разработчиками. Вместо
+          того, чтобы сказать вашим сотрудникам: <quote>Давайте
+          использовать абстрактный доступ к данным, затем создадим
+          слой управления отображением данных и тогда создадим слой
+          между ними, который всем этим управляет</quote> можно
+          воспользоваться общим термином: <quote>Давайте здесь
+          использовать подход MVC</quote>.
+        </para>
       </note>
     </para>
 
@@ -229,30 +229,30 @@ def book_list(request):
       и C используются в Django:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    <emphasis>M</emphasis>, доступ к данным, обрабатывается
-	    слоем работы с базой данных, который описан в этой главе.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>M</emphasis>, доступ к данным, обрабатывается
+            слоем работы с базой данных, который описан в этой главе.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <emphasis>V</emphasis>, эта часть, которая определяет
-	    какие данные получать и как их отображать, обрабатывается
-	    представлениями и шаблонами.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>V</emphasis>, эта часть, которая определяет
+            какие данные получать и как их отображать, обрабатывается
+            представлениями и шаблонами.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <emphasis>C</emphasis>, эта часть, которая выбирает
-	    представление в зависимости от пользовательского ввода,
-	    обрабатывается самой средой разработки, следуя созданной
-	    вами схемой URL, и вызывает соответствующую функцию Python
-	    для указанного URL.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>C</emphasis>, эта часть, которая выбирает
+            представление в зависимости от пользовательского ввода,
+            обрабатывается самой средой разработки, следуя созданной
+            вами схемой URL, и вызывает соответствующую функцию Python
+            для указанного URL.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -264,36 +264,36 @@ def book_list(request):
       MTV-подходе к разработке:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    <emphasis>M</emphasis> определено для
-	    <quote>Модели</quote> (Model), слоя доступа к данным. Этот
-	    слой знает всё о данных: как получить к ним доступ, как
-	    проверить их, как с ними работать и как данные связаны
-	    между собой.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>M</emphasis> определено для
+            <quote>Модели</quote> (Model), слоя доступа к данным. Этот
+            слой знает всё о данных: как получить к ним доступ, как
+            проверить их, как с ними работать и как данные связаны
+            между собой.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <emphasis>T</emphasis> определено для
-	    <quote>Шаблона</quote> (Template), слоя представления
-	    данных. Этот слой принимает решения относительно
-	    представления данных: как и что должно отображаться на
-	    странице или в другом типе документа.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>T</emphasis> определено для
+            <quote>Шаблона</quote> (Template), слоя представления
+            данных. Этот слой принимает решения относительно
+            представления данных: как и что должно отображаться на
+            странице или в другом типе документа.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <emphasis>V</emphasis> определено для
-	    <quote>Представления</quote> (View), слоя
-	    бизнес-логики. Этот слой содержит логику, как получать
-	    доступ к моделям и применять соответствующий шаблон. Вы
-	    можете рассматривать его как мост между моделями и
-	    шаблонами.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>V</emphasis> определено для
+            <quote>Представления</quote> (View), слоя
+            бизнес-логики. Этот слой содержит логику, как получать
+            доступ к моделям и применять соответствующий шаблон. Вы
+            можете рассматривать его как мост между моделями и
+            шаблонами.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -338,48 +338,48 @@ def book_list(request):
 
     <para>
       <note>
-	<title>
-	  Используем кодировку UTF-8, пример для MySQL
-	  (прим. переводчика)
-	</title>
+        <title>
+          Используем кодировку UTF-8, пример для MySQL
+          (прим. переводчика)
+        </title>
 
-	<para>
-	  Откроем на редактирование файл
-	  <filename>/etc/mysql/my.cnf</filename>.
-	</para>
+        <para>
+          Откроем на редактирование файл
+          <filename>/etc/mysql/my.cnf</filename>.
+        </para>
 
-	<para>
-	  В конец секции <token>[client]</token> добавим строчку:
-	  <screen>
+        <para>
+          В конец секции <token>[client]</token> добавим строчку:
+          <screen>
 default-character-set=utf8
-	  </screen>
-	</para>
+          </screen>
+        </para>
 
-	<para>
-	  В конец секции <token>[mysqld]</token> добавим строчки:
-	  <screen>
+        <para>
+          В конец секции <token>[mysqld]</token> добавим строчки:
+          <screen>
 default-character-set=utf8
 collation_server=utf8_unicode_ci
-	  </screen>
-	</para>
+          </screen>
+        </para>
 
-	<para>
-	  Теперь следует перезапустить сервер базы данных и можно
-	  приступать к созданию самой базы.
-	</para>
+        <para>
+          Теперь следует перезапустить сервер базы данных и можно
+          приступать к созданию самой базы.
+        </para>
       </note>
     </para>
 
     <para>
       <note>
-	<title>
-	  Проверка настроек кодировки (прим. переводчика)
-	</title>
+        <title>
+          Проверка настроек кодировки (прим. переводчика)
+        </title>
 
-	<para>
-	  В результате вышеописанных действий вы должны получить:
-	  <screen>
-	    <![CDATA[
+        <para>
+          В результате вышеописанных действий вы должны получить:
+          <screen>
+            <![CDATA[
 mysql> show variables like 'coll%';
 +----------------------+-----------------+
 | Variable_name        | Value           |
@@ -404,9 +404,9 @@ mysql> show variables like 'char%';
 | character_sets_dir       | /usr/share/mysql/charsets/ |
 +--------------------------+----------------------------+
 8 rows in set (0.00 sec)
-	    ]]>
-	  </screen>
-	</para>
+            ]]>
+          </screen>
+        </para>
       </note>
     </para>
 
@@ -414,11 +414,11 @@ mysql> show variables like 'char%';
       Мы предполагаем, что вы уже установили сервер базы данных,
       запустили его и создали базу данных внутри. Пример для MySQL:
       <screen>
-	<![CDATA[
+        <![CDATA[
 CREATE USER user@localhost IDENTIFIED BY "topsecret";
 CREATE DATABASE mysite;
 GRANT ALL ON mysite.* TO user@localhost;
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -447,190 +447,190 @@ DATABASE_PORT = ''
     <para>
       Опишем каждый параметр:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Параметр <varname>DATABASE_ENGINE</varname> указывает тип
-	    базы данных. Может быть одним из показанных в таблице
-	    <quote><xref linkend="&BASEID;.tbl1"
-	    endterm="&BASEID;.tbl1.title"/></quote>.
-	  </para>
+        <listitem>
+          <para>
+            Параметр <varname>DATABASE_ENGINE</varname> указывает тип
+            базы данных. Может быть одним из показанных в таблице
+            <quote><xref linkend="&BASEID;.tbl1"
+            endterm="&BASEID;.tbl1.title"/></quote>.
+          </para>
 
-	  <para>
-	    <table id="&BASEID;.tbl1" frame="all" pgwide="1">
+          <para>
+            <table id="&BASEID;.tbl1" frame="all" pgwide="1">
 
-	      <title id="&BASEID;.tbl1.title">
-		Настройки драйвера базы данных
-	      </title>
+              <title id="&BASEID;.tbl1.title">
+                Настройки драйвера базы данных
+              </title>
 
-	      <tgroup cols="3" align="left" colsep="1" rowsep="1">
-	      <colspec colname="c1" colwidth="4cm"/>
-	      <colspec colname="c2" colwidth="4cm"/>
-	      <colspec colname="c3" colwidth="6cm"/>
+              <tgroup cols="3" align="left" colsep="1" rowsep="1">
+                <colspec colname="c1" colwidth="4cm"/>
+                <colspec colname="c2" colwidth="4cm"/>
+                <colspec colname="c3" colwidth="6cm"/>
 
-	      <thead>
-		<row>
-		  <entry>Значение</entry>
-		  <entry>База данных</entry>
-		  <entry>Драйвер</entry>
-		</row>
-	      </thead>
+                <thead>
+                  <row>
+                    <entry>Значение</entry>
+                    <entry>База данных</entry>
+                    <entry>Драйвер</entry>
+                  </row>
+                </thead>
 
-	      <tbody>
-		<row>
-		  <entry><token>postgresql</token></entry>
-		  <entry>PostgreSQL</entry>
-		  <entry>
-		    <token>psycopg</token> версия 1.х, <ulink
-		    url="http://www.djangoproject.com/r/python-pgsql/1/"/>
-		  </entry>
-		</row>
+                <tbody>
+                  <row>
+                    <entry><token>postgresql</token></entry>
+                    <entry>PostgreSQL</entry>
+                    <entry>
+                      <token>psycopg</token> версия 1.х, <ulink
+                      url="http://www.djangoproject.com/r/python-pgsql/1/"/>
+                    </entry>
+                  </row>
 
-		<row>
-		  <entry><token>postgresql_psycopg2</token></entry>
-		  <entry>PostgreSQL</entry>
-		  <entry>
-		    <token>psycopg</token> версия 2.х, <ulink
-		    url="http://www.djangoproject.com/r/python-pgsql/"/>
-		  </entry>
-		</row>
+                  <row>
+                    <entry><token>postgresql_psycopg2</token></entry>
+                    <entry>PostgreSQL</entry>
+                    <entry>
+                      <token>psycopg</token> версия 2.х, <ulink
+                      url="http://www.djangoproject.com/r/python-pgsql/"/>
+                    </entry>
+                  </row>
 
-		<row>
-		  <entry><token>mysql</token></entry>
-		  <entry>MySQL</entry>
-		  <entry>
-		    <token>MySQLdb</token>, <ulink
-		    url="http://www.djangoproject.com/r/python-mysql/"/>
-		  </entry>
-		</row>
+                  <row>
+                    <entry><token>mysql</token></entry>
+                    <entry>MySQL</entry>
+                    <entry>
+                      <token>MySQLdb</token>, <ulink
+                      url="http://www.djangoproject.com/r/python-mysql/"/>
+                    </entry>
+                  </row>
 
-		<row>
-		  <entry><token>sqlite3</token></entry>
-		  <entry>SQLite</entry>
-		  <entry>
-		    При использовании Python 2.5+ драйвер не нужен. В
-		    противном случае <ulink
-		    url="http://www.djangoproject.com/r/python-sqlite/"/>
-		  </entry>
-		</row>
+                  <row>
+                    <entry><token>sqlite3</token></entry>
+                    <entry>SQLite</entry>
+                    <entry>
+                      При использовании Python 2.5+ драйвер не нужен. В
+                      противном случае <ulink
+                      url="http://www.djangoproject.com/r/python-sqlite/"/>
+                    </entry>
+                  </row>
 
-		<row>
-		  <entry><token>oracle</token></entry>
-		  <entry>Oracle</entry>
-		  <entry>
-		    <token>cx_Oracle</token>, <ulink
-		    url="http://www.djangoproject.com/r/python-oracle/"/>
-		  </entry>
-		</row>
-	      </tbody>
-	      </tgroup>
-	    </table>
-	  </para>
+                  <row>
+                    <entry><token>oracle</token></entry>
+                    <entry>Oracle</entry>
+                    <entry>
+                      <token>cx_Oracle</token>, <ulink
+                      url="http://www.djangoproject.com/r/python-oracle/"/>
+                    </entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
+          </para>
 
-	  <para>
-	    Следует отметить, что для работы с базой данных
-	    потребуется скачать и установить соответствующий
-	    драйвер. Каждый описанный драйвер доступен бесплатно,
-	    просто проследуйте по ссылке, которая приведена в колонке
-	    <quote>Драйвер</quote>. Если вы используете Linux,
-	    вероятно ваша система управления пакетами может предложить
-	    соответствующие пакеты. (Например, ищите пакеты с именами
-	    <token>python-postgresql</token> или
-	    <token>python-psycopg</token>.)
-	  </para>
+          <para>
+            Следует отметить, что для работы с базой данных
+            потребуется скачать и установить соответствующий
+            драйвер. Каждый описанный драйвер доступен бесплатно,
+            просто проследуйте по ссылке, которая приведена в колонке
+            <quote>Драйвер</quote>. Если вы используете Linux,
+            вероятно ваша система управления пакетами может предложить
+            соответствующие пакеты. (Например, ищите пакеты с именами
+            <token>python-postgresql</token> или
+            <token>python-psycopg</token>.)
+          </para>
 
-	  <para>
-	    Пример:
-	    <screen>
-	      <![CDATA[
+          <para>
+            Пример:
+            <screen>
+              <![CDATA[
 DATABASE_ENGINE = 'postgresql_psycopg2'
-	      ]]>
-	    </screen>
-	  </para>
-	</listitem>
+              ]]>
+            </screen>
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Параметр <varname>DATABASE_NAME</varname> указывает Django
-	    имя вашей базы данных. Например:
-	    <screen>
-	      <![CDATA[
+        <listitem>
+          <para>
+            Параметр <varname>DATABASE_NAME</varname> указывает Django
+            имя вашей базы данных. Например:
+            <screen>
+              <![CDATA[
 DATABASE_NAME = 'mydb'
-	      ]]>
-	    </screen>
-	  </para>
+              ]]>
+            </screen>
+          </para>
 
-	  <para>
-	    Если вы использует SQLite, укажите
-	    полный путь к файлу базы данных на файловой системе. Например:
-	    <screen>
-	      <![CDATA[
+          <para>
+            Если вы использует SQLite, укажите полный путь к файлу
+            базы данных на файловой системе. Например:
+            <screen>
+              <![CDATA[
 DATABASE_NAME = '/home/django/mydata.db'
-	      ]]>
-	    </screen>
-	  </para>
+              ]]>
+            </screen>
+          </para>
 
-	  <para>
-	    Мы используем каталог <filename>/home/django</filename> в
-	    этом примере, но вам следует выбирать каталог, который
-	    более подходит для вашей задачи.
-	  </para>
-	</listitem>
+          <para>
+            Мы используем каталог <filename>/home/django</filename> в
+            этом примере, но вам следует выбирать каталог, который
+            более подходит для вашей задачи.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Параметр <varname>DATABASE_USER</varname> указывает Django
-	    какое имя надо использовать при соединении с базой
-	    данных. Если вы используете SQLite, оставьте этот параметр
-	    пустым.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Параметр <varname>DATABASE_USER</varname> указывает Django
+            какое имя надо использовать при соединении с базой
+            данных. Если вы используете SQLite, оставьте этот параметр
+            пустым.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Параметр <varname>DATABASE_PASSWORD</varname> указывает
-	    Django какой пароль надо использовать при соединении с
-	    базой данных. Если вы используете SQLite, оставьте этот
-	    параметр пустым.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Параметр <varname>DATABASE_PASSWORD</varname> указывает
+            Django какой пароль надо использовать при соединении с
+            базой данных. Если вы используете SQLite, оставьте этот
+            параметр пустым.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Параметр <varname>DATABASE_HOST</varname> указывает Django
-	    какое имя сервера надо использовать при соединении с базой
-	    данных. Если база данных находится на том же компьютере
-	    (т.е., <token>localhost</token>), оставьте параметр
-	    пустым. Если вы используете SQLite, оставьте этот параметр
-	    пустым.
-	  </para>
+        <listitem>
+          <para>
+            Параметр <varname>DATABASE_HOST</varname> указывает Django
+            какое имя сервера надо использовать при соединении с базой
+            данных. Если база данных находится на том же компьютере
+            (т.е., <token>localhost</token>), оставьте параметр
+            пустым. Если вы используете SQLite, оставьте этот параметр
+            пустым.
+          </para>
 
-	  <para>
-	    MySQL является особым случаем. Если значение этого
-	    параметра начинается с прямого слэша (<token>/</token>) и
-	    вы используете MySQL, то соединение будет произведено
-	    через UNIX сокет, например:
-	    <screen>
+          <para>
+            MySQL является особым случаем. Если значение этого
+            параметра начинается с прямого слэша (<token>/</token>) и
+            вы используете MySQL, то соединение будет произведено
+            через UNIX сокет, например:
+            <screen>
 DATABASE_HOST = '/var/run/mysql'
-	    </screen>
-	  </para>
-	</listitem>
+            </screen>
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    (Прим. переводчика) Скопировано из прошлой версии книги,
-	    так как не потеряло актуальность.
-	  </para>
+        <listitem>
+          <para>
+            (Прим. переводчика) Скопировано из прошлой версии книги,
+            так как не потеряло актуальность.
+          </para>
 
-	  <para>
-	    Параметр <varname>DATABASE_PORT</varname> указывает Django
-	    какой порт надо использовать при соединении с базой
-	    данных. Если вы используете SQLite, оставьте этот параметр
-	    пустым. В противном случае, соответствующий драйвер базы
-	    данных будет использовать стандартный (для конкретной базы
-	    данных) порт. В большинстве случаев используется
-	    стандартный порт, можете оставить этот параметр пустым.
-	  </para>
-	</listitem>
+          <para>
+            Параметр <varname>DATABASE_PORT</varname> указывает Django
+            какой порт надо использовать при соединении с базой
+            данных. Если вы используете SQLite, оставьте этот параметр
+            пустым. В противном случае, соответствующий драйвер базы
+            данных будет использовать стандартный (для конкретной базы
+            данных) порт. В большинстве случаев используется
+            стандартный порт, можете оставить этот параметр пустым.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -651,10 +651,10 @@ DATABASE_HOST = '/var/run/mysql'
       В интерпретаторе выполните нижеприведённые команды для проверки
       ваших настроек для соединения с базой данных:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> from django.db import connection
 >>> cursor = connection.cursor()
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -669,112 +669,112 @@ DATABASE_HOST = '/var/run/mysql'
     <para>
       <table id="&BASEID;.tbl2" frame="all" pgwide="1">
 
-	<title id="&BASEID;.tbl2.title">
-	  Сообщения об ошибках в конфигурации доступа к базе данных
-	</title>
+        <title id="&BASEID;.tbl2.title">
+          Сообщения об ошибках в конфигурации доступа к базе данных
+        </title>
 
-	<tgroup cols="2" align="left" colsep="1" rowsep="1">
+        <tgroup cols="2" align="left" colsep="1" rowsep="1">
 
-	  <colspec colname="c1" colwidth="7cm"/>
-	  <colspec colname="c2" colwidth="7cm"/>
+          <colspec colname="c1" colwidth="7cm"/>
+          <colspec colname="c2" colwidth="7cm"/>
 
-	  <thead>
-	    <row rowsep="1">
-	      <entry>Сообщение об ошибке</entry>
-	      <entry>Решение</entry>
-	    </row>
-	  </thead>
+          <thead>
+            <row rowsep="1">
+              <entry>Сообщение об ошибке</entry>
+              <entry>Решение</entry>
+            </row>
+          </thead>
 
-	  <tbody>
-	    <row>
-	      <entry>
-		Вы не определили значение параметра
-		<varname>DATABASE_ENGINE</varname>. (You haven't set
-		the DATABASE_ENGINE setting yet.)
-	      </entry>
-	      <entry>
-		Установите значение параметра
-		<varname>DATABASE_ENGINE</varname>. Не оставляйте его
-		пустым.
-	      </entry>
-	    </row>
+          <tbody>
+            <row>
+              <entry>
+                Вы не определили значение параметра
+                <varname>DATABASE_ENGINE</varname>. (You haven't set
+                the DATABASE_ENGINE setting yet.)
+              </entry>
+              <entry>
+                Установите значение параметра
+                <varname>DATABASE_ENGINE</varname>. Не оставляйте его
+                пустым.
+              </entry>
+            </row>
 
-	    <row>
-	      <entry>
-		Не определена переменная среды
-		<varname>DJANGO_SETTINGS_MODULE</varname>. (Environment
-		variable DJANGO_SETTINGS_MODULE is undefined.)
-	      </entry>
-	      <entry>
-		Запустите команду <command>python manage.py
-		shell</command> вместо <command>python</command>.
-	      </entry>
-	    </row>
+            <row>
+              <entry>
+                Не определена переменная среды
+                <varname>DJANGO_SETTINGS_MODULE</varname>. (Environment
+                variable DJANGO_SETTINGS_MODULE is undefined.)
+              </entry>
+              <entry>
+                Запустите команду <command>python manage.py
+                shell</command> вместо <command>python</command>.
+              </entry>
+            </row>
 
-	    <row>
-	      <entry>
-		Ошибка при загрузке модуля _____. Нет модуля с именем
-		_____. (Error loading _____ module: No module named
-		_____.)
-	      </entry>
-	      <entry>
-		Вы не установили соответствующий драйвер базы данных,
-		т.е. <token>psycopg</token> или
-		<token>MySQLdb</token>.
-	      </entry>
-	    </row>
+            <row>
+              <entry>
+                Ошибка при загрузке модуля _____. Нет модуля с именем
+                _____. (Error loading _____ module: No module named
+                _____.)
+              </entry>
+              <entry>
+                Вы не установили соответствующий драйвер базы данных,
+                т.е. <token>psycopg</token> или
+                <token>MySQLdb</token>.
+              </entry>
+            </row>
 
-	    <row>
-	      <entry>
-		_____ не является доступным драйвером базы
-		данных. (_____ isn't an available database backend.
-	      </entry>
-	      <entry>
-		Установите параметр
-		<varname>DATABASE_ENGINE</varname>, указав
-		используемую базу данных, как было описано
-		ранее. Возможно вы опечатались?
-	      </entry>
-	    </row>
+            <row>
+              <entry>
+                _____ не является доступным драйвером базы
+                данных. (_____ isn't an available database backend.
+              </entry>
+              <entry>
+                Установите параметр
+                <varname>DATABASE_ENGINE</varname>, указав
+                используемую базу данных, как было описано
+                ранее. Возможно вы опечатались?
+              </entry>
+            </row>
 
-	    <row>
+            <row>
+              <entry>
+                База данных _____ не существует. (database _____ does
+                not exist.)
+              </entry>
 	      <entry>
-		База данных _____ не существует. (database _____ does
-		not exist.)
+            Измените параметр <varname>DATABASE_NAME</varname>, чтобы
+            он указывал на существующую базу данных, или выполните
+            соответствующую команду <command>CREATE DATABASE</command>
+            для создания базы данных.
 	      </entry>
-	      <entry>
-		Измените параметр <varname>DATABASE_NAME</varname>,
-		чтобы он указывал на существующую базу данных, или
-		выполните соответствующую команду <command>CREATE
-		DATABASE</command> для создания базы данных.
-	      </entry>
-	    </row>
+            </row>
 
-	    <row>
-	      <entry>
-		Роль _____ не существует. (role _____ does not exist.)
-	      </entry>
-	      <entry>
-		Измените параметр <varname>DATABASE_USER</varname>,
-		чтобы он указывал на существующего пользователя или
-		создайте соответствующего пользователя в базе данных.
-	      </entry>
-	    </row>
+            <row>
+              <entry>
+                Роль _____ не существует. (role _____ does not exist.)
+              </entry>
+              <entry>
+                Измените параметр <varname>DATABASE_USER</varname>,
+                чтобы он указывал на существующего пользователя или
+                создайте соответствующего пользователя в базе данных.
+              </entry>
+            </row>
 
-	    <row>
-	      <entry>
-		Не могу подключиться к серверу. (could not connect to
-		server.)
-	      </entry>
-	      <entry>
-		Удостоверьтесь, что параметры
-		<varname>DATABASE_HOST</varname> и
-		<varname>DATABASE_PORT</varname> установлены
-		правильно, а также, что сервер баз данных работает.
-	      </entry>
-	    </row>
-	  </tbody>
-	</tgroup>
+            <row>
+              <entry>
+                Не могу подключиться к серверу. (could not connect to
+                server.)
+              </entry>
+              <entry>
+                Удостоверьтесь, что параметры
+                <varname>DATABASE_HOST</varname> и
+                <varname>DATABASE_PORT</varname> установлены
+                правильно, а также, что сервер баз данных работает.
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
       </table>
     </para>
 
@@ -802,36 +802,36 @@ DATABASE_HOST = '/var/run/mysql'
       приложением? Разница в том, что первое является конфигурацией, а
       второе &mdash; кодом:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Проект &mdash; это экземпляр определённого набора кода
-	    Django-приложений и конфигурация для этих приложений.
-	  </para>
+        <listitem>
+          <para>
+            Проект &mdash; это экземпляр определённого набора кода
+            Django-приложений и конфигурация для этих приложений.
+          </para>
 
-	  <para>
-	    С технической точки зрения существует одно требование к
-	    проекту &mdash; наличие файла конфигурации, который
-	    определяет способ соединения с базой данных, список
-	    установленных приложений, каталог с шаблонами и так далее.
-	  </para>
-	</listitem>
+          <para>
+            С технической точки зрения существует одно требование к
+            проекту &mdash; наличие файла конфигурации, который
+            определяет способ соединения с базой данных, список
+            установленных приложений, каталог с шаблонами и так далее.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Приложение &mdash; это переносимый набор некой
-	    функциональности, обычно включает в себя модели и
-	    представления, которые хранятся вместе в едином пакете
-	    языка Python.
-	  </para>
+        <listitem>
+          <para>
+            Приложение &mdash; это переносимый набор некой
+            функциональности, обычно включает в себя модели и
+            представления, которые хранятся вместе в едином пакете
+            языка Python.
+          </para>
 
-	  <para>
-	    Например, Django поставляется с рядом приложений, таких
-	    как система комментирования и автоматический интерфейс
-	    администратора. Важной особенностью этих приложений
-	    является то, что они переносимы и их можно использовать во
-	    множестве проектов.
-	  </para>
-	</listitem>
+          <para>
+            Например, Django поставляется с рядом приложений, таких
+            как система комментирования и автоматический интерфейс
+            администратора. Важной особенностью этих приложений
+            является то, что они переносимы и их можно использовать во
+            множестве проектов.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -863,14 +863,14 @@ DATABASE_HOST = '/var/run/mysql'
       приложение.
     </para>
 
-      <para>
-	Внутри каталога проекта <filename>mysite</filename> выполните
-	эту команду для создания приложения
-	<application>books</application>:
-	<screen>
-	  <![CDATA[
+    <para>
+      Внутри каталога проекта <filename>mysite</filename> выполните
+      эту команду для создания приложения
+      <application>books</application>:
+      <screen>
+        <![CDATA[
 python manage.py startapp books
-	  ]]>
+        ]]>
       </screen>
     </para>
 
@@ -880,12 +880,12 @@ python manage.py startapp books
       <filename>mysite</filename>. Давайте глянем на содержимое этого
       каталога:
       <screen>
-	<![CDATA[
+        <![CDATA[
 books/
     __init__.py
     models.py
     views.py
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -930,79 +930,79 @@ books/
       <emphasis>и</emphasis> в SQL?</quote> Django действует таким
       образом по нескольким причинам:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Самодиагностика занимает ресурсы и несовершенна. Для того,
-	    чтобы предоставить удобный API для доступа к данным,
-	    Django должна <emphasis>как-то</emphasis> получить
-	    информацию о содержимом базы данных и существует два
-	    способа сделать это. Первый: можно явно описать данные в
-	    Python. Второй: самодиагностика базы данных при работе
-	    приложения для определения моделей данных.
-	  </para>
+        <listitem>
+          <para>
+            Самодиагностика занимает ресурсы и несовершенна. Для того,
+            чтобы предоставить удобный API для доступа к данным,
+            Django должна <emphasis>как-то</emphasis> получить
+            информацию о содержимом базы данных и существует два
+            способа сделать это. Первый: можно явно описать данные в
+            Python. Второй: самодиагностика базы данных при работе
+            приложения для определения моделей данных.
+          </para>
 
-	  <para>
-	    Второй способ кажется более очевидным, так как метаданные
-	    в ваших таблицах хранятся в одном месте, но он приводит к
-	    нескольким проблемам. Первое, самодиагностика базы данных
-	    во время работы приложения потребляет ресурсы. Если среде
-	    разработки потребуется проверять структуру базы данных при
-	    выполнении каждого запроса, или хотя бы при каждом запуске
-	    веб-сервера, вы получите значительную нагрузку на ресурсы
-	    сервера. (В то время как некоторые считают такую нагрузку
-	    приемлемой, разработчики Django нацелены на максимально
-	    возможную скорость работы среды. И этот подход успешно
-	    решает задачу обгона конкурентов в тестах.) Во-вторых,
-	    некоторые базы данных, особенно старые версии MySQL, не
-	    сохраняют достаточно метаинформации для точной и полной
-	    самодиагностики.
-	  </para>
-	</listitem>
+          <para>
+            Второй способ кажется более очевидным, так как метаданные
+            в ваших таблицах хранятся в одном месте, но он приводит к
+            нескольким проблемам. Первое, самодиагностика базы данных
+            во время работы приложения потребляет ресурсы. Если среде
+            разработки потребуется проверять структуру базы данных при
+            выполнении каждого запроса, или хотя бы при каждом запуске
+            веб-сервера, вы получите значительную нагрузку на ресурсы
+            сервера. (В то время как некоторые считают такую нагрузку
+            приемлемой, разработчики Django нацелены на максимально
+            возможную скорость работы среды. И этот подход успешно
+            решает задачу обгона конкурентов в тестах.) Во-вторых,
+            некоторые базы данных, особенно старые версии MySQL, не
+            сохраняют достаточно метаинформации для точной и полной
+            самодиагностики.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Разрабатывать с помощью Python прикольно и хранение всего
-	    в виде его кода сокращает число <quote>переключений
-	    контекста</quote>, которые приходится делать вашему
-	    мозгу. Если придерживаться единой среды
-	    разработки/менталитета, это повысит продуктивность
-	    работы. Необходимость писать SQL, затем код Python, а
-	    потом опять SQL, отрицательно сказывается на
-	    производительности разработчика.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Разрабатывать с помощью Python прикольно и хранение всего
+            в виде его кода сокращает число <quote>переключений
+            контекста</quote>, которые приходится делать вашему
+            мозгу. Если придерживаться единой среды
+            разработки/менталитета, это повысит продуктивность
+            работы. Необходимость писать SQL, затем код Python, а
+            потом опять SQL, отрицательно сказывается на
+            производительности разработчика.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Когда модели данных хранятся в виде кода, а не в базе
-	    данных, это упрощает управление версиями этих моделей. Это
-	    поможет вам хранить историю всех изменений моделей.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Когда модели данных хранятся в виде кода, а не в базе
+            данных, это упрощает управление версиями этих моделей. Это
+            поможет вам хранить историю всех изменений моделей.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    SQL позволяет лишь определённый уровень хранения
-	    метаинформации о формате данных. Большинство систем
-	    управления базами данных не предоставляют
-	    специализированных типов данных для представления адресов
-	    электронной почты или URL. Модели Django
-	    предоставляют. Преимущество высокоуровневых типов данных в
-	    улучшении продуктивности и в большем повторном
-	    использовании кода.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            SQL позволяет лишь определённый уровень хранения
+            метаинформации о формате данных. Большинство систем
+            управления базами данных не предоставляют
+            специализированных типов данных для представления адресов
+            электронной почты или URL. Модели Django
+            предоставляют. Преимущество высокоуровневых типов данных в
+            улучшении продуктивности и в большем повторном
+            использовании кода.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    SQL несовместим между разными платформами баз данных. При
-	    распространении веб-приложения, более практично передавать
-	    модуль на языке Python, который описывает формат ваших
-	    данных, вместо отдельных наборов операторов
-	    <command>CREATE TABLE</command> для MySQL, PostgreSQL и
-	    SQLite.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            SQL несовместим между разными платформами баз данных. При
+            распространении веб-приложения, более практично передавать
+            модуль на языке Python, который описывает формат ваших
+            данных, вместо отдельных наборов операторов
+            <command>CREATE TABLE</command> для MySQL, PostgreSQL и
+            SQLite.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1042,27 +1042,27 @@ books/
     <para>
       Мы предположим следующие концепции, поля и взаимоотношения:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Автор имеет звание (господин, госпожа, товарищ), имя,
-	    фамилию, адрес электронной почты и фотографию.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Автор имеет звание (господин, госпожа, товарищ), имя,
+            фамилию, адрес электронной почты и фотографию.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Издатель имеет имя, адрес, город, область, страну и сайт.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Издатель имеет имя, адрес, город, область, страну и сайт.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Книга имеет название и дату издания. Она также имеет
-	    одного или нескольких авторов (с авторами отношение
-	    многие-ко-многим) и одного издателя (отношение
-	    один-к-многим, как внешний ключ, к издателям).
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Книга имеет название и дату издания. Она также имеет
+            одного или нескольких авторов (с авторами отношение
+            многие-ко-многим) и одного издателя (отношение
+            один-к-многим, как внешний ключ, к издателям).
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1072,7 +1072,7 @@ books/
       <filename>models.py</filename>, который был создан командой
       <command>startapp</command>, добавьте следующее:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.db import models
 
 class Publisher(models.Model):
@@ -1095,7 +1095,7 @@ class Book(models.Model):
     authors = models.ManyToManyField(Author)
     publisher = models.ForeignKey(Publisher)
     publication_date = models.DateField()
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1123,7 +1123,7 @@ class Book(models.Model):
       <classname>Publisher</classname> эквивалентна следующей таблице
       (в синтаксисе для PostgreSQL):
       <screen>
-	<![CDATA[
+        <![CDATA[
 CREATE TABLE "books_publisher" (
     "id" serial NOT NULL PRIMARY KEY,
     "name" varchar(30) NOT NULL,
@@ -1133,7 +1133,7 @@ CREATE TABLE "books_publisher" (
     "country" varchar(50) NOT NULL,
     "website" varchar(200) NOT NULL
 );
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1209,7 +1209,7 @@ INSTALLED_APPS = (
       добавьте <token>mysite.books</token> в список
       <varname>INSTALLED_APPS</varname>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 MIDDLEWARE_CLASSES = (
 #    'django.middleware.common.CommonMiddleware',
 #    'django.contrib.sessions.middleware.SessionMiddleware',
@@ -1223,7 +1223,7 @@ INSTALLED_APPS = (
     #'django.contrib.sites',
     'mysite.books',
 )
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1284,7 +1284,7 @@ python manage.py sqlall books
       <command>manage.py startapp</command>. После запуска команды вы
       должны увидеть нечто подобное:
       <screen>
-	<![CDATA[
+        <![CDATA[
 BEGIN;
 CREATE TABLE "books_publisher" (
     "id" serial NOT NULL PRIMARY KEY,
@@ -1317,62 +1317,62 @@ CREATE TABLE "books_book_authors" (
 );
 CREATE INDEX books_book_publisher_id ON "books_book" ("publisher_id");
 COMMIT;
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Отметим следующее:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Имена таблиц генерируются автоматически, комбинируется имя
-	    приложения (<token>books</token>) и имя модели в нижнем
-	    регистре (<token>publisher</token>, <token>book</token> и
-	    <token>author</token>). Вы можете изменить это поведение,
-	    подробности смотрите в приложении <quote><xref
-	    linkend="djangobook.appendix_b"
-	    endterm="djangobook.appendix_b.title"/></quote>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Имена таблиц генерируются автоматически, комбинируется имя
+            приложения (<token>books</token>) и имя модели в нижнем
+            регистре (<token>publisher</token>, <token>book</token> и
+            <token>author</token>). Вы можете изменить это поведение,
+            подробности смотрите в приложении <quote><xref
+            linkend="djangobook.appendix_b"
+            endterm="djangobook.appendix_b.title"/></quote>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Как мы уже упоминали, Django автоматически добавляет
-	    первичный ключ для каждой таблицы &mdash; поле
-	    <token>id</token>. Вы можете изменить и это.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Как мы уже упоминали, Django автоматически добавляет
+            первичный ключ для каждой таблицы &mdash; поле
+            <token>id</token>. Вы можете изменить и это.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    По правилу Django добавляет
-	    <quote><token>_id</token></quote> к имени поля внешнего
-	    ключа. Как вы можете предположить, вы можете изменить и
-	    это поведение.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            По правилу Django добавляет
+            <quote><token>_id</token></quote> к имени поля внешнего
+            ключа. Как вы можете предположить, вы можете изменить и
+            это поведение.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Привязка внешнего ключа явно определяется с помощью
-	    оператора <token>REFERENCES</token>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Привязка внешнего ключа явно определяется с помощью
+            оператора <token>REFERENCES</token>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Операторы <token>CREATE TABLE</token> адаптируются к
-	    используемой базе данных, таким образом специфичные типы
-	    полей, такие как <token>auto_increment</token> (MySQL),
-	    <token>serial</token> (PostgreSQL) или <token>integer
-	    primary key</token> (SQLite) обрабатываются
-	    автоматически. То же самое происходит с экранированием
-	    имён полей (т.е., используются двойные или одинарные
-	    кавычки). В данном примере приведён синтаксис для
-	    PostgreSQL.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Операторы <token>CREATE TABLE</token> адаптируются к
+            используемой базе данных, таким образом специфичные типы
+            полей, такие как <token>auto_increment</token> (MySQL),
+            <token>serial</token> (PostgreSQL) или <token>integer
+            primary key</token> (SQLite) обрабатываются
+            автоматически. То же самое происходит с экранированием
+            имён полей (т.е., используются двойные или одинарные
+            кавычки). В данном примере приведён синтаксис для
+            PostgreSQL.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1386,21 +1386,21 @@ COMMIT;
       предоставляет простой способ выполнения SQL в базе
       данных. Выполните команду <command>syncdb</command>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 python manage.py syncdb
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Вы увидите подобное:
       <screen>
-	<![CDATA[
+        <![CDATA[
 Creating table books_publisher
 Creating table books_book
 Creating table books_author
 Installing index for books.Book model
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1452,7 +1452,7 @@ Installing index for books.Book model
       запустив команду <command>python manage.py shell</command> и
       набрав следующее:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> from books.models import Publisher
 >>> p1 = Publisher(name='Addison-Wesley', address='75 Arlington Street',
 ...     city='Boston', state_province='MA', country='U.S.A.',
@@ -1465,62 +1465,65 @@ Installing index for books.Book model
 >>> publisher_list = Publisher.objects.all()
 >>> publisher_list
 [<Publisher: Publisher object>, <Publisher: Publisher object>]
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Эти несколько строк кода выполняют немного. Вот основное:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Во-первых, мы импортируем наш класс модели
-	    <classname>Publisher</classname>. Это позволит нам
-	    работать с таблицей базы данных, которая содержит
-	    информацию об издателях.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Во-первых, мы импортируем наш класс модели
+            <classname>Publisher</classname>. Это позволит нам
+            работать с таблицей базы данных, которая содержит
+            информацию об издателях.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Мы создаём экземпляр этого класса, передав значения для
-	    каждого поля &mdash; <token>name</token>,
-	    <token>address</token> и так далее.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Мы создаём экземпляр этого класса, передав значения для
+            каждого поля &mdash; <token>name</token>,
+            <token>address</token> и так далее.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Чтобы сохранить объект в базе данных, вызовите метод
-	    <function>save()</function>. Django выполнит для этого SQL
-	    оператор <token>INSERT</token>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Чтобы сохранить объект в базе данных, вызовите метод
+            <function>save()</function>. Django выполнит для этого SQL
+            оператор <token>INSERT</token>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Для того, чтобы получить информацию об издателях из базы
-	    данных, используйте атрибут
-	    <token>Publisher.objects</token>, который можно
-	    рассматривать как список всех издателей. Получаем список
-	    <emphasis>всех</emphasis> объектов
-	    <classname>Publisher</classname> из базы данных с помощью
-	    метода <function>Publisher.objects.all()</function>.
-	    Django выполнит SQL оператор <token>SELECT</token>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Для того, чтобы получить информацию об издателях из базы
+            данных, используйте атрибут
+            <token>Publisher.objects</token>, который можно
+            рассматривать как список всех издателей. Получаем список
+            <emphasis>всех</emphasis> объектов
+            <classname>Publisher</classname> из базы данных с помощью
+            метода <function>Publisher.objects.all()</function>.
+            Django выполнит SQL оператор <token>SELECT</token>.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
     <para>
-      Следует остановиться на одном моменте, если он не очевиден из примера. При создании объекта с помощью модели Django не сохраняет ничего в базе данных до тех пор, пока вы не вызовите метод <function>save()</function>:
+      Следует остановиться на одном моменте, если он не очевиден из
+      примера. При создании объекта с помощью модели Django не
+      сохраняет ничего в базе данных до тех пор, пока вы не вызовите
+      метод <function>save()</function>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 p1 = Publisher(...)
 # At this point, p1 is not saved to the database yet!
 p1.save()
 # Now it is.
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1530,7 +1533,7 @@ p1.save()
       <function>objects.create()</function>. Следующий пример
       эквивалентен предыдущему:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> p1 = Publisher.objects.create(name='Apress',
 ...     address='2855 Telegraph Avenue',
 ...     city='Berkeley', state_province='CA', country='U.S.A.',
@@ -1541,7 +1544,7 @@ p1.save()
 ...     website='http://www.oreilly.com/')
 >>> publisher_list = Publisher.objects.all()
 >>> publisher_list
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1563,9 +1566,9 @@ p1.save()
       Когда мы распечатали список издателей, всё что мы получили
       &mdash; бесполезный вывод, который затрудняет понимание:
       <screen>
-	<![CDATA[
+        <![CDATA[
 [<Publisher: Publisher object>, <Publisher: Publisher object>]
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1577,7 +1580,7 @@ p1.save()
       отображать юникодное представление объекта. Вот так это
       используется в реальном приложении:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.db import models
 
 class Publisher(models.Model):
@@ -1609,7 +1612,7 @@ class Book(models.Model):
 
     def __unicode__(self):
         return self.title
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1637,64 +1640,64 @@ class Book(models.Model):
 
     <para>
       <note>
-	<title>
-	  Объекты <classname>Unicode</classname>
-	</title>
+        <title>
+          Объекты <classname>Unicode</classname>
+        </title>
 
-	<para>
-	  Что представляют собой объекты
-	  <classname>Unicode</classname>?
-	</para>
+        <para>
+          Что представляют собой объекты
+          <classname>Unicode</classname>?
+        </para>
 
-	<para>
-	  Вы можете рассматривать объект
-	  <classname>Unicode</classname> в качестве обычной строки,
-	  которая может содержать миллион различных типов символов, от
-	  акцентированных версий латинских букв до различных символов
-	  экзотических языков.
-	</para>
+        <para>
+          Вы можете рассматривать объект
+          <classname>Unicode</classname> в качестве обычной строки,
+          которая может содержать миллион различных типов символов, от
+          акцентированных версий латинских букв до различных символов
+          экзотических языков.
+        </para>
 
-	<para>
-	  Обычные строки в Python являются
-	  <emphasis>кодированными</emphasis>, это означает, что они
-	  используют кодировку: ASCII, ISO-8859-1 или UTF-8. Если вы
-	  помещаете в обычную строку экзотические символы (таковыми
-	  считаются любые символы, не попадающие в кодировку ASCII),
-	  вы должны помнить используемую кодировку, иначе на выходе вы
-	  получите непонятную мешанину символов. Проблемы возникают
-	  при попытках объединить данные в одной кодировке с данными в
-	  другой или при попытке отобразить эти данные в приложении,
-	  которое работает только с одной определённой кодировкой. Все
-	  мы встречались с сайтами или сообщениями электронной почты,
-	  которые содержали <quote>??? ??????</quote> или другие
-	  символы в нечётных позициях. Всё это показывает на проблему
-	  с кодировкой.
-	</para>
+        <para>
+          Обычные строки в Python являются
+          <emphasis>кодированными</emphasis>, это означает, что они
+          используют кодировку: ASCII, ISO-8859-1 или UTF-8. Если вы
+          помещаете в обычную строку экзотические символы (таковыми
+          считаются любые символы, не попадающие в кодировку ASCII),
+          вы должны помнить используемую кодировку, иначе на выходе вы
+          получите непонятную мешанину символов. Проблемы возникают
+          при попытках объединить данные в одной кодировке с данными в
+          другой или при попытке отобразить эти данные в приложении,
+          которое работает только с одной определённой кодировкой. Все
+          мы встречались с сайтами или сообщениями электронной почты,
+          которые содержали <quote>??? ??????</quote> или другие
+          символы в нечётных позициях. Всё это показывает на проблему
+          с кодировкой.
+        </para>
 
-	<para>
-	  Однако объекты <classname>Unicode</classname> не имеют
-	  кодировки. Они используют целостный, универсальный набор
-	  символов, называемый <quote>Unicode</quote>. При работе с
-	  объектами <classname>Unicode</classname> в Python, вы можете
-	  смешивать и сравнивать их, не беспокоясь о кодировке.
-	</para>
+        <para>
+          Однако объекты <classname>Unicode</classname> не имеют
+          кодировки. Они используют целостный, универсальный набор
+          символов, называемый <quote>Unicode</quote>. При работе с
+          объектами <classname>Unicode</classname> в Python, вы можете
+          смешивать и сравнивать их, не беспокоясь о кодировке.
+        </para>
 
-	<para>
-	  Django использует объекты <classname>Unicode</classname>
-	  везде. Объекты моделей выбираются в виде объектов
-	  <classname>Unicode</classname>, представления работают с
-	  <classname>Unicode</classname> данными, а шаблоны
-	  обрабатываются как <classname>Unicode</classname>. В общем,
-	  вам не надо беспокоиться о кодировках вообще. Всё должно
-	  работать.
-	</para>
+        <para>
+          Django использует объекты <classname>Unicode</classname>
+          везде. Объекты моделей выбираются в виде объектов
+          <classname>Unicode</classname>, представления работают с
+          <classname>Unicode</classname> данными, а шаблоны
+          обрабатываются как <classname>Unicode</classname>. В общем,
+          вам не надо беспокоиться о кодировках вообще. Всё должно
+          работать.
+        </para>
 
-	<para>
-	  Следует отметить то, что мы лишь кратко описали объекты
-	  <classname>Unicode</classname>. Вы можете самостоятельно
-	  продолжить их изучение. Хорошей точкой старта будет <ulink
-	  url="http://www.joelonsoftware.com/articles/Unicode.html"/>.
-	</para>
+        <para>
+          Следует отметить то, что мы лишь кратко описали объекты
+          <classname>Unicode</classname>. Вы можете самостоятельно
+          продолжить их изучение. Хорошей точкой старта будет <ulink
+          url="http://www.joelonsoftware.com/articles/Unicode.html"/>.
+        </para>
       </note>
     </para>
 
@@ -1705,12 +1708,12 @@ class Book(models.Model):
       изменений.) Теперь список объектов
       <classname>Publisher</classname> более понятен:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> from books.models import Publisher
 >>> publisher_list = Publisher.objects.all()
 >>> publisher_list
 [<Publisher: Addison-Wesley>, <Publisher: O'Reilly>]
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1744,14 +1747,14 @@ class Book(models.Model):
       в вашу базу данных сначала надо создать экземпляр модели с
       помощью именованных аргументов, вот так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> p = Publisher(name='Apress',
 ...         address='2855 Telegraph Ave.',
 ...         city='Berkeley',
 ...         state_province='CA',
 ...         country='U.S.A.',
 ...         website='http://www.apress.com/')
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1761,9 +1764,9 @@ class Book(models.Model):
       базе данных пока не будет вызван метод
       <function>save()</function>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> p.save()
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1771,13 +1774,13 @@ class Book(models.Model):
       Вышеприведённые действия с точки зрения SQL операторов выглядят
       так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 INSERT INTO book_publisher
     (name, address, city, state_province, country, website)
 VALUES
     ('Apress', '2855 Telegraph Ave.', 'Berkeley', 'CA',
      'U.S.A.', 'http://www.apress.com/');
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1788,10 +1791,10 @@ VALUES
       вычисление значения для первичного ключа и подставит это
       значение в атрибут <token>id</token>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> p.id
 52    # значение может отличаться для ваших данных
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1801,17 +1804,17 @@ VALUES
       будут выполнять SQL оператор <token>UPDATE</token> вместо
       <token>INSERT</token>):
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> p.name = 'Apress Publishing'
 >>> p.save()
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       В SQL это будет выглядеть так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 UPDATE book_publisher SET
     name = 'Apress Publishing',
     address = '2855 Telegraph Ave.',
@@ -1820,7 +1823,7 @@ UPDATE book_publisher SET
     country = 'U.S.A.',
     website = 'http://www.apress.com'
 WHERE id = 52;
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1832,11 +1835,11 @@ WHERE id = 52;
       Multiple Objects in One Statement</quote> далее о том, как
       выполнять подобные запрос:
       <screen>
-	<![CDATA[
+        <![CDATA[
 UPDATE books_publisher SET
     name = 'Apress Publishing'
 WHERE id=52;
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1855,42 +1858,42 @@ WHERE id=52;
       знаем способ получения <emphasis>каждой</emphasis> записи
       определённой модели:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> Publisher.objects.all()
 [<Publisher: Apress>, <Publisher: O'Reilly>]
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       В общих чертах в SQL это выглядит так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 SELECT
     id, name, address, city, state_province, country, website
 FROM book_publisher;
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       <note>
-	<para>
-	  Следует отметить, что Django не использует <token>SELECT
-	  *</token> при просмотре данных, а вместо этого явно
-	  перечисляет все поля. Так было задумано изначально: в
-	  некоторых случаях использование <token>SELECT *</token>
-	  может повлиять на производительность, а главное,
-	  перечисление полей более соответствует нормам Искусства
-	  программирования на языке Python: <quote>Явное лучше
-	  неявного</quote>.
-	</para>
+        <para>
+          Следует отметить, что Django не использует <token>SELECT
+          *</token> при просмотре данных, а вместо этого явно
+          перечисляет все поля. Так было задумано изначально: в
+          некоторых случаях использование <token>SELECT *</token>
+          может повлиять на производительность, а главное,
+          перечисление полей более соответствует нормам Искусства
+          программирования на языке Python: <quote>Явное лучше
+          неявного</quote>.
+        </para>
 
-	<para>
-	  Для получения более подробной информации об Искусстве
-	  программирования на языке Python выполните в консоли Python
-	  команду <command>import this</command>.
-	</para>
+        <para>
+          Для получения более подробной информации об Искусстве
+          программирования на языке Python выполните в консоли Python
+          команду <command>import this</command>.
+        </para>
       </note>
     </para>
 
@@ -1898,51 +1901,51 @@ FROM book_publisher;
       Теперь внимательно рассмотрим строку
       <token>Publisher.objects.all()</token>:
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Сначала у нас есть определённая нами модель
-	    <classname>Publisher</classname>. Ничего удивительного:
-	    при необходимости получить доступ к данным вы используете
-	    модель.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Сначала у нас есть определённая нами модель
+            <classname>Publisher</classname>. Ничего удивительного:
+            при необходимости получить доступ к данным вы используете
+            модель.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Затем мы работаем с <token>objects</token>. Технически
-	    этот объект можно назвать
-	    <emphasis>менеджером</emphasis>. Менеджеры более подробно
-	    будут описаны в главе <quote><xref
-	    linkend="djangobook.chap10"
-	    endterm="djangobook.chap10.title"/></quote>. Сейчас
-	    вам надо знать только то, что менеджеры отвечают за
-	    операции <quote>табличного уровня</quote> над данными, что
-	    самое главное, включая операции выборки данных.
-	  </para>
+        <listitem>
+          <para>
+            Затем мы работаем с <token>objects</token>. Технически
+            этот объект можно назвать
+            <emphasis>менеджером</emphasis>. Менеджеры более подробно
+            будут описаны в главе <quote><xref
+            linkend="djangobook.chap10"
+            endterm="djangobook.chap10.title"/></quote>. Сейчас вам
+            надо знать только то, что менеджеры отвечают за операции
+            <quote>табличного уровня</quote> над данными, что самое
+            главное, включая операции выборки данных.
+          </para>
 
-	  <para>
-	    Все модели автоматически получают менеджер
-	    <token>objects</token>. Он используется при каждом доступе
-	    к данным.
-	  </para>
-	</listitem>
+          <para>
+            Все модели автоматически получают менеджер
+            <token>objects</token>. Он используется при каждом доступе
+            к данным.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Наконец, у нас есть <function>all()</function>. Это метод
-	    объекта <token>objects</token>, который возвращает все
-	    записи, относящиеся к этой модели, из базы
-	    данных. Несмотря на то, что этот объект
-	    <emphasis>выглядит</emphasis> как список, в
-	    действительности это <emphasis>набор данных
-	    (QuerySet)</emphasis> &mdash; объект, который представляет
-	    собой набор записей из базы данных. Набор данных описан в
-	    приложении <quote><xref linkend="djangobook.appendix_c"
-	    endterm="djangobook.appendix_c.title"/></quote>. В
-	    оставшейся части этой главы мы будем рассматривать этот
-	    набор как список.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Наконец, у нас есть <function>all()</function>. Это метод
+            объекта <token>objects</token>, который возвращает все
+            записи, относящиеся к этой модели, из базы
+            данных. Несмотря на то, что этот объект
+            <emphasis>выглядит</emphasis> как список, в
+            действительности это <emphasis>набор данных
+            (QuerySet)</emphasis> &mdash; объект, который представляет
+            собой набор записей из базы данных. Набор данных описан в
+            приложении <quote><xref linkend="djangobook.appendix_c"
+            endterm="djangobook.appendix_c.title"/></quote>. В
+            оставшейся части этой главы мы будем рассматривать этот
+            набор как список.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1955,98 +1958,98 @@ FROM book_publisher;
     <section id="&BASEID;.select.filtering">
 
       <title id="&BASEID;.select.filtering.title">
-	Фильтрация данных
+        Фильтрация данных
       </title>
 
       <para>
-	Естественно, что достаточно редко требуется получать
-	<emphasis>весь набор</emphasis> данных из модели
-	единовременно. В большинстве случаев нам требуется обработать
-	небольшую часть данных. Мы можем осуществить это с помощью
-	метода <function>filter()</function>:
-	<screen>
-	  <![CDATA[
+        Естественно, что достаточно редко требуется получать
+        <emphasis>весь набор</emphasis> данных из модели
+        единовременно. В большинстве случаев нам требуется обработать
+        небольшую часть данных. Мы можем осуществить это с помощью
+        метода <function>filter()</function>:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.filter(name='Apress')
 [<Publisher: Apress>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Метод <function>filter()</function> принимает именованные
-	аргументы, которые преобразуются в соответствующие SQL-условия
-	<token>WHERE</token>. Предыдущий пример будет преобразован в
-	нечто подобное:
-	<screen>
-	  <![CDATA[
+        Метод <function>filter()</function> принимает именованные
+        аргументы, которые преобразуются в соответствующие SQL-условия
+        <token>WHERE</token>. Предыдущий пример будет преобразован в
+        нечто подобное:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 WHERE name = 'Apress';
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Вы можете передать множество аргументов в
-	<function>filter()</function> для сокращения диапазона
-	выборки:
-	<screen>
-	  <![CDATA[
+        Вы можете передать множество аргументов в
+        <function>filter()</function> для сокращения диапазона
+        выборки:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.filter(country="U.S.A.", state_province="CA")
 [<Publisher: Apress>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Множество аргументов будут объединены с помощью SQL операторов
-	<token>AND</token>. Пример станет таким:
-	<screen>
-	  <![CDATA[
+        Множество аргументов будут объединены с помощью SQL операторов
+        <token>AND</token>. Пример станет таким:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 WHERE country = 'U.S.A.'
 AND state_province = 'CA';
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Следует отметить, что по умолчанию выборка использует SQL
-	оператор <token>=</token> для точного совпадения. Также можно
-	выполнять другие виды запросов:
-	<screen>
-	  <![CDATA[
+        Следует отметить, что по умолчанию выборка использует SQL
+        оператор <token>=</token> для точного совпадения. Также можно
+        выполнять другие виды запросов:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.filter(name__contains="press")
 [<Publisher: Apress>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Обратите внимание на <emphasis>двойное</emphasis>
-	подчёркивание между <token>name</token> и
-	<token>contains</token>. Подобно Python это используется
-	Django для выполнения <quote>магических</quote> действий. В
-	данном случае <token>__contains</token> преобразовывается в
-	SQL оператоh <token>LIKE</token>:
-	<screen>
-	  <![CDATA[
+        Обратите внимание на <emphasis>двойное</emphasis>
+        подчёркивание между <token>name</token> и
+        <token>contains</token>. Подобно Python это используется
+        Django для выполнения <quote>магических</quote> действий. В
+        данном случае <token>__contains</token> преобразовывается в
+        SQL оператоh <token>LIKE</token>:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 WHERE name LIKE '%press%';
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Доступны множество типов выборок, включая
-	<token>icontains</token> (независящий от регистра LIKE),
-	<token>startswith</token> и <token>endswith</token>, а также
-	<token>range</token> (SQL оператор <token>BETWEEN</token>). В
-	приложении <quote><xref linkend="djangobook.appendix_c"
-	endterm="djangobook.appendix_c.title"/></quote> подробно
-	описаны все типы выборок.
+        Доступны множество типов выборок, включая
+        <token>icontains</token> (независящий от регистра LIKE),
+        <token>startswith</token> и <token>endswith</token>, а также
+        <token>range</token> (SQL оператор <token>BETWEEN</token>). В
+        приложении <quote><xref linkend="djangobook.appendix_c"
+        endterm="djangobook.appendix_c.title"/></quote> подробно
+        описаны все типы выборок.
       </para>
 
     </section>
@@ -2054,68 +2057,68 @@ WHERE name LIKE '%press%';
     <section id="&BASEID;.select.single">
 
       <title id="&BASEID;.select.single.title">
-	Получение одного объекта
+        Получение одного объекта
       </title>
 
       <para>
-	Вышеприведённые примеры использования
-	<function>filter()</function> всегда возвращают
-	<classname>QuerySet</classname>, который можно использовать
-	как список. Иногда более уместной является выборка
-	единственного объекта. Для этого предназначен метод
-	<function>get()</function>:
-	<screen>
-	  <![CDATA[
+        Вышеприведённые примеры использования
+        <function>filter()</function> всегда возвращают
+        <classname>QuerySet</classname>, который можно использовать
+        как список. Иногда более уместной является выборка
+        единственного объекта. Для этого предназначен метод
+        <function>get()</function>:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.get(name="Apress")
 <Publisher: Apress>
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Вместо списка (т.е., набора данных
-	<classname>QuerySet</classname>) возвращается только один
-	объект. По этой причине, запрос ожидающий множество объектов
-	вызовет исключение:
-	<screen>
-	  <![CDATA[
+        Вместо списка (т.е., набора данных
+        <classname>QuerySet</classname>) возвращается только один
+        объект. По этой причине, запрос ожидающий множество объектов
+        вызовет исключение:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.get(country="U.S.A.")
 Traceback (most recent call last):
     ...
 MultipleObjectsReturned: get() returned more than one Publisher --
     it returned 2! Lookup parameters were {'country': 'U.S.A.'}
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Запрос не возвращающий ни одного объекта тоже вызовет
-	исключение:
-	<screen>
-	  <![CDATA[
+        Запрос не возвращающий ни одного объекта тоже вызовет
+        исключение:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.get(name="Penguin")
 Traceback (most recent call last):
     ...
 DoesNotExist: Publisher matching query does not exist.
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Исключение <classname>DoesNotExist</classname> является
-	атрибутом класса модели &mdash;
-	<token>Publisher.DoesNotExist</token>. В вашем приложении вы
-	можете перехватывать такие исключения:
-	<screen>
-	  <![CDATA[
+        Исключение <classname>DoesNotExist</classname> является
+        атрибутом класса модели &mdash;
+        <token>Publisher.DoesNotExist</token>. В вашем приложении вы
+        можете перехватывать такие исключения:
+        <screen>
+          <![CDATA[
 try:
     p = Publisher.objects.get(name='Apress')
 except Publisher.DoesNotExist:
     print "Apress isn't in the database yet."
 else:
     print "Apress is in the database."
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
     </section>
@@ -2123,86 +2126,86 @@ else:
     <section id="&BASEID;.select.order">
 
       <title id="&BASEID;.select.order.title">
-	Сортировка данных
+        Сортировка данных
       </title>
 
       <para>
-	В процессе изучения предыдущих примеров вы могли заметить, что
-	объекты возвращаются в случайном порядке. Раз мы не указали в
-	каком порядке нам возвращать результат выборки, база данных
-	отдаёт его в удобном для себя виде.
+        В процессе изучения предыдущих примеров вы могли заметить, что
+        объекты возвращаются в случайном порядке. Раз мы не указали в
+        каком порядке нам возвращать результат выборки, база данных
+        отдаёт его в удобном для себя виде.
       </para>
 
       <para>
-	Очевидно, что для вашего приложения потребуется отсортировать
-	результат по какому-нибудь значению, скажем, по алфавиту. Для
-	этого использую метод <function>order_by()</function>:
-	<screen>
-	  <![CDATA[
+        Очевидно, что для вашего приложения потребуется отсортировать
+        результат по какому-нибудь значению, скажем, по алфавиту. Для
+        этого использую метод <function>order_by()</function>:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by("name")
 [<Publisher: Apress>, <Publisher: O'Reilly>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Это не сильно отличается от примера с методом
-	<function>all()</function>, но SQL представление теперь
-	включает в себя оператор сортировки:
-	<screen>
-	  <![CDATA[
+        Это не сильно отличается от примера с методом
+        <function>all()</function>, но SQL представление теперь
+        включает в себя оператор сортировки:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 ORDER BY name;
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Мы можем производить сортировку по любому полю:
-	<screen>
-	  <![CDATA[
+        Мы можем производить сортировку по любому полю:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by("address")
 [<Publisher: O'Reilly>, <Publisher: Apress>]
 
 >>> Publisher.objects.order_by("state_province")
 [<Publisher: Apress>, <Publisher: O'Reilly>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Для выполнения сортировки по множеству полей (когда второе
-	поле используется для сортировки элементов, у которых первое
-	поле совпадает), используют множество аргументов:
-	<screen>
-	  <![CDATA[
+        Для выполнения сортировки по множеству полей (когда второе
+        поле используется для сортировки элементов, у которых первое
+        поле совпадает), используют множество аргументов:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by("state_province", "address")
  [<Publisher: Apress>, <Publisher: O'Reilly>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Также мы можем указать необходимость выполнять обратную
-	сортировку с помощью префикса <token>-</token>(минус) для
-	имени поля:
-	<screen>
-	  <![CDATA[
+        Также мы можем указать необходимость выполнять обратную
+        сортировку с помощью префикса <token>-</token>(минус) для
+        имени поля:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by("-name")
 [<Publisher: O'Reilly>, <Publisher: Apress>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Несмотря на все возможности, постоянное использование
-	<function>order_by()</function> может надоесть. Чаще всего
-	сортировку надо производить по жёстко определённому полю. В
-	этих случаях Django позволяет указать стандартную сортировку
-	для модели:
-	<screen>
-	  <![CDATA[
+        Несмотря на все возможности, постоянное использование
+        <function>order_by()</function> может надоесть. Чаще всего
+        сортировку надо производить по жёстко определённому полю. В
+        этих случаях Django позволяет указать стандартную сортировку
+        для модели:
+        <screen>
+          <![CDATA[
 class Publisher(models.Model):
     name = models.CharField(max_length=30)
     address = models.CharField(max_length=50)
@@ -2216,24 +2219,24 @@ class Publisher(models.Model):
 
     class Meta:
         ordering = ["name"]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Здесь мы ввели новую концепцию: класс
-	<classname>Meta</classname>, который внедрён в определение
-	класса <classname>Publisher</classname> (обратите внимание на
-	отступы). Вы можете использовать данный класс
-	<classname>Meta</classname> с любой моделью для указания
-	различных параметров, влияющих на поведение модели. Полный
-	список данных параметров описан в приложении B FIXME, но
-	сейчас мы рассматривали только параметр
-	<token>ordering</token>. Если вы определите его, то пока не
-	будет использован явный вызов метода
-	<function>order_by()</function>, все объекты
-	<classname>Publisher</classname> будут выдаваться
-	отсортированными по полю <token>name</token>.
+        Здесь мы ввели новую концепцию: класс
+        <classname>Meta</classname>, который внедрён в определение
+        класса <classname>Publisher</classname> (обратите внимание на
+        отступы). Вы можете использовать данный класс
+        <classname>Meta</classname> с любой моделью для указания
+        различных параметров, влияющих на поведение модели. Полный
+        список данных параметров описан в приложении B FIXME, но
+        сейчас мы рассматривали только параметр
+        <token>ordering</token>. Если вы определите его, то пока не
+        будет использован явный вызов метода
+        <function>order_by()</function>, все объекты
+        <classname>Publisher</classname> будут выдаваться
+        отсортированными по полю <token>name</token>.
       </para>
 
     </section>
@@ -2241,38 +2244,38 @@ class Publisher(models.Model):
     <section id="&BASEID;.select.chain">
 
       <title id="&BASEID;.select.chain.title">
-	Формирование цепочки запросов
+        Формирование цепочки запросов
       </title>
 
       <para>
-	Вы знаете как фильтровать данные и как их сортировать. Вы
-	желаете узнать как это делать одновременно? Для этого следует
-	<quote>сцепить</quote> операторы вместе:
-	<screen>
-	  <![CDATA[
+        Вы знаете как фильтровать данные и как их сортировать. Вы
+        желаете узнать как это делать одновременно? Для этого следует
+        <quote>сцепить</quote> операторы вместе:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.filter(country="U.S.A.").order_by("-name")
 [<Publisher: O'Reilly>, <Publisher: Apress>]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Как вы можете предполагать, в SQL представлении это будет
-	выглядеть так:
-	<screen>
-	  <![CDATA[
+        Как вы можете предполагать, в SQL представлении это будет
+        выглядеть так:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 WHERE country = 'U.S.A'
 ORDER BY name DESC;
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Количество таких цепочек никак не
-	ограничено<footnote><para>Оставил из предыдущей версии
-	(прим. переводчика).</para></footnote>.
+        Количество таких цепочек никак не
+        ограничено<footnote><para>Оставил из предыдущей версии
+        (прим. переводчика).</para></footnote>.
       </para>
 
     </section>
@@ -2280,79 +2283,79 @@ ORDER BY name DESC;
     <section id="&BASEID;.select.slice">
 
       <title id="&BASEID;.select.slice.title">
-	Выборка части результатов
+        Выборка части результатов
       </title>
 
       <para>
-	Часто требуется получить только несколько строк результата
-	выборки. Представьте, что в вашей базе находится несколько
-	тысяч издателей, но вам надо отобразить только первого. Вы
-	можете это осуществить с помощью возможностей стандартного
-	списка Python:
-	<screen>
-	  <![CDATA[
+        Часто требуется получить только несколько строк результата
+        выборки. Представьте, что в вашей базе находится несколько
+        тысяч издателей, но вам надо отобразить только первого. Вы
+        можете это осуществить с помощью возможностей стандартного
+        списка Python:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by('name')[0]
 <Publisher: Apress>
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Это преобразуется в:
-	<screen>
-	  <![CDATA[
+        Это преобразуется в:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 ORDER BY name
 LIMIT 1;
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Аналогично, вы можете получать определённый набор данных с
-	помощью стандартного синтаксиса языка Python для работы со
-	списками:
-	<screen>
-	  <![CDATA[
+        Аналогично, вы можете получать определённый набор данных с
+        помощью стандартного синтаксиса языка Python для работы со
+        списками:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by('name')[0:2]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Этот код вернёт два объекта и будет преобразован в:
-	<screen>
-	  <![CDATA[
+        Этот код вернёт два объекта и будет преобразован в:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 ORDER BY name
 OFFSET 0 LIMIT 2;
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Следует отметить, что отрицательные значения <emphasis>не
-	поддерживаются</emphasis>:
-	<screen>
-	  <![CDATA[
+        Следует отметить, что отрицательные значения <emphasis>не
+        поддерживаются</emphasis>:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by('name')[-1]
 Traceback (most recent call last):
   ...
 AssertionError: Negative indexing is not supported.
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Но получить результат всё же возможно. Просто воспользуйтесь
-	методом <function>order_by()</function>:
-	<screen>
-	  <![CDATA[
+        Но получить результат всё же возможно. Просто воспользуйтесь
+        методом <function>order_by()</function>:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.order_by('-name')[0]
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
     </section>
@@ -2360,36 +2363,36 @@ AssertionError: Negative indexing is not supported.
     <section id="&BASEID;.select.multiple-update">
 
       <title id="&BASEID;.select.multiple-update.title">
-	Изменение множества объектов одним запросом
+        Изменение множества объектов одним запросом
       </title>
 
       <para>
-	Мы упоминали в разделе <quote><xref
-	linkend="&BASEID;.insert-update"
-	endterm="&BASEID;.insert-update.title"/></quote> о том, что
-	метод <function>save()</function> обновляет
-	<emphasis>все</emphasis> поля записи. Иногда полезно уметь
-	обновлять только выделенный набор полей.
+        Мы упоминали в разделе <quote><xref
+        linkend="&BASEID;.insert-update"
+        endterm="&BASEID;.insert-update.title"/></quote> о том, что
+        метод <function>save()</function> обновляет
+        <emphasis>все</emphasis> поля записи. Иногда полезно уметь
+        обновлять только выделенный набор полей.
       </para>
 
       <para>
-	Например, нам требуется изменить в объекте
-	<classname>Publisher</classname> поле <token>name</token> с
-	<quote>Apress</quote> на <quote>Apress Publishing</quote>. При
-	использовании <function>save()</function> это выглядит так:
-	<screen>
-	  <![CDATA[
+        Например, нам требуется изменить в объекте
+        <classname>Publisher</classname> поле <token>name</token> с
+        <quote>Apress</quote> на <quote>Apress Publishing</quote>. При
+        использовании <function>save()</function> это выглядит так:
+        <screen>
+          <![CDATA[
 >>> p = Publisher.objects.get(name='Apress')
 >>> p.name = 'Apress Publishing'
 >>> p.save()
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Это примерно преобразовывается в следующий SQL:
-	<screen>
-	  <![CDATA[
+        Это примерно преобразовывается в следующий SQL:
+        <screen>
+          <![CDATA[
 SELECT id, name, address, city, state_province, country, website
 FROM books_publisher
 WHERE name = 'Apress';
@@ -2402,61 +2405,61 @@ UPDATE books_publisher SET
     country = 'U.S.A.',
     website = 'http://www.apress.com'
 WHERE id = 52;
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	(Следует отметить, что данный пример предполагает, что нужный
-	нам объект имеет идентификатор 52.)
+        (Следует отметить, что данный пример предполагает, что нужный
+        нам объект имеет идентификатор 52.)
       </para>
 
       <para>
-	Вы можете видеть в данном примере, что метод
-	<function>save()</function> установит значения для
-	<emphasis>всех</emphasis> полей, не только для
-	<token>name</token>. Если в вашем случае, остальные поля могут
-	изменяться другими процессами, правильнее будет изменять
-	<emphasis>только</emphasis> поля, которые этого требуют. Для
-	этого следует использовать метод <function>update()</function>
-	объектов <classname>QuerySet</classname>. Пример:
-	<screen>
-	  <![CDATA[
+        Вы можете видеть в данном примере, что метод
+        <function>save()</function> установит значения для
+        <emphasis>всех</emphasis> полей, не только для
+        <token>name</token>. Если в вашем случае, остальные поля могут
+        изменяться другими процессами, правильнее будет изменять
+        <emphasis>только</emphasis> поля, которые этого требуют. Для
+        этого следует использовать метод <function>update()</function>
+        объектов <classname>QuerySet</classname>. Пример:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.filter(id=52).update(name='Apress Publishing')
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	SQL код будет более эффективным и не сможет вызвать
-	<quote>гонки</quote>:
-	<screen>
-	  <![CDATA[
+        SQL код будет более эффективным и не сможет вызвать
+        <quote>гонки</quote>:
+        <screen>
+          <![CDATA[
 UPDATE books_publisher
 SET name = 'Apress Publishing'
 WHERE id = 52;
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Метод <function>update()</function> имеется у каждого
-	<classname>QuerySet</classname> и это означает, что вы можете
-	изменять множество записей за раз. Вот так вы можете изменить
-	в поле <token>country</token> значение <quote>U.S.A.</quote>
-	на <quote>USA</quote> для каждой записи
-	<classname>Publisher</classname>:
-	<screen>
-	  <![CDATA[
+        Метод <function>update()</function> имеется у каждого
+        <classname>QuerySet</classname> и это означает, что вы можете
+        изменять множество записей за раз. Вот так вы можете изменить
+        в поле <token>country</token> значение <quote>U.S.A.</quote>
+        на <quote>USA</quote> для каждой записи
+        <classname>Publisher</classname>:
+        <screen>
+          <![CDATA[
 >>> Publisher.objects.all().filter(country='U.S.A.').update(country='USA')
 2
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Метод <function>update()</function> вернул значение &mdash;
-	целое, представляющее количество изменённых записей.
+        Метод <function>update()</function> вернул значение &mdash;
+        целое, представляющее количество изменённых записей.
       </para>
 
     </section>
@@ -2473,12 +2476,12 @@ WHERE id = 52;
       Для удаления объектов следует использовать метод
       <function>delete()</function>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> p = Publisher.objects.get(name="O'Reilly")
 >>> p.delete()
 >>> Publisher.objects.all()
 [<Publisher: Apress Publishing>]
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -2489,12 +2492,12 @@ WHERE id = 52;
       использованию метода <function>update()</function>, описанному в
       предыдущем разделе:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> Publisher.objects.filter(country='USA').delete()
 >>> Publisher.objects.all().delete()
 >>> Publisher.objects.all()
 []
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -2506,12 +2509,12 @@ WHERE id = 52;
       <emphasis>всех</emphasis> записей таблицы. Этот пример не
       сработает:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> Publisher.objects.delete()
 Traceback (most recent call last):
   File "<console>", line 1, in <module>
 AttributeError: 'Manager' object has no attribute 'delete'
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -2519,9 +2522,9 @@ AttributeError: 'Manager' object has no attribute 'delete'
        Но сразу станет работать, если вы добавите метод
        <function>all()</function>:
        <screen>
-	 <![CDATA[
+         <![CDATA[
 >>> Publisher.objects.all().delete()
-	 ]]>
+         ]]>
        </screen>
      </para>
 
@@ -2530,9 +2533,9 @@ AttributeError: 'Manager' object has no attribute 'delete'
        случае не требуется использовать метод
        <function>all()</function>. Повторим предыдущий пример:
        <screen>
-	 <![CDATA[
+         <![CDATA[
 >>> Publisher.objects.filter(country='USA').delete()
-	 ]]>
+         ]]>
        </screen>
      </para>
 

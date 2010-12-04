@@ -116,44 +116,44 @@
       Сначала внесите изменения в файле настроек:
 
       <orderedlist>
-	<listitem>
-	  <para>
-	    Добавим <token>django.contrib.admin</token> в параметр
-	    <varname>INSTALLED_APPS</varname>. (Порядок элементов в
-	    <varname>INSTALLED_APPS</varname> не имеет значения, но мы
-	    советуем содержать их в алфавитном порядке, для удобства
-	    чтения.)
-	  </para>
-	</listitem>
+	    <listitem>
+	      <para>
+	        Добавим <token>django.contrib.admin</token> в параметр
+	        <varname>qINSTALLED_APPS</varname>. (Порядок элементов в
+	        <varname>INSTALLED_APPS</varname> не имеет значения, но мы
+	        советуем содержать их в алфавитном порядке, для удобства
+	        чтения.)
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Убедитесь, что <varname>INSTALLED_APPS</varname> содержит
-	    <token>django.contrib.auth</token>,
-	    <token>django.contrib.sessions</token> и
-	    <token>django.contrib.contenttypes</token>. Интерфейс
-	    администратора требует подключение этих трёх
-	    пакетов. (Если вы следуете нашим инструкциям относительно
-	    проекта <token>mysite</token>, вспомните, что мы
-	    закомментировали эти три пакета в главе <quote><xref
-	    linkend="djangobook.chap05"
-	    endterm="djangobook.chap05.title"/></quote>. Раскомментируйте
-	    их сейчас.)
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Убедитесь, что <varname>INSTALLED_APPS</varname> содержит
+            <token>django.contrib.auth</token>,
+            <token>django.contrib.sessions</token> и
+            <token>django.contrib.contenttypes</token>. Интерфейс
+            администратора требует подключение этих трёх
+            пакетов. (Если вы следуете нашим инструкциям относительно
+            проекта <token>mysite</token>, вспомните, что мы
+            закомментировали эти три пакета в главе <quote><xref
+            linkend="djangobook.chap05"
+            endterm="djangobook.chap05.title"/></quote>. Раскомментируйте
+            их сейчас.)
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Убедитесь, что <varname>MIDDLEWARE_CLASSES</varname>
-	    содержит
-	    <token>django.middleware.common.CommonMiddleware</token> и
-	    <token>django.contrib.sessions.middleware.SessionMiddleware</token>
-	    а также
-	    <token>django.contrib.auth.middleware.AuthenticationMiddleware</token>. (И
-	    снова вам потребуется расскомментировать эти строчки для
-	    проекта <token>mysite</token>.)
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Убедитесь, что <varname>MIDDLEWARE_CLASSES</varname>
+            содержит
+            <token>django.middleware.common.CommonMiddleware</token> и
+            <token>django.contrib.sessions.middleware.SessionMiddleware</token>
+            а также
+            <token>django.contrib.auth.middleware.AuthenticationMiddleware</token>. (И
+            снова вам потребуется расскомментировать эти строчки для
+            проекта <token>mysite</token>.)
+          </para>
+        </listitem>
       </orderedlist>
     </para>
 
@@ -179,7 +179,7 @@
       и вам потребуется раскомментировать его. Вот, что там должно
       быть:
       <screen>
-	<![CDATA[
+        <![CDATA[
 # Include these import statements...
 from django.contrib import admin
 admin.autodiscover()
@@ -190,7 +190,7 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     # ...
 )
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -225,16 +225,16 @@ urlpatterns = patterns('',
 
     <para>
       <figure id="&BASEID;.pic1" float="0">
-	<title id="&BASEID;.pic1.title">
-	  Форма аутентификации администратора
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/login.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
+        <title id="&BASEID;.pic1.title">
+          Форма аутентификации администратора
+        </title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="pics/login.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
       </figure>
     </para>
 
@@ -257,16 +257,16 @@ urlpatterns = patterns('',
 
     <para>
       <figure id="&BASEID;.pic2" float="0">
-	<title id="&BASEID;.pic2.title">
-	  Главная страница интерфейса администратора
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/admin_index.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
+        <title id="&BASEID;.pic2.title">
+          Главная страница интерфейса администратора
+        </title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="pics/admin_index.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
       </figure>
     </para>
 
@@ -278,37 +278,37 @@ urlpatterns = patterns('',
       добавлять, изменять и удалять конкретные записи.
 
       <note>
-	<title>
-	  Прочие языки
-	</title>
+        <title>
+          Прочие языки
+        </title>
 
-	<para>
-	  Если английский не является вашим основным языком, вы можете
-	  легко настроить интерфейс администратора на отображение
-	  информации на нужном вам языке. Для это в конфигурационном
-	  файле добавьте
-	  <token>django.middleware.locale.LocaleMiddleware</token> в
-	  <varname> MIDDLEWARE_CLASSES</varname>. Убедитесь что оно
-	  следует <emphasis>после</emphasis>
-	  <token>django.contrib.sessions.middleware.SessionMiddleware</token>.
-	</para>
+        <para>
+          Если английский не является вашим основным языком, вы можете
+          легко настроить интерфейс администратора на отображение
+          информации на нужном вам языке. Для это в конфигурационном
+          файле добавьте
+          <token>django.middleware.locale.LocaleMiddleware</token> в
+          <varname> MIDDLEWARE_CLASSES</varname>. Убедитесь что оно
+          следует <emphasis>после</emphasis>
+          <token>django.contrib.sessions.middleware.SessionMiddleware</token>.
+        </para>
 
-	<para>
-	  После этого перегрузите главную страницу административного
-	  интерфейса.  Если присутствует перевод для вашего языка,
-	  различные части интерфейса &mdash; от названий ссылок
-	  <quote>Сменить пароль</quote> и <quote>Выйти</quote> в
-	  верхней части страницы до <quote>Группы</quote> и
-	  <quote>Пользователи</quote> &mdash; отобразятся на вашем
-	  языке вместо английского. Django поставляется с переводом
-	  интерфейса на десятки языков.
-	</para>
+        <para>
+          После этого перегрузите главную страницу административного
+          интерфейса.  Если присутствует перевод для вашего языка,
+          различные части интерфейса &mdash; от названий ссылок
+          <quote>Сменить пароль</quote> и <quote>Выйти</quote> в
+          верхней части страницы до <quote>Группы</quote> и
+          <quote>Пользователи</quote> &mdash; отобразятся на вашем
+          языке вместо английского. Django поставляется с переводом
+          интерфейса на десятки языков.
+        </para>
 
-	<para>
-	  Подробнее многоязычность в Django рассмотрена в главе
-	  <quote><xref linkend="djangobook.chap19"
-	  endterm="djangobook.chap19.title"/></quote>.
-	</para>
+        <para>
+          Подробнее многоязычность в Django рассмотрена в главе
+          <quote><xref linkend="djangobook.chap19"
+          endterm="djangobook.chap19.title"/></quote>.
+        </para>
       </note>
     </para>
 
@@ -320,16 +320,16 @@ urlpatterns = patterns('',
 
     <para>
       <figure id="&BASEID;.pic3" float="0">
-	<title id="&BASEID;.pic3.title">
-	  Стандартный вид списка изменений
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/changelist.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
+        <title id="&BASEID;.pic3.title">
+          Стандартный вид списка изменений
+        </title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="pics/changelist.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
       </figure>
     </para>
 
@@ -353,16 +353,16 @@ urlpatterns = patterns('',
 
     <para>
       <figure id="&BASEID;.pic4" float="0">
-	<title id="&BASEID;.pic4.title">
-	  Форма редактирования пользователя
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/editform.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
+        <title id="&BASEID;.pic4.title">
+          Форма редактирования пользователя
+        </title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="pics/editform.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
       </figure>
     </para>
 
@@ -403,16 +403,16 @@ urlpatterns = patterns('',
 
     <para>
       <figure id="&BASEID;.pic5" float="0">
-	<title id="&BASEID;.pic5.title">
-	  Форма редактирования с ошибками
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/editform_errors.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
+        <title id="&BASEID;.pic5.title">
+          Форма редактирования с ошибками
+        </title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="pics/editform_errors.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
       </figure>
     </para>
 
@@ -426,16 +426,16 @@ urlpatterns = patterns('',
 
     <para>
       <figure id="&BASEID;.pic6" float="0">
-	<title id="&BASEID;.pic6.title">
-	  Страница изменений объекта
-	</title>
-	<screenshot>
-	  <mediaobject>
-	    <imageobject>
-	      <imagedata fileref="pics/history.png" format="PNG"/>
-	    </imageobject>
-	  </mediaobject>
-	</screenshot>
+        <title id="&BASEID;.pic6.title">
+          Страница изменений объекта
+        </title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="pics/history.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
       </figure>
     </para>
 
@@ -463,14 +463,14 @@ urlpatterns = patterns('',
       (<token>mysite/books</token>) создайте файл
       <filename>admin.py</filename> и добавьте в него следущие строки:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.contrib import admin
 from mysite.books.models import Publisher, Author, Book
 
 admin.site.register(Publisher)
 admin.site.register(Author)
 admin.site.register(Book)
-	]]>
+        ]]>
       </screen>
       Этот код указывает Django предоставлять интерфейс для каждой из
       перечисленных моделей.
@@ -506,7 +506,7 @@ admin.site.register(Book)
       модели <classname> Book</classname>. Вспомним как выглядит
       модель <classname>Book</classname>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 class Book(models.Model):
     title = models.CharField(max_length=100)
     authors = models.ManyToManyField(Author)
@@ -515,7 +515,7 @@ class Book(models.Model):
 
     def __unicode__(self):
         return self.title
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -621,12 +621,12 @@ class Book(models.Model):
       <token>mysite/books/models.py</token>). Просто добавьте
       <token>blank=True</token> к полю <token>email</token>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
     email = models.EmailField(blank=True)
-	]]>
+        ]]>
       </screen>
       Это указывает Django, что поле адреса электронной почты может
       быть пустым. По-умолчанию, все поля имеют
@@ -663,155 +663,155 @@ class Author(models.Model):
     <section id="&BASEID;;.optional-field.date">
 
       <title id="&BASEID;;.optional-field.date.title">
-	Необязательные числовые поля и поля с датой
+        Необязательные числовые поля и поля с датой
       </title>
 
       <para>
-	Особо надо отметить использование <token>blank=True</token>
-	совместно с полями даты/времени и численными. Погрузимся в
-	теорию.
+        Особо надо отметить использование <token>blank=True</token>
+        совместно с полями даты/времени и численными. Погрузимся в
+        теорию.
       </para>
 
       <para>
-	SQL обладает собственным способом представления пустых
-	значений &mdash; специальное значение <token>NULL</token>.
-	<token>NULL</token> может обозначать
-	<quote>неизвестное</quote> или <quote>неверное</quote>, или
-	какое-то другое конкретное значение.
+        SQL обладает собственным способом представления пустых
+        значений &mdash; специальное значение <token>NULL</token>.
+        <token>NULL</token> может обозначать
+        <quote>неизвестное</quote> или <quote>неверное</quote>, или
+        какое-то другое конкретное значение.
       </para>
 
       <para>
-	В SQL значение <token>NULL</token> отличается от пустой
-	строки, так же как и в Python специальный объект
-	<token>None</token> отличается от пустой строки
-	(<token><quote></quote></token>). Это значит, что некоторые
-	типы полей (например, <token>VARCHAR</token>) могут содержать
-	как <token>NULL</token>, так и пустые строки.
+        В SQL значение <token>NULL</token> отличается от пустой
+        строки, так же как и в Python специальный объект
+        <token>None</token> отличается от пустой строки
+        (<token><quote></quote></token>). Это значит, что некоторые
+        типы полей (например, <token>VARCHAR</token>) могут содержать
+        как <token>NULL</token>, так и пустые строки.
       </para>
 
       <para>
-	Это может вызвать нежелательную путаницу и неопределённость:
-	<quote>Почему эта запись содержит <token>NULL</token>, а
-	следующая пустую строку? В чём разница? Или данные просто были
-	ошибочно введены?</quote> И: <quote>Как мне получить все
-	записи с пустым полем &mdash; следует ли искать записи с
-	пустой строкой и с <token>NULL</token>, или учитывать только
-	пустую строку?</quote>
+        Это может вызвать нежелательную путаницу и неопределённость:
+        <quote>Почему эта запись содержит <token>NULL</token>, а
+        следующая пустую строку? В чём разница? Или данные просто были
+        ошибочно введены?</quote> И: <quote>Как мне получить все
+        записи с пустым полем &mdash; следует ли искать записи с
+        пустой строкой и с <token>NULL</token>, или учитывать только
+        пустую строку?</quote>
       </para>
 
       <para>
-	Что бы избежать подобной путаницы, Django автоматически
-	создает операторы <token>CREATE TABLE</token> (которые
-	рассматривались в главе <quote><xref
-	linkend="djangobook.chap05"
-	endterm="djangobook.chap05.title"/></quote>), добавляя явно
-	<token>NOT NULL</token> к каждому поля. Например,
-	сгенерированый запрос создания таблицы для модели
-	<classname>Author</classname>:
-	<screen>
-	  <![CDATA[
+        Что бы избежать подобной путаницы, Django автоматически
+        создает операторы <token>CREATE TABLE</token> (которые
+        рассматривались в главе <quote><xref
+        linkend="djangobook.chap05"
+        endterm="djangobook.chap05.title"/></quote>), добавляя явно
+        <token>NOT NULL</token> к каждому поля. Например,
+        сгенерированый запрос создания таблицы для модели
+        <classname>Author</classname>:
+        <screen>
+          <![CDATA[
 CREATE TABLE "books_author" (
     "id" serial NOT NULL PRIMARY KEY,
     "first_name" varchar(30) NOT NULL,
     "last_name" varchar(40) NOT NULL,
     "email" varchar(75) NOT NULL
 );
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	В большинстве случаев, такое стандартное поведение является
-	оптимальным для вашего приложения и избавит вас от проблем,
-	вызванных несоответствием данных. И оно отлично работает с
-	остальными компонентами Django: такими как административный
-	интерфейс, который вставляет пустую строку (а
-	<emphasis>не</emphasis> значение <token>NULL</token>), если вы
-	оставляете символьное поле пустым.
+        В большинстве случаев, такое стандартное поведение является
+        оптимальным для вашего приложения и избавит вас от проблем,
+        вызванных несоответствием данных. И оно отлично работает с
+        остальными компонентами Django: такими как административный
+        интерфейс, который вставляет пустую строку (а
+        <emphasis>не</emphasis> значение <token>NULL</token>), если вы
+        оставляете символьное поле пустым.
       </para>
 
       <para>
-	Исключением являются поля базы данных, для которых пустая
-	строка является недопустимым значением &mdash; например, поля
-	даты, времеми, числовые. Если вы попытаетесь добавить пустую
-	строку в поле даты или целочисленное поле, скорее всего вы
-	получите ошибку, в зависимости от типа базы данных, которую вы
-	используете. (PostgreSQL, являясь строгим, вернет исключение;
-	MySQL может принять или нет, в зависимости от используемой
-	версии, времени дня и фазы луны.) В таких случаях,
-	<token>NULL</token> является единственным вариантом
-	определения пустого значения. В моделях Django, вы можете
-	указать, что поле допускает значения <token>NULL</token>,
-	добавив параметр <token>null=True</token> в определение поля.
+        Исключением являются поля базы данных, для которых пустая
+        строка является недопустимым значением &mdash; например, поля
+        даты, времеми, числовые. Если вы попытаетесь добавить пустую
+        строку в поле даты или целочисленное поле, скорее всего вы
+        получите ошибку, в зависимости от типа базы данных, которую вы
+        используете. (PostgreSQL, являясь строгим, вернет исключение;
+        MySQL может принять или нет, в зависимости от используемой
+        версии, времени дня и фазы луны.) В таких случаях,
+        <token>NULL</token> является единственным вариантом
+        определения пустого значения. В моделях Django, вы можете
+        указать, что поле допускает значения <token>NULL</token>,
+        добавив параметр <token>null=True</token> в определение поля.
       </para>
 
       <para>
-	Так вот к чему мы ведём: если вы хотите разрешить пустые
-	значения для полей даты(таких как,
-	<classname>DateField</classname>,
-	<classname>TimeField</classname>,
-	<classname>DateTimeField</classname>) или числовых полей(
-	<classname>IntegerField</classname>,
-	<classname>DecimalField</classname>,
-	<classname>FloatField</classname>), вы должны использовать и
-	<token>blank=True</token> <emphasis>и</emphasis>
-	<token>null=True</token>.
+        Так вот к чему мы ведём: если вы хотите разрешить пустые
+        значения для полей даты(таких как,
+        <classname>DateField</classname>,
+        <classname>TimeField</classname>,
+        <classname>DateTimeField</classname>) или числовых полей(
+        <classname>IntegerField</classname>,
+        <classname>DecimalField</classname>,
+        <classname>FloatField</classname>), вы должны использовать и
+        <token>blank=True</token> <emphasis>и</emphasis>
+        <token>null=True</token>.
       </para>
 
       <para>
-	Для примера, изменим модель <classname>Book</classname>,
-	разрешив пустое значение для поля
-	<token>publication_date</token>. Вот так вот будет выглядеть
-	наша модель:
-	<screen>
-	  <![CDATA[
+        Для примера, изменим модель <classname>Book</classname>,
+        разрешив пустое значение для поля
+        <token>publication_date</token>. Вот так вот будет выглядеть
+        наша модель:
+        <screen>
+          <![CDATA[
 class Book(models.Model):
     title = models.CharField(max_length=100)
     authors = models.ManyToManyField(Author)
     publisher = models.ForeignKey(Publisher)
     publication_date = models.DateField(blank=True, null=True)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Добавление <token>null=True</token> является более сложным,
-	чем добавление <token>blank=True</token>, потому что
-	<token>null=True</token> изменяет структуру базы данных
-	&mdash; то есть, изменяет оператор <token>CREATE
-	TABLE</token>, убирая <token>NOT NULL</token> у поля
-	<token>publication_date</token>. Чтобы завершить изменение, вы
-	должны обновить структуру таблицы в базе данных.
+        Добавление <token>null=True</token> является более сложным,
+        чем добавление <token>blank=True</token>, потому что
+        <token>null=True</token> изменяет структуру базы данных
+        &mdash; то есть, изменяет оператор <token>CREATE
+        TABLE</token>, убирая <token>NOT NULL</token> у поля
+        <token>publication_date</token>. Чтобы завершить изменение, вы
+        должны обновить структуру таблицы в базе данных.
       </para>
 
       <para>
-	По ряду причин Django не пытается автоматизировать изменение
-	структуры базы данных, так что ответственность за выполнение
-	соответствующих запросов <token>ALTER TABLE</token> ложится на
-	вас всякий раз, когда вы вносите подобные изменения в
-	модель. Напомним, что вы можете использовать команду
-	<command>manage.py dbshell</command>, чтобы войти в оболочку
-	сервера базы данных. Вот запрос для внесения изменений,
-	которые мы совершили:
-	<screen>
-	  <![CDATA[
+        По ряду причин Django не пытается автоматизировать изменение
+        структуры базы данных, так что ответственность за выполнение
+        соответствующих запросов <token>ALTER TABLE</token> ложится на
+        вас всякий раз, когда вы вносите подобные изменения в
+        модель. Напомним, что вы можете использовать команду
+        <command>manage.py dbshell</command>, чтобы войти в оболочку
+        сервера базы данных. Вот запрос для внесения изменений,
+        которые мы совершили:
+        <screen>
+          <![CDATA[
 ALTER TABLE books_book ALTER COLUMN publication_date DROP NOT NULL;
-	  ]]>
-	</screen>
-	(Обратите внимание, что такой синтаксис специфичен для
-	PostgreSQL.)
+          ]]>
+        </screen>
+        (Обратите внимание, что такой синтаксис специфичен для
+        PostgreSQL.)
       </para>
 
       <para>
-	Изменения структуры базы данных более детально мы рассмотрим в
-	главе <quote><xref linkend="djangobook.chap10"
-	endterm="djangobook.chap10.title"/></quote>.
+        Изменения структуры базы данных более детально мы рассмотрим в
+        главе <quote><xref linkend="djangobook.chap10"
+        endterm="djangobook.chap10.title"/></quote>.
       </para>
 
       <para>
-	Завершив изменения, вернёмся к интерфейсу
-	администратора. Теперь форма редактирования книги позволяет
-	оставляеть пустой дату публикации.
+        Завершив изменения, вернёмся к интерфейсу
+        администратора. Теперь форма редактирования книги позволяет
+        оставляеть пустой дату публикации.
       </para>
 
     </section>
@@ -846,12 +846,12 @@ ALTER TABLE books_book ALTER COLUMN publication_date DROP NOT NULL;
       Например, ниже показано как мы можем изменить метку для поля
       <varname>Author.email</varname> на <quote>e-mail</quote>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
     email = models.EmailField(blank=True, verbose_name='e-mail')
-	]]>
+        ]]>
       </screen>
       Сделав это изменение и перезапустив сервер, вы увидите новую
       метку на форме редактирования автора.
@@ -871,12 +871,12 @@ class Author(models.Model):
       </varname> как позиционный аргумент &mdash; более компактный
       синтаксис. Этот пример эквивалентен предыдущему:
       <screen>
-	<![CDATA[
+        <![CDATA[
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
     email = models.EmailField('e-mail', blank=True)
-	]]>
+        ]]>
       </screen>
       Такой вариант не подходит для полей
       <classname>ManyToManyField</classname> и
@@ -913,22 +913,22 @@ class Author(models.Model):
     <section id="&BASEID;.modeladmin.changelist">
 
       <title id="&BASEID;.modeladmin.changelist.title">
-	Настройка списка редактирования
+        Настройка списка редактирования
       </title>
 
       <para>
-	Давайте погрузимся в настройку интерфейса, определив поля,
-	которые будут отображатся в списке редактирования для нашей
-	модели <classname>Author</classname>.  По-умолчанию, в списке
-	изменения отображается результат выполнения метода
-	<token>__unicode__()</token> для каждого объекта модели. В
-	главе <quote><xref linkend="djangobook.chap05"
-	endterm="djangobook.chap05.title"/></quote> мы определили
-	метод <token>__unicode__()</token> для модели
-	<classname>Author</classname> так, чтобы он возвращал имя и
-	фамилию:
-	<screen>
-	  <![CDATA[
+        Давайте погрузимся в настройку интерфейса, определив поля,
+        которые будут отображатся в списке редактирования для нашей
+        модели <classname>Author</classname>.  По-умолчанию, в списке
+        изменения отображается результат выполнения метода
+        <token>__unicode__()</token> для каждого объекта модели. В
+        главе <quote><xref linkend="djangobook.chap05"
+        endterm="djangobook.chap05.title"/></quote> мы определили
+        метод <token>__unicode__()</token> для модели
+        <classname>Author</classname> так, чтобы он возвращал имя и
+        фамилию:
+        <screen>
+          <![CDATA[
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=40)
@@ -936,47 +936,47 @@ class Author(models.Model):
 
     def __unicode__(self):
         return u'%s %s' % (self.first_name, self.last_name)
-	  ]]>
-	</screen>
-	В результате список изменения обьектов
-	<classname>Author</classname> отображает имя и фамилию вместе,
-	вы можете это увидеть на рисунке <quote><xref
-	linkend="&BASEID;.pic7"
-	endterm="&BASEID;.pic7.title"/></quote>:
+          ]]>
+        </screen>
+        В результате список изменения обьектов
+        <classname>Author</classname> отображает имя и фамилию вместе,
+        вы можете это увидеть на рисунке <quote><xref
+        linkend="&BASEID;.pic7"
+        endterm="&BASEID;.pic7.title"/></quote>:
       </para>
 
       <para>
-	<figure id="&BASEID;.pic7" float="0">
-	  <title id="&BASEID;.pic7.title">
-	    Страница списка редактирования авторов
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic7" float="0">
+          <title id="&BASEID;.pic7.title">
+            Страница списка редактирования авторов
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Мы можем изменить это стандартное поведение, добавив в список
-	дополнительные поля. Было бы удобно, например, если бы на этой
-	странице отображался адрес электронной почты автора и можно
-	было сортировать по имени и фамилии.
+        Мы можем изменить это стандартное поведение, добавив в список
+        дополнительные поля. Было бы удобно, например, если бы на этой
+        странице отображался адрес электронной почты автора и можно
+        было сортировать по имени и фамилии.
       </para>
 
       <para>
-	Чтобы это реализовать определим класс
-	<classname>ModelAdmin</classname> для модели
-	<classname>Author</classname>. Этот класс является ключём к
-	настройке интерфейса администратора и самое простое, что он
-	может &mdash; это определить список полей, которые будут
-	отображаться на странице списка редактирования. Приведём
-	<filename>admin.py</filename> к следующему виду:
-	<screen>
-	  <![CDATA[
+        Чтобы это реализовать определим класс
+        <classname>ModelAdmin</classname> для модели
+        <classname>Author</classname>. Этот класс является ключём к
+        настройке интерфейса администратора и самое простое, что он
+        может &mdash; это определить список полей, которые будут
+        отображаться на странице списка редактирования. Приведём
+        <filename>admin.py</filename> к следующему виду:
+        <screen>
+          <![CDATA[
 from django.contrib import admin
 from mysite.books.models import Publisher, Author, Book
 
@@ -986,120 +986,120 @@ class AuthorAdmin(admin.ModelAdmin):
 admin.site.register(Publisher)
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Book)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Вот, что мы сделали:
+        Вот, что мы сделали:
 
-	<orderedlist>
-	  <listitem>
-	    <para>
-	      Мы создали класс <classname>AuthorAdmin</classname>.
-	      Этот класс, унаследованый от
-	      <token>django.contrib.admin.ModelAdmin</token>, содержит
-	      настройки для конкретной модели в интерфейсе
-	      администратора. Мы изменили только одну настройку
-	      &mdash; <token>list_display</token>, назначив ей кортеж
-	      с именами полей, которые будут отображаться на странице
-	      списка редактирования. Естественно, модель должна
-	      содержать перечисленные поля.
-	    </para>
-	  </listitem>
+        <orderedlist>
+          <listitem>
+            <para>
+              Мы создали класс <classname>AuthorAdmin</classname>.
+              Этот класс, унаследованый от
+              <token>django.contrib.admin.ModelAdmin</token>, содержит
+              настройки для конкретной модели в интерфейсе
+              администратора. Мы изменили только одну настройку
+              &mdash; <token>list_display</token>, назначив ей кортеж
+              с именами полей, которые будут отображаться на странице
+              списка редактирования. Естественно, модель должна
+              содержать перечисленные поля.
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      Мы изменили вызов <token>admin.site.register()</token>,
-	      добавив <classname>AuthorAdmin</classname> после
-	      <classname>Author</classname>. Это можно прочитать как:
-	      <quote>Зарегистрировать модель
-	      <classname>Author</classname> с настройками
-	      <classname>AuthorAdmin</classname></quote>.
-	    </para>
+          <listitem>
+            <para>
+              Мы изменили вызов <token>admin.site.register()</token>,
+              добавив <classname>AuthorAdmin</classname> после
+              <classname>Author</classname>. Это можно прочитать как:
+              <quote>Зарегистрировать модель
+              <classname>Author</classname> с настройками
+              <classname>AuthorAdmin</classname></quote>.
+            </para>
 
-	    <para>
-	      Функция <function>admin.site.register()</function>
-	      принимает унаследованый от
-	      <classname>ModelAdmin</classname> класс, как
-	      необязательный аргумент. Если вы не указали второй
-	      аргумент(как в случае с <classname>Book</classname> и
-	      <classname>Publisher</classname>), Django будет
-	      использовать настройки по-умолчанию для этой модели.
-	    </para>
-	  </listitem>
-	</orderedlist>
+            <para>
+              Функция <function>admin.site.register()</function>
+              принимает унаследованый от
+              <classname>ModelAdmin</classname> класс, как
+              необязательный аргумент. Если вы не указали второй
+              аргумент(как в случае с <classname>Book</classname> и
+              <classname>Publisher</classname>), Django будет
+              использовать настройки по-умолчанию для этой модели.
+            </para>
+          </listitem>
+        </orderedlist>
       </para>
 
       <para>
-	Внеся новые настройки, обновляем страницу списка
-	редактирования авторов, и вы увидите, что на странице теперь
-	отображается три колонки &mdash; имя, фамилия и
-	email-адресс. К тому же, можно производить сортировку по
-	колонкам с помощью нажатия на их заголовок. (См. рисунок
-	<quote><xref linkend="&BASEID;.pic8"
-	endterm="&BASEID;.pic8.title"/></quote>):
+        Внеся новые настройки, обновляем страницу списка
+        редактирования авторов, и вы увидите, что на странице теперь
+        отображается три колонки &mdash; имя, фамилия и
+        email-адресс. К тому же, можно производить сортировку по
+        колонкам с помощью нажатия на их заголовок. (См. рисунок
+        <quote><xref linkend="&BASEID;.pic8"
+        endterm="&BASEID;.pic8.title"/></quote>):
       </para>
 
       <para>
-	<figure id="&BASEID;.pic8" float="0">
-	  <title id="&BASEID;.pic8.title">
-	    Страница списка редактирования авторов с опцией
-	    list_display
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic8" float="0">
+          <title id="&BASEID;.pic8.title">
+            Страница списка редактирования авторов с опцией
+            list_display
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Теперь добавим простую панель поиска. Добавьте
-	<varname>search_fields</varname> в
-	<classname>AuthorAdmin</classname>, вот так:
-	<screen>
-	  <![CDATA[
+        Теперь добавим простую панель поиска. Добавьте
+        <varname>search_fields</varname> в
+        <classname>AuthorAdmin</classname>, вот так:
+        <screen>
+          <![CDATA[
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email')
     search_fields = ('first_name', 'last_name')
-	  ]]>
-	</screen>
-	Обновите страницу и вы увидите панель поиска
-	вверху. (См. рисунок <quote><xref linkend="&BASEID;.pic9"
-	endterm="&BASEID;.pic9.title"/></quote>.) Мы просто указали
-	странице со списком редактирования, чтобы она отобразила
-	панель поиска, которая производит поиск по полям
-	<varname>first_name</varname> и
-	<varname>last_name</varname>. Как можно ожидать, поиск
-	регистронезависимый и работает с обоими полями. То есть при
-	поиске строки <token><quote>bar</quote></token>, будет найдет
-	как автор с именем Barney, так и автор с фамилией Hobarson.
+          ]]>
+        </screen>
+        Обновите страницу и вы увидите панель поиска
+        вверху. (См. рисунок <quote><xref linkend="&BASEID;.pic9"
+        endterm="&BASEID;.pic9.title"/></quote>.) Мы просто указали
+        странице со списком редактирования, чтобы она отобразила
+        панель поиска, которая производит поиск по полям
+        <varname>first_name</varname> и
+        <varname>last_name</varname>. Как можно ожидать, поиск
+        регистронезависимый и работает с обоими полями. То есть при
+        поиске строки <token><quote>bar</quote></token>, будет найдет
+        как автор с именем Barney, так и автор с фамилией Hobarson.
       </para>
 
       <para>
-	<figure id="&BASEID;.pic9" float="0">
-	  <title id="&BASEID;.pic9.title">
-	    Страница списка редактирования авторов с опцией search_fields
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic9" float="0">
+          <title id="&BASEID;.pic9.title">
+            Страница списка редактирования авторов с опцией search_fields
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Теперь добавим фильтр по дате к странице списка редактирования
-	модели <classname>Book</classname>:
-	<screen>
-	  <![CDATA[
+        Теперь добавим фильтр по дате к странице списка редактирования
+        модели <classname>Book</classname>:
+        <screen>
+          <![CDATA[
 from django.contrib import admin
 from mysite.books.models import Publisher, Author, Book
 
@@ -1114,148 +1114,148 @@ class BookAdmin(admin.ModelAdmin):
 admin.site.register(Publisher)
 admin.site.register(Author, AuthorAdmin)
 admin.site.register(Book, BookAdmin)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Так как мы работаем с другим набором настроек, мы создали
-	отдельный класс <classname>ModelAdmin</classname> &mdash;
-	<classname>BookAdmin</classname>. Сначала мы определили
-	<varname>list_display</varname> для более приемлимого
-	отображения списка редактирования. Затем установили
-	<varname>list_filter</varname>, указав кортеж полей для
-	фильтра, который отобразится в правой части страници. Для поля
-	даты, Django предоставляет готовые варианты фильтрации списка:
-	<quote>Сегодня</quote>, <quote>Последние 7 дней</quote>,
-	<quote>Этот месяц</quote>, <quote>Этот год</quote> &mdash;
-	разработчики Django нашли их самыми популярными вариантами
-	условий фильтрации. Рисунок <quote><xref
-	linkend="&BASEID;.pic10"
-	endterm="&BASEID;.pic10.title"/></quote> показывает, как это
-	выглядит:
+        Так как мы работаем с другим набором настроек, мы создали
+        отдельный класс <classname>ModelAdmin</classname> &mdash;
+        <classname>BookAdmin</classname>. Сначала мы определили
+        <varname>list_display</varname> для более приемлимого
+        отображения списка редактирования. Затем установили
+        <varname>list_filter</varname>, указав кортеж полей для
+        фильтра, который отобразится в правой части страници. Для поля
+        даты, Django предоставляет готовые варианты фильтрации списка:
+        <quote>Сегодня</quote>, <quote>Последние 7 дней</quote>,
+        <quote>Этот месяц</quote>, <quote>Этот год</quote> &mdash;
+        разработчики Django нашли их самыми популярными вариантами
+        условий фильтрации. Рисунок <quote><xref
+        linkend="&BASEID;.pic10"
+        endterm="&BASEID;.pic10.title"/></quote> показывает, как это
+        выглядит:
       </para>
 
       <para>
-	<figure id="&BASEID;.pic10" float="0">
-	  <title id="&BASEID;.pic10.title">
-	    Страница списка редактирования книг с опцией list_filter
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic10" float="0">
+          <title id="&BASEID;.pic10.title">
+            Страница списка редактирования книг с опцией list_filter
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Параметр <varname>list_filter</varname> работает с полями
-	разных типов, не только
-	<classname>DateField</classname>. (Попробуйте, например, с
-	полями <classname>BooleanField</classname> и
-	<classname>ForeignKey</classname>.) Фильтры отображаются,
-	если есть хотя бы два значения для фильтрации.
+        Параметр <varname>list_filter</varname> работает с полями
+        разных типов, не только
+        <classname>DateField</classname>. (Попробуйте, например, с
+        полями <classname>BooleanField</classname> и
+        <classname>ForeignKey</classname>.) Фильтры отображаются, если
+        есть хотя бы два значения для фильтрации.
       </para>
 
       <para>
-	Ещё одним способом фильтрации по дате является использование
-	опции <varname>date_hierarchy</varname>:
-	<screen>
-	  <![CDATA[
+        Ещё одним способом фильтрации по дате является использование
+        опции <varname>date_hierarchy</varname>:
+        <screen>
+          <![CDATA[
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'publisher', 'publication_date')
     list_filter = ('publication_date',)
     date_hierarchy = 'publication_date'
-	  ]]>
-	</screen>
-	К странице списка редактирования сверху добавляется
-	развернутая панель навигации по дате, как показано на рисуноке
-	<quote><xref linkend="&BASEID;.pic11"
-	endterm="&BASEID;.pic11.title"/></quote>. Она начинается со
-	списка доступных годов, затем месяцев и дней.
+          ]]>
+        </screen>
+        К странице списка редактирования сверху добавляется
+        развернутая панель навигации по дате, как показано на рисуноке
+        <quote><xref linkend="&BASEID;.pic11"
+        endterm="&BASEID;.pic11.title"/></quote>. Она начинается со
+        списка доступных годов, затем месяцев и дней.
       </para>
 
       <para>
-	<figure id="&BASEID;.pic11" float="0">
-	  <title id="&BASEID;.pic11.title">
-	    Страница списка редактирования книг с опцией date_hierarchy
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic11" float="0">
+          <title id="&BASEID;.pic11.title">
+            Страница списка редактирования книг с опцией date_hierarchy
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Обратите внимание, опция <varname>date_hierarchy</varname> в
-	качестве параметра принимает <emphasis>строку</emphasis>, а не
-	кортеж, потому что только одна дата поля может быть
-	использована для иерархии.
+        Обратите внимание, опция <varname>date_hierarchy</varname> в
+        качестве параметра принимает <emphasis>строку</emphasis>, а не
+        кортеж, потому что только одна дата поля может быть
+        использована для иерархии.
       </para>
 
       <para>
-	Теперь изменим сортировку по-умолчанию, чтобы на странице
-	списка редактирования, книги сортировались по дате публикации
-	в направлении убывания.  По-умолчанию, объекты сортируются в
-	соответствии с атрибутом <varname>ordering</varname> класса
-	<classname>Meta</classname> (См. главу <quote><xref
-	linkend="djangobook.chap05"
-	endterm="djangobook.chap05.title"/></quote>), но если
-	<varname>ordering</varname> там не указан, то сортировка не
-	определена.
-	<screen>
-	  <![CDATA[
+        Теперь изменим сортировку по-умолчанию, чтобы на странице
+        списка редактирования, книги сортировались по дате публикации
+        в направлении убывания.  По-умолчанию, объекты сортируются в
+        соответствии с атрибутом <varname>ordering</varname> класса
+        <classname>Meta</classname> (См. главу <quote><xref
+        linkend="djangobook.chap05"
+        endterm="djangobook.chap05.title"/></quote>), но если
+        <varname>ordering</varname> там не указан, то сортировка не
+        определена.
+        <screen>
+          <![CDATA[
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'publisher', 'publication_date')
     list_filter = ('publication_date',)
     date_hierarchy = 'publication_date'
     ordering = ('-publication_date',)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Опция <varname>ordering</varname> административного интерфейса
-	работает так же, как и для класса <classname>Meta</classname>,
-	за исключением того, что использует только первое поле
-	указанное в списке. Чтобы указать тип сортировки по-убыванию,
-	необходимо поставить минус перед названием поля.
+        Опция <varname>ordering</varname> административного интерфейса
+        работает так же, как и для класса <classname>Meta</classname>,
+        за исключением того, что использует только первое поле
+        указанное в списке. Чтобы указать тип сортировки по-убыванию,
+        необходимо поставить минус перед названием поля.
       </para>
 
       <para>
-	Обновим страницу списка редактирования. Обратите внимание, что
-	возле заголовка поля даты публикации появилась стрелка,
-	указывающая на направление сортировки. (См. рисунок
-	<quote><xref linkend="&BASEID;.pic12"
-	endterm="&BASEID;.pic12.title"/></quote>.)
+        Обновим страницу списка редактирования. Обратите внимание, что
+        возле заголовка поля даты публикации появилась стрелка,
+        указывающая на направление сортировки. (См. рисунок
+        <quote><xref linkend="&BASEID;.pic12"
+        endterm="&BASEID;.pic12.title"/></quote>.)
       </para>
 
       <para>
-	<figure id="&BASEID;.pic12" float="0">
-	  <title id="&BASEID;.pic12.title">
-	    Страница списка редактирования книг с сортировкой
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic12" float="0">
+          <title id="&BASEID;.pic12.title">
+            Страница списка редактирования книг с сортировкой
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Мы рассмотрели основные настройки. Используя их, можно создать
-	функциональный и удобный интерфейс администратора всего парой
-	строк кода.
+        Мы рассмотрели основные настройки. Используя их, можно создать
+        функциональный и удобный интерфейс администратора всего парой
+        строк кода.
       </para>
 
     </section>
@@ -1263,170 +1263,170 @@ class BookAdmin(admin.ModelAdmin):
     <section id="&BASEID;.modeladmin.editform">
 
       <title id="&BASEID;.modeladmin.editform.title">
-	Настройка форм редактирования
+        Настройка форм редактирования
       </title>
 
       <para>
-	Так же, как и со списками редактирования, форма редактирования
-	может быть настроена множеством способов.
+        Так же, как и со списками редактирования, форма редактирования
+        может быть настроена множеством способов.
       </para>
 
       <para>
-	Сначала определим порядок отображения полей. По-умолчанию,
-	поля отображаются в том же порядке, в каком они были
-	определены в модели. Мы можем изменить этот порядок с помощью опции
-	<varname>fields</varname> в нашем классе, унаследованом от
-	<classname>ModelAdmin</classname>:
-	<screen>
-	  <![CDATA[
+        Сначала определим порядок отображения полей. По-умолчанию,
+        поля отображаются в том же порядке, в каком они были
+        определены в модели. Мы можем изменить этот порядок с помощью
+        опции <varname>fields</varname> в нашем классе, унаследованом
+        от <classname>ModelAdmin</classname>:
+        <screen>
+          <![CDATA[
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'publisher', 'publication_date')
     list_filter = ('publication_date',)
     date_hierarchy = 'publication_date'
     ordering = ('-publication_date',)
     fields = ('title', 'authors', 'publisher', 'publication_date')
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Теперь форма редактирования для книг будет использовать
-	указаный порядок полей. Более естественно, если название книги
-	будет идти перед автором. Конечно, порядок полей зависит от
-	вашего способа работы с данными. Все формы разные.
+        Теперь форма редактирования для книг будет использовать
+        указаный порядок полей. Более естественно, если название книги
+        будет идти перед автором. Конечно, порядок полей зависит от
+        вашего способа работы с данными. Все формы разные.
       </para>
 
       <para>
-	Другой полезной особенностью, которую предоставляет опция
-	<token>fields</token> является <emphasis>исключение</emphasis>
-	определённых полей из списка редактирования. Просто уберите из
-	списка поля, которые требуется исключить. Вы можете
-	использовать это в случае, когда вашим административным
-	пользователям позволено редактировать только определённые
-	части данных или если часть полей изменяется с помощью
-	внешнего автоматизированного процесса. Например, в нашей базе
-	с книгами, мы можем спрятать поле
-	<token>publication_date</token>:
-	<screen>
-	  <![CDATA[
+        Другой полезной особенностью, которую предоставляет опция
+        <token>fields</token> является <emphasis>исключение</emphasis>
+        определённых полей из списка редактирования. Просто уберите из
+        списка поля, которые требуется исключить. Вы можете
+        использовать это в случае, когда вашим административным
+        пользователям позволено редактировать только определённые
+        части данных или если часть полей изменяется с помощью
+        внешнего автоматизированного процесса. Например, в нашей базе
+        с книгами, мы можем спрятать поле
+        <token>publication_date</token>:
+        <screen>
+          <![CDATA[
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'publisher', 'publication_date')
     list_filter = ('publication_date',)
     date_hierarchy = 'publication_date'
     ordering = ('-publication_date',)
     fields = ('title', 'authors', 'publisher')
-	  ]]>
-	</screen>
-	В результате, форма редактирование книг не предоставляет
-	возможности изменения даты публикации. Это может быть полезно
-	в случае, если вы издатель, которые предпочитает, чтобы его
-	авторы не отодвигали даты публикаций. (Естественно, это чисто
-	гипотетический пример.)
+          ]]>
+        </screen>
+        В результате, форма редактирование книг не предоставляет
+        возможности изменения даты публикации. Это может быть полезно
+        в случае, если вы издатель, которые предпочитает, чтобы его
+        авторы не отодвигали даты публикаций. (Естественно, это чисто
+        гипотетический пример.)
       </para>
 
       <para>
-	Когда пользователь использует эту неполную форму для
-	добавления книги, Django устанавливает
-	<token>publication_date</token> в <token>None</token> &mdash;
-	поэтому убедитесь, что поле имеет свойство
-	<token>null=True</token>.
+        Когда пользователь использует эту неполную форму для
+        добавления книги, Django устанавливает
+        <token>publication_date</token> в <token>None</token> &mdash;
+        поэтому убедитесь, что поле имеет свойство
+        <token>null=True</token>.
       </para>
 
       <para>
-	Другая часто используемая настройка формы редактирования
-	используется для полей типа многие-ко-многим. Как можно было
-	увидеть на форме редактирования для книг, интерфейс
-	администратора представляет каждое поле типа
-	<classname>ManyToManyField</classname> в виде списка с
-	возможностью выбора нескольких элементов, который является
-	самым логичным методом отображения в формате HTML &mdash; но
-	такие списки не всегда удобно использовать. Если вам требуется
-	отметить несколько элементов, вы должны удерживать клавишу
-	<token>Ctrl</token> для этого. Интерфейс администратора
-	добавляет текст, который напоминает об этом, но представьте
-	ситуацию когда надо выделить сотню элементов.
+        Другая часто используемая настройка формы редактирования
+        используется для полей типа многие-ко-многим. Как можно было
+        увидеть на форме редактирования для книг, интерфейс
+        администратора представляет каждое поле типа
+        <classname>ManyToManyField</classname> в виде списка с
+        возможностью выбора нескольких элементов, который является
+        самым логичным методом отображения в формате HTML &mdash; но
+        такие списки не всегда удобно использовать. Если вам требуется
+        отметить несколько элементов, вы должны удерживать клавишу
+        <token>Ctrl</token> для этого. Интерфейс администратора
+        добавляет текст, который напоминает об этом, но представьте
+        ситуацию когда надо выделить сотню элементов.
       </para>
 
       <para>
-	Интенфейс администратора предоставляет решение &mdash;
-	<token>filter_horizontal</token>.  Добавим его в
-	<classname>BookAdmin</classname> и посмотрим что получилось:
-	<screen>
-	  <![CDATA[
+        Интенфейс администратора предоставляет решение &mdash;
+        <token>filter_horizontal</token>.  Добавим его в
+        <classname>BookAdmin</classname> и посмотрим что получилось:
+        <screen>
+          <![CDATA[
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'publisher', 'publication_date')
     list_filter = ('publication_date',)
     date_hierarchy = 'publication_date'
     ordering = ('-publication_date',)
     filter_horizontal = ('authors',)
-	  ]]>
-	</screen>
-	(Обратите внимание, что мы удалил параметр
-	<token>fields</token>.)
+          ]]>
+        </screen>
+        (Обратите внимание, что мы удалил параметр
+        <token>fields</token>.)
       </para>
 
       <para>
-	Обновите страницу и вы заметите, что поле <quote>Автор</quote>
-	теперь использует удобный javascript-интерфейс фильтрации,
-	который позволяет искать среди элементов и перемещать
-	выбранных авторов в поле выбранных и наоборот.
+        Обновите страницу и вы заметите, что поле <quote>Автор</quote>
+        теперь использует удобный javascript-интерфейс фильтрации,
+        который позволяет искать среди элементов и перемещать
+        выбранных авторов в поле выбранных и наоборот.
       </para>
 
       <para>
-	<figure id="&BASEID;.pic13" float="0">
-	  <title id="&BASEID;.pic13.title">
-	    Страница списка редактирования книг с опцией filter_horizontal.
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic13" float="0">
+          <title id="&BASEID;.pic13.title">
+            Страница списка редактирования книг с опцией filter_horizontal.
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Мы настоятельно рекомендуем использовать
-	<token>filter_horizontal</token> для полей
-	<classname>ManyToManyField</classname> у которых более 10
-	элементов. Также вы можете использовать
-	<token>filter_horizontal</token> для нескольких полей, указав
-	их имена в кортеже.
+        Мы настоятельно рекомендуем использовать
+        <token>filter_horizontal</token> для полей
+        <classname>ManyToManyField</classname> у которых более 10
+        элементов. Также вы можете использовать
+        <token>filter_horizontal</token> для нескольких полей, указав
+        их имена в кортеже.
       </para>
 
       <para>
-	Классы <classname>ModelAdmin</classname> так же поддерживает
-	опцию <token>filter_vertical</token>. Она работает так же, как
-	и <token>filter_horizontal</token>, но поля располагаются
-	вертикально. Используйте то, что вам больше нравится.
+        Классы <classname>ModelAdmin</classname> так же поддерживает
+        опцию <token>filter_vertical</token>. Она работает так же, как
+        и <token>filter_horizontal</token>, но поля располагаются
+        вертикально. Используйте то, что вам больше нравится.
       </para>
 
       <para>
-	Опции <token>filter_horizontal</token> и
-	<token>filter_vertical</token> работают только с полями
-	<classname>ManyToManyField</classname>, не с
-	<classname>ForeignKey</classname>. По-умолчанию, интерфейс
-	администратора использует <token>&lt;select&gt;</token> для
-	полей <classname>ForeignKey</classname>, но, так же как и для
-	поля <classname>ManyToManyField</classname>, иногда вы не
-	хотите видеть все объекты в выпадающем списке. Например, если
-	в вашей базе книг будут тысячи авторов, форма добавления книг
-	будет вынуждена загружать всех авторов в выпадающий список.
+        Опции <token>filter_horizontal</token> и
+        <token>filter_vertical</token> работают только с полями
+        <classname>ManyToManyField</classname>, не с
+        <classname>ForeignKey</classname>. По-умолчанию, интерфейс
+        администратора использует <token>&lt;select&gt;</token> для
+        полей <classname>ForeignKey</classname>, но, так же как и для
+        поля <classname>ManyToManyField</classname>, иногда вы не
+        хотите видеть все объекты в выпадающем списке. Например, если
+        в вашей базе книг будут тысячи авторов, форма добавления книг
+        будет вынуждена загружать всех авторов в выпадающий список.
       </para>
 
       <para>
-	Методом для решения этой задачи является использование опции
-	<token>raw_id_fields</token>. Укажите для неё кортеж с именами
-	полей <classname>ForeignKey</classname> и эти поля будут
-	отображаться простым текстовым полем (<token>&lt;input
-	type="text"&gt;</token>) вместо
-	<token>&lt;select&gt;</token>. (См. рисунок <quote><xref
-	linkend="&BASEID;.pic14"
-	endterm="&BASEID;.pic14.title"/></quote>.)
-	<screen>
-	  <![CDATA[
+        Методом для решения этой задачи является использование опции
+        <token>raw_id_fields</token>. Укажите для неё кортеж с именами
+        полей <classname>ForeignKey</classname> и эти поля будут
+        отображаться простым текстовым полем (<token>&lt;input
+        type="text"&gt;</token>) вместо
+        <token>&lt;select&gt;</token>. (См. рисунок <quote><xref
+        linkend="&BASEID;.pic14"
+        endterm="&BASEID;.pic14.title"/></quote>.)
+        <screen>
+          <![CDATA[
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'publisher', 'publication_date')
     list_filter = ('publication_date',)
@@ -1434,31 +1434,32 @@ class BookAdmin(admin.ModelAdmin):
     ordering = ('-publication_date',)
     filter_horizontal = ('authors',)
     raw_id_fields = ('publisher',)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	<figure id="&BASEID;.pic14" float="0">
-	  <title id="&BASEID;.pic14.title">
-	    Страница списка редактирования книг с опцией raw_id_fields.
-	  </title>
-	  <screenshot>
-	    <mediaobject>
-	      <imageobject>
-		<imagedata fileref="pics/waiting_for.png" format="PNG"/>
-	      </imageobject>
-	    </mediaobject>
-	  </screenshot>
-	</figure>
+        <figure id="&BASEID;.pic14" float="0">
+          <title id="&BASEID;.pic14.title">
+            Страница списка редактирования книг с опцией raw_id_fields.
+          </title>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </figure>
       </para>
 
       <para>
-	Что вы будете вводить в это поле? Идентификатор издателя. Учитывая
-	то, что люди не могут запомнить идентификаторы из базы данных,
-	рядом находится иконка с увеличительным стеклом, которую вы можете
-	нажать для отображения окна, на котором вы можете выбрать
-	требуемого издателя.
+        Что вы будете вводить в это поле? Идентификатор
+        издателя. Учитывая то, что люди не могут запомнить
+        идентификаторы из базы данных, рядом находится иконка с
+        увеличительным стеклом, которую вы можете нажать для
+        отображения окна, на котором вы можете выбрать требуемого
+        издателя.
       </para>
 
     </section>
@@ -1505,38 +1506,38 @@ class BookAdmin(admin.ModelAdmin):
       интерфейсе администратора. Существует набор из трёх флагов:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Флаг <quote>is active</quote> (активен) управляет
-	    активностью пользователя в общем смысле. Если флаг
-	    отключен, пользователь не пройдёт аутентификацию даже при
-	    указании правильного пароля.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Флаг <quote>is active</quote> (активен) управляет
+            активностью пользователя в общем смысле. Если флаг
+            отключен, пользователь не пройдёт аутентификацию даже при
+            указании правильного пароля.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Флаг <quote>is staff</quote> (сотрудник) управляет
-	    доступом пользователя к интерфейсу администратора (т.е.,
-	    является ли пользователь штатным сотрудником вашей
-	    организации). Так как, тот же самый пользователь системы
-	    может управлять доступом к публичной, не административной,
-	    части сайтов (обратитесь к главе <quote><xref
-	    linkend="djangobook.chap14"
-	    endterm="djangobook.chap14.title"/></quote>), значение
-	    этого флага разделяет обычных пользователей от
-	    администраторов.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Флаг <quote>is staff</quote> (сотрудник) управляет
+            доступом пользователя к интерфейсу администратора (т.е.,
+            является ли пользователь штатным сотрудником вашей
+            организации). Так как, тот же самый пользователь системы
+            может управлять доступом к публичной, не административной,
+            части сайтов (обратитесь к главе <quote><xref
+            linkend="djangobook.chap14"
+            endterm="djangobook.chap14.title"/></quote>), значение
+            этого флага разделяет обычных пользователей от
+            администраторов.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Флаг <quote>is superuser</quote> (суперпользователь)
-	    предоставляет пользователю полные права на добавление,
-	    создание и удаление любого элемента на интерфейсе
-	    администратора. Обычные правила доступа игнорируются.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Флаг <quote>is superuser</quote> (суперпользователь)
+            предоставляет пользователю полные права на добавление,
+            создание и удаление любого элемента на интерфейсе
+            администратора. Обычные правила доступа игнорируются.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1565,14 +1566,14 @@ class BookAdmin(admin.ModelAdmin):
       официальной документации на Django.
 
       <note>
-	<para>
-	  Доступ к редактированию пользователей и их прав также
-	  управляется этой системой. Если вы разрешили кому-нибудь
-	  редактировать пользователей, то он сможет изменять свои
-	  собственные права, а это может выходить за рамки того, что
-	  вы желали! Предоставление пользователю права релактировать
-	  пользователей явно превращает его в суперпользователя.
-	</para>
+        <para>
+          Доступ к редактированию пользователей и их прав также
+          управляется этой системой. Если вы разрешили кому-нибудь
+          редактировать пользователей, то он сможет изменять свои
+          собственные права, а это может выходить за рамки того, что
+          вы желали! Предоставление пользователю права релактировать
+          пользователей явно превращает его в суперпользователя.
+        </para>
       </note>
     </para>
 
@@ -1610,36 +1611,36 @@ class BookAdmin(admin.ModelAdmin):
       как-то так:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Журналист, ответственный за репортаж, встречается с одним
-	    из разработчиков и обсуждает с ним возможность публикации
-	    имеющихся у него данных.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Журналист, ответственный за репортаж, встречается с одним
+            из разработчиков и обсуждает с ним возможность публикации
+            имеющихся у него данных.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Разработчик создаёт модель для этих данных и затем
-	    открывает доступ репортёру к интерфейсу администратора.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Разработчик создаёт модель для этих данных и затем
+            открывает доступ репортёру к интерфейсу администратора.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Корреспондент осматривает интерфейс администратора,
-	    указать на недостающие или лишние поля - лучше сейчас, чем
-	    позже. Разработчик оперативно изменяет модели.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Корреспондент осматривает интерфейс администратора,
+            указать на недостающие или лишние поля - лучше сейчас, чем
+            позже. Разработчик оперативно изменяет модели.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Пока журналист вводит данные в Django, разработчик может
-	    сфокусироваться на работе над публичной частью интерфейса
-	    (прикольная часть!).
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Пока журналист вводит данные в Django, разработчик может
+            сфокусироваться на работе над публичной частью интерфейса
+            (прикольная часть!).
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1655,42 +1656,42 @@ class BookAdmin(admin.ModelAdmin):
       интерфейс администратора полезным в некоторых других случаях:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    <emphasis>Проверка моделей данных</emphasis>: После
-	    определение нескольких моделей, будет полезно открыть их в
-	    интерфейсе и ввести некоторое количество данных. Обычно на
-	    этом этапе находятся ошибки в схеме базы данных.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>Проверка моделей данных</emphasis>: После
+            определение нескольких моделей, будет полезно открыть их в
+            интерфейсе и ввести некоторое количество данных. Обычно на
+            этом этапе находятся ошибки в схеме базы данных.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <emphasis>Управление полученными данными</emphasis>: Для
-	    приложения, которые построены на данных, получаемых из
-	    внешних источников (например, от пользователей или
-	    поисковых роботов), интерфейс администратора предоставляет
-	    простой способ изучения и редактирования этих данных. Вы
-	    можете рассматривать его как не самый мощный, но
-	    достаточно удобную версию утилиты командной строки для
-	    работы с базой данных.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>Управление полученными данными</emphasis>: Для
+            приложения, которые построены на данных, получаемых из
+            внешних источников (например, от пользователей или
+            поисковых роботов), интерфейс администратора предоставляет
+            простой способ изучения и редактирования этих данных. Вы
+            можете рассматривать его как не самый мощный, но
+            достаточно удобную версию утилиты командной строки для
+            работы с базой данных.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <emphasis>RAD приложения для управления
-	    данными</emphasis>: Вы можете использовать интерфейс
-	    администратора для создания на его основе простого
-	    приложения для управления данными &mdash; скажем, для
-	    отслеживания своих трат. Если вы разрабатываете что-то для
-	    собственного использования, не для публики, интерфейс
-	    администратора может помогать вам достаточно
-	    продолжительное время. С этой стороны, вы можете
-	    рассматривать его как реляционную версию электронных
-	    таблиц.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <emphasis>RAD приложения для управления
+            данными</emphasis>: Вы можете использовать интерфейс
+            администратора для создания на его основе простого
+            приложения для управления данными &mdash; скажем, для
+            отслеживания своих трат. Если вы разрабатываете что-то для
+            собственного использования, не для публики, интерфейс
+            администратора может помогать вам достаточно
+            продолжительное время. С этой стороны, вы можете
+            рассматривать его как реляционную версию электронных
+            таблиц.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 

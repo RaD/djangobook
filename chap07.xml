@@ -40,12 +40,12 @@
       аргумента, как в нашем представлении
       <function>hello()</function>:
       <screen>
-	<![CDATA[
+	    <![CDATA[
 from django.http import HttpResponse
 
 def hello(request):
     return HttpResponse("Hello world")
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -63,68 +63,68 @@ def hello(request):
     <section id="&BASEID;.get-data-from-request.url-info">
 
       <title id="&BASEID;.get-data-from-request.url-info.title">
-	Информация об URL
+        Информация об URL
       </title>
 
       <para>
-	<classname>HttpRequest</classname> объекты содержат информацию
-	о запрошенном URL:
+        <classname>HttpRequest</classname> объекты содержат информацию
+        о запрошенном URL:
 
-	<table id="&BASEID;.tbl1" frame="all" pgwide="1">
+        <table id="&BASEID;.tbl1" frame="all" pgwide="1">
 
-	  <title id="&BASEID;.tbl1.title">
-	    Информация об URL
-	  </title>
+          <title id="&BASEID;.tbl1.title">
+            Информация об URL
+          </title>
 
-	  <tgroup cols="3" align="left" colsep="1" rowsep="1">
-	    <colspec colname="c1" colwidth="4cm"/>
-	    <colspec colname="c2" colwidth="6cm"/>
-	    <colspec colname="c3" colwidth="4cm"/>
+          <tgroup cols="3" align="left" colsep="1" rowsep="1">
+            <colspec colname="c1" colwidth="4cm"/>
+            <colspec colname="c2" colwidth="6cm"/>
+            <colspec colname="c3" colwidth="4cm"/>
 
-	    <thead>
-	      <row>
-		<entry>Атрибут/Метод</entry>
-		<entry>Описание</entry>
-		<entry>Пример</entry>
-	      </row>
-	    </thead>
+            <thead>
+              <row>
+                <entry>Атрибут/Метод</entry>
+                <entry>Описание</entry>
+                <entry>Пример</entry>
+              </row>
+            </thead>
 
-	    <tbody>
-	      <row>
-		<entry><token>request.path</token></entry>
-		<entry>Полный путь, без домена, но с начальным слешом.</entry>
-		<entry><token>/hello/</token></entry>
-	      </row>
+            <tbody>
+              <row>
+                <entry><token>request.path</token></entry>
+                <entry>Полный путь, без домена, но с начальным слешом.</entry>
+                <entry><token>/hello/</token></entry>
+              </row>
 
-	      <row>
-		<entry><token>request.get_host()</token></entry>
-		<entry>Имя компьютера (т.е., <quote>домен</quote>).</entry>
-		<entry><token>127.0.0.1:8000</token> или <token>www.example.com</token></entry>
-	      </row>
+              <row>
+                <entry><token>request.get_host()</token></entry>
+                <entry>Имя компьютера (т.е., <quote>домен</quote>).</entry>
+                <entry><token>127.0.0.1:8000</token> или <token>www.example.com</token></entry>
+              </row>
 
-	      <row>
-		<entry><token>request.get_full_path()</token></entry>
-		<entry>Равен <token>path</token>, но со строкой запроса (если она существует).</entry>
-		<entry><token>/hello/?print=true</token></entry>
-	      </row>
+              <row>
+                <entry><token>request.get_full_path()</token></entry>
+                <entry>Равен <token>path</token>, но со строкой запроса (если она существует).</entry>
+                <entry><token>/hello/?print=true</token></entry>
+              </row>
 
-	      <row>
-		<entry><token>request.is_secure()</token></entry>
-		<entry><token>True</token> в случае использования HTTPS. Иначе <token>False</token>.</entry>
-		<entry><token>True</token> или <token>False</token></entry>
-	      </row>
-	    </tbody>
-	  </tgroup>
-	</table>
+              <row>
+                <entry><token>request.is_secure()</token></entry>
+                <entry><token>True</token> в случае использования HTTPS. Иначе <token>False</token>.</entry>
+                <entry><token>True</token> или <token>False</token></entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
       </para>
 
       <para>
-	Всегда используйте эти атрибуты/методы вместо прямого
-	вписывания URL в ваши представления. Такой подход делает код
-	более гибким и его можно будет повторно использовать в других
-	местах. Простейший пример:
-	<screen>
-	  <![CDATA[
+        Всегда используйте эти атрибуты/методы вместо прямого
+        вписывания URL в ваши представления. Такой подход делает код
+        более гибким и его можно будет повторно использовать в других
+        местах. Простейший пример:
+        <screen>
+          <![CDATA[
 # BAD!
 def current_url_view_bad(request):
     return HttpResponse("Welcome to the page at /current/")
@@ -132,8 +132,8 @@ def current_url_view_bad(request):
 # GOOD
 def current_url_view_good(request):
     return HttpResponse("Welcome to the page at %s" % request.path)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
     </section>
@@ -141,62 +141,62 @@ def current_url_view_good(request):
     <section id="&BASEID;.get-data-from-request.other-info">
 
       <title id="&BASEID;.get-data-from-request.other-info.title">
-	Остальная информация о запросе
+        Остальная информация о запросе
       </title>
 
       <para>
-	Атрибут <token>request.META</token> является словарём, который
-	содержит все доступные HTTP заголовки текущего запроса,
-	включая IP адрес посетителя и информацию об его браузере
-	(название и версию). Следует отметить, что полный список
-	доступных заголовков зависит от того, какие заголовки были
-	посланы браузером посетителя и какие заголовки были
-	установлены веб-сервером. Перечислим несколько стандартных
-	ключей этого словаря:
+        Атрибут <token>request.META</token> является словарём, который
+        содержит все доступные HTTP заголовки текущего запроса,
+        включая IP адрес посетителя и информацию об его браузере
+        (название и версию). Следует отметить, что полный список
+        доступных заголовков зависит от того, какие заголовки были
+        посланы браузером посетителя и какие заголовки были
+        установлены веб-сервером. Перечислим несколько стандартных
+        ключей этого словаря:
 
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      <token>HTTP_REFERER</token> &mdash; ссылка на страницу с
-	      которой пришли на текущую, если такая существует.
-	    </para>
-	  </listitem>
+        <itemizedlist>
+          <listitem>
+            <para>
+              <token>HTTP_REFERER</token> &mdash; ссылка на страницу с
+              которой пришли на текущую, если такая существует.
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      <token>HTTP_USER_AGENT</token> &mdash; идентификационная
-	      строка браузера. Обычно выглядит так:
-	      <token>"Mozilla/5.0 (X11; U; Linux i686; fr-FR;
-	      rv:1.8.1.17) Gecko/20080829 Firefox/2.0.0.17"</token>.
-	    </para>
-	  </listitem>
+          <listitem>
+            <para>
+              <token>HTTP_USER_AGENT</token> &mdash; идентификационная
+              строка браузера. Обычно выглядит так:
+              <token>"Mozilla/5.0 (X11; U; Linux i686; fr-FR;
+              rv:1.8.1.17) Gecko/20080829 Firefox/2.0.0.17"</token>.
+            </para>
+          </listitem>
 
-	  <listitem>
-	    <para>
-	      <token>REMOTE_ADDR</token> &mdash; IP адрес
-	      пользователя, т.е., <token>"12.245.67.89"</token>. (Если
-	      запрос был передан через прокси, тогда адрес может быть
-	      передан в виде списка:
-	      <token>"12.245.67.89,23.45.78.90"</token>.)
-	    </para>
-	  </listitem>
-	</itemizedlist>
+          <listitem>
+            <para>
+              <token>REMOTE_ADDR</token> &mdash; IP адрес
+              пользователя, т.е., <token>"12.245.67.89"</token>. (Если
+              запрос был передан через прокси, тогда адрес может быть
+              передан в виде списка:
+              <token>"12.245.67.89,23.45.78.90"</token>.)
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
 
       <para>
-	Следует отметить, что так как <token>request.META</token>
-	является обычным словарём языка Python, вы получите исключение
-	<classname>KeyError</classname>, если попытаетесь использовать
-	несуществующий ключ. (Так как HTTP заголовки являются
-	<emphasis>внешними</emphasis> данными &mdash; они передаются
-	браузерами посетителей &mdash; им не стоит доверять, и вы
-	должны всегда проектировать ваше приложение на грамотную
-	обработку возникающих ошибок, если нужного заголовка нет или
-	он пустой.) Следует использовать блок
-	<token>try/except</token> или метод <function>get()</function>
-	для обработки случая с неопределёнными ключами:
-	<screen>
-	  <![CDATA[
+        Следует отметить, что так как <token>request.META</token>
+        является обычным словарём языка Python, вы получите исключение
+        <classname>KeyError</classname>, если попытаетесь использовать
+        несуществующий ключ. (Так как HTTP заголовки являются
+        <emphasis>внешними</emphasis> данными &mdash; они передаются
+        браузерами посетителей &mdash; им не стоит доверять, и вы
+        должны всегда проектировать ваше приложение на грамотную
+        обработку возникающих ошибок, если нужного заголовка нет или
+        он пустой.) Следует использовать блок
+        <token>try/except</token> или метод <function>get()</function>
+        для обработки случая с неопределёнными ключами:
+        <screen>
+          <![CDATA[
 # BAD!
 def ua_display_bad(request):
     ua = request.META['HTTP_USER_AGENT']  # Might raise KeyError!
@@ -214,17 +214,17 @@ def ua_display_good1(request):
 def ua_display_good2(request):
     ua = request.META.get('HTTP_USER_AGENT', 'unknown')
     return HttpResponse("Your browser is %s" % ua)
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	Мы рекомендуем вам написать небольшое представление, которое
-	будет отображать все данные из <token>request.META</token>,
-	так вы сможете узнать что там есть. Вот так может выглядеть
-	ваше представление:
-	<screen>
-	  <![CDATA[
+        Мы рекомендуем вам написать небольшое представление, которое
+        будет отображать все данные из <token>request.META</token>,
+        так вы сможете узнать что там есть. Вот так может выглядеть
+        ваше представление:
+        <screen>
+          <![CDATA[
 def display_meta(request):
     values = request.META.items()
     values.sort()
@@ -232,14 +232,14 @@ def display_meta(request):
     for k, v in values:
         html.append('<tr><td>%s</td><td>%s</td></tr>' % (k, v))
     return HttpResponse('<table>%s</table>' % '\n'.join(html))
-	  ]]>
-	</screen>
+          ]]>
+        </screen>
       </para>
 
       <para>
-	В качестве упражнения, вы можете преобразовать данный код для
-	использования возможностей шаблонной системы Django, а не
-	использовать <quote>сырой</quote> HTML.
+        В качестве упражнения, вы можете преобразовать данный код для
+        использования возможностей шаблонной системы Django, а не
+        использовать <quote>сырой</quote> HTML.
       </para>
 
     </section>
@@ -247,58 +247,58 @@ def display_meta(request):
     <section id="&BASEID;.get-data-from-request.submit-info">
 
       <title id="&BASEID;.get-data-from-request.submit-info.title">
-	Информация о переданных данных
+        Информация о переданных данных
       </title>
 
       <para>
-	Кроме основных метаданных о запросе,
-	<classname>HttpRequest</classname> имеет два атрибута, которые
-	содержат информацию переданную пользователем:
-	<token>request.GET</token> и <token>request.POST</token>. Оба
-	этих атрибута являются словарными объектами, которые
-	предоставляют доступ к данным <token>GET</token> и
-	<token>POST</token>.
+        Кроме основных метаданных о запросе,
+        <classname>HttpRequest</classname> имеет два атрибута, которые
+        содержат информацию переданную пользователем:
+        <token>request.GET</token> и <token>request.POST</token>. Оба
+        этих атрибута являются словарными объектами, которые
+        предоставляют доступ к данным <token>GET</token> и
+        <token>POST</token>.
       </para>
 
       <para>
-	<note>
-	  <title>
-	    Словарные объекты
-	  </title>
+        <note>
+          <title>
+            Словарные объекты
+          </title>
 
-	  <para>
-	    Когда мы говорим, что <token>request.GET</token> и
-	    <token>request.POST</token> являются
-	    <quote>словарными</quote> объектами, мы подразумеваем, что
-	    они ведут себя как обычные словари языка Python, но
-	    технически не являются словарями. Например,
-	    <token>request.GET</token> и <token>request.POST</token>
-	    обладают методами <function>get()</function>,
-	    <function>keys()</function> и
-	    <function>values()</function> и вы можете выполнять
-	    итерацию по их ключам, так <token>for key in
-	    request.GET</token>.
-	  </para>
+          <para>
+            Когда мы говорим, что <token>request.GET</token> и
+            <token>request.POST</token> являются
+            <quote>словарными</quote> объектами, мы подразумеваем, что
+            они ведут себя как обычные словари языка Python, но
+            технически не являются словарями. Например,
+            <token>request.GET</token> и <token>request.POST</token>
+            обладают методами <function>get()</function>,
+            <function>keys()</function> и
+            <function>values()</function> и вы можете выполнять
+            итерацию по их ключам, так <token>for key in
+            request.GET</token>.
+          </para>
 
-	  <para>
-	    Так в чём разница? В том, что эти объекты обладают
-	    дополнительными методами, которых нет у обычных
-	    словарей. Мы ещё остановимся на этом.
-	  </para>
+          <para>
+            Так в чём разница? В том, что эти объекты обладают
+            дополнительными методами, которых нет у обычных
+            словарей. Мы ещё остановимся на этом.
+          </para>
 
-	  <para>
-	    Вы можете встретиться с подобным термином &mdash;
-	    <quote>файловые объекты</quote> &mdash; такие объекты
-	    обладают несколькими основными методами, подобными
-	    <function>read()</function>, которые позволяют работать с
-	    ними почти как с настоящими файлами.
-	  </para>
-	</note>
+          <para>
+            Вы можете встретиться с подобным термином &mdash;
+            <quote>файловые объекты</quote> &mdash; такие объекты
+            обладают несколькими основными методами, подобными
+            <function>read()</function>, которые позволяют работать с
+            ними почти как с настоящими файлами.
+          </para>
+        </note>
       </para>
 
       <para>
-	POST данные обычно получают из HTML <![CDATA[<form>]]>, а GET
-	данные могут приходить как от форм, так и из URL.
+        POST данные обычно получают из HTML <![CDATA[<form>]]>, а GET
+        данные могут приходить как от форм, так и из URL.
       </para>
 
     </section>
@@ -323,12 +323,12 @@ def display_meta(request):
       обрабатывает переданные данные. Первый шаг несложен. Давайте
       создадим представление, которое отображает поисковую форму:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.shortcuts import render_to_response
 
 def search_form(request):
     return render_to_response('search_form.html')
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -345,7 +345,7 @@ def search_form(request):
       Соответствующий шаблон, <filename>search_form.html</filename>,
       может выглядеть так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Search</title>
@@ -357,14 +357,14 @@ def search_form(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Схема URL в <filename>urls.py</filename> может выглядеть так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from mysite.books import views
 
 urlpatterns = patterns('',
@@ -372,7 +372,7 @@ urlpatterns = patterns('',
     (r'^search-form/$', views.search_form),
     # ...
 )
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -397,7 +397,7 @@ urlpatterns = patterns('',
       обработчик которого ещё не был реализован. Давайте это исправим
       с помощью второй функции представления:
       <screen>
-	<![CDATA[
+        <![CDATA[
 # urls.py
 
 urlpatterns = patterns('',
@@ -415,7 +415,7 @@ def search(request):
     else:
         message = 'You submitted an empty form.'
     return HttpResponse(message)
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -426,24 +426,24 @@ def search(request):
       система. Если кратко:
 
       <orderedlist>
-	<listitem>
-	  <para>
-	    Тег <![CDATA[<form>]]> определяет переменную
-	    <varname>q</varname>. При отправке формы, значение этой
-	    переменной посылается через <token>GET</token>
-	    (<token>method="get"</token>) на URL
-	    <token>/search/</token>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Тег <![CDATA[<form>]]> определяет переменную
+            <varname>q</varname>. При отправке формы, значение этой
+            переменной посылается через <token>GET</token>
+            (<token>method="get"</token>) на URL
+            <token>/search/</token>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Представление обрабатывающее URL <token>/search/</token>
-	    (<function>search()</function>) получает доступ к значению
-	    переменной <varname>q</varname> через
-	    <token>request.GET</token>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Представление обрабатывающее URL <token>/search/</token>
+            (<function>search()</function>) получает доступ к значению
+            переменной <varname>q</varname> через
+            <token>request.GET</token>.
+          </para>
+        </listitem>
       </orderedlist>
     </para>
 
@@ -455,37 +455,37 @@ def search(request):
       то любая передача пустой формы приводила бы к вызову исключения
       <classname>KeyError</classname> в представлении:
       <screen>
-	<![CDATA[
+        <![CDATA[
 # BAD!
 def bad_search(request):
     # The following line will raise KeyError if 'q' hasn't
     # been submitted!
     message = 'You searched for: %r' % request.GET['q']
     return HttpResponse(message)
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       <note>
-	<title>
-	  Параметры строки запроса
-	</title>
+        <title>
+          Параметры строки запроса
+        </title>
 
-	<para>
-	  Так как <token>GET</token> данные передаются в строке
-	  запроса (т.е., <token>/search/?q=django</token>), вы можете
-	  использовать <token>request.GET</token> для доступа к
-	  переменным, переданным в этой строке. В главе <quote><xref
-	  linkend="djangobook.chap03"
-	  endterm="djangobook.chap03.title"/></quote> при ознакомлении
-	  со схемой URL, мы сравнивали подход Django к формированию
-	  URL с традиционными PHP/Java URL, например,
-	  <token>/time/plus?hours=3</token> и обещали вернуться к
-	  этому в этой главе. Теперь вы знаете как получать доступ к
-	  параметрам строки запроса в ваших представлениях &mdash;
-	  просто используйте <token>request.GET</token>.
-	</para>
+        <para>
+          Так как <token>GET</token> данные передаются в строке
+          запроса (т.е., <token>/search/?q=django</token>), вы можете
+          использовать <token>request.GET</token> для доступа к
+          переменным, переданным в этой строке. В главе <quote><xref
+          linkend="djangobook.chap03"
+          endterm="djangobook.chap03.title"/></quote> при ознакомлении
+          со схемой URL, мы сравнивали подход Django к формированию
+          URL с традиционными PHP/Java URL, например,
+          <token>/time/plus?hours=3</token> и обещали вернуться к
+          этому в этой главе. Теперь вы знаете как получать доступ к
+          параметрам строки запроса в ваших представлениях &mdash;
+          просто используйте <token>request.GET</token>.
+        </para>
       </note>
     </para>
 
@@ -515,7 +515,7 @@ def bad_search(request):
       используем их для поиска по базе данных (и снова, в
       <filename>views.py</filename>):
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from mysite.books.models import Book
@@ -528,7 +528,7 @@ def search(request):
             {'books': books, 'query': q})
     else:
         return HttpResponse('Please submit a search term.')
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -536,51 +536,51 @@ def search(request):
       Остановимся и опишем, что мы сделали:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Помимо проверки существования <varname>q</varname> в
-	    <token>request.GET</token>, мы удостоверились, что
-	    <token>request.GET['q']</token> не содержит пустую строку,
-	    перед её передачей в базу данных.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Помимо проверки существования <varname>q</varname> в
+            <token>request.GET</token>, мы удостоверились, что
+            <token>request.GET['q']</token> не содержит пустую строку,
+            перед её передачей в базу данных.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Мы используем
-	    <token>Book.objects.filter(title__icontains=q)</token> для
-	    поиска по нашей таблице книг, разыскивая книги у которых
-	    заголовок содержит переданную строку. Суффикс
-	    <token>icontains</token> является модификатором (это было
-	    рассмотрено в главе <quote><xref
-	    linkend="djangobook.chap05"
-	    endterm="djangobook.chap05.title"/></quote> и в Приложении
-	    B FIXME) и данный оператор может быть приблизительно
-	    переведён в <quote>Получить все книги, названия которых
-	    содержат <varname>q</varname>, не принимая во внимание
-	    регистр букв.</quote>
-	  </para>
+        <listitem>
+          <para>
+            Мы используем
+            <token>Book.objects.filter(title__icontains=q)</token> для
+            поиска по нашей таблице книг, разыскивая книги у которых
+            заголовок содержит переданную строку. Суффикс
+            <token>icontains</token> является модификатором (это было
+            рассмотрено в главе <quote><xref
+            linkend="djangobook.chap05"
+            endterm="djangobook.chap05.title"/></quote> и в Приложении
+            B FIXME) и данный оператор может быть приблизительно
+            переведён в <quote>Получить все книги, названия которых
+            содержат <varname>q</varname>, не принимая во внимание
+            регистр букв.</quote>
+          </para>
 
-	  <para>
-	    Это очень простой способ реализации поиска книг. Мы не
-	    рекомендуем использовать простой <token>icontains</token>
-	    запрос на больших реальных базах данных, так как он может
-	    быть очень медленным. (В реальном мире, вам потребуется
-	    собственная поисковая система. Поищите в Интернет
-	    <emphasis>полнотекстовую поисковую систему с открытым
-	    кодом</emphasis>, чтобы получить информацию о их
-	    возможностях.)
-	  </para>
-	</listitem>
+          <para>
+            Это очень простой способ реализации поиска книг. Мы не
+            рекомендуем использовать простой <token>icontains</token>
+            запрос на больших реальных базах данных, так как он может
+            быть очень медленным. (В реальном мире, вам потребуется
+            собственная поисковая система. Поищите в Интернет
+            <emphasis>полнотекстовую поисковую систему с открытым
+            кодом</emphasis>, чтобы получить информацию о их
+            возможностях.)
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Мы передаём <varname>books</varname>, список объектов
-	    <classname>Book</classname>, в шаблон. Шаблонный код в
-	    файле <filename>search_results.html</filename> может
-	    выглядеть так:
-	    <screen>
-	      <![CDATA[
+        <listitem>
+          <para>
+            Мы передаём <varname>books</varname>, список объектов
+            <classname>Book</classname>, в шаблон. Шаблонный код в
+            файле <filename>search_results.html</filename> может
+            выглядеть так:
+            <screen>
+              <![CDATA[
 <p>You searched for: <strong>{{ query }}</strong></p>
 
 {% if books %}
@@ -593,10 +593,10 @@ def search(request):
 {% else %}
     <p>No books matched your search criteria.</p>
 {% endif %}
-	      ]]>
-	    </screen>
-	  </para>
-	</listitem>
+              ]]>
+            </screen>
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -630,7 +630,7 @@ def search(request):
       её и сразу отправить данные. Простейшим способом сделать это
       является повторная обработка шаблона, вот так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from mysite.books.models import Book
@@ -646,7 +646,7 @@ def search(request):
             {'books': books, 'query': q})
     else:
         return render_to_response('search_form.html', {'error': True})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -664,7 +664,7 @@ def search(request):
       может отредактировать <filename>search_form.html</filename>,
       добавив проверку наличия переменной <varname>error</varname>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Search</title>
@@ -679,7 +679,7 @@ def search(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -703,7 +703,7 @@ def search(request):
       сообщение об ошибке, если кто-то зайдёт по этому URL без
       указания <token>GET</token> параметров:
       <screen>
-	<![CDATA[
+        <![CDATA[
 def search(request):
     error = False
     if 'q' in request.GET:
@@ -716,7 +716,7 @@ def search(request):
                 {'books': books, 'query': q})
     return render_to_response('search_form.html',
         {'error': error})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -737,15 +737,15 @@ def search(request):
       стало необязательным указывать URL, по которому надо отправлять
       данные формы. Вместо строки:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <form action="/search/" method="get">
-	]]>
+        ]]>
       </screen>
       можно писать так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <form action="" method="get">
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -772,63 +772,63 @@ def search(request):
       видели такие сообщения об ошибках на сайтах:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    <quote>Пожалуйста, введите верный адрес электронной
-	    почты. 'foo' не является адресом электронной
-	    почты.</quote>
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <quote>Пожалуйста, введите верный адрес электронной
+            почты. 'foo' не является адресом электронной
+            почты.</quote>
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <quote>Пожалуйста, введите верный шестизначный код
-	    почтового отделения. '123' не является почтовым
-	    кодом.</quote>
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <quote>Пожалуйста, введите верный шестизначный код
+            почтового отделения. '123' не является почтовым
+            кодом.</quote>
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <quote>Пожалуйста, введите верную дату в формате
-	    <token>DD-MM-YYYY</token>.</quote>
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <quote>Пожалуйста, введите верную дату в формате
+            <token>DD-MM-YYYY</token>.</quote>
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    <quote>Пожалуйста, введите пароль, который содержит как
-	    минимум 8 символов и содержит хотя бы одну цифру.</quote>
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            <quote>Пожалуйста, введите пароль, который содержит как
+            минимум 8 символов и содержит хотя бы одну цифру.</quote>
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
     <para>
       <note>
-	<title>
-	  Об использовании JavaScript для проверки данных
-	</title>
+        <title>
+          Об использовании JavaScript для проверки данных
+        </title>
 
-	<para>
-	  Хотя мы не рассказываем об этом, но вы можете использовать
-	  JavaScript для проверки данных на стороне клиента, прямо в
-	  браузере. Но помните, даже если вы это делаете, вы
-	  <emphasis>обязаны</emphasis> сделать проверку и на стороне
-	  сервера. Некоторые пользователи не включают JavaScript, а
-	  <quote>злобные хакеры</quote> могут передавать
-	  самостоятельно сформированные данные, которые не доступны
-	  JavaScript коду.
-	</para>
+        <para>
+          Хотя мы не рассказываем об этом, но вы можете использовать
+          JavaScript для проверки данных на стороне клиента, прямо в
+          браузере. Но помните, даже если вы это делаете, вы
+          <emphasis>обязаны</emphasis> сделать проверку и на стороне
+          сервера. Некоторые пользователи не включают JavaScript, а
+          <quote>злобные хакеры</quote> могут передавать
+          самостоятельно сформированные данные, которые не доступны
+          JavaScript коду.
+        </para>
 
-	<para>
-	  И вы ничего не можете с этим поделать, остаётся только
-	  <emphasis>всегда</emphasis> проверять данные, переданные
-	  пользователями, на стороне сервера (т.е., в ваших
-	  представлениях). Проверку с помощью JavaScript следует
-	  рассматривать как дополнительную удобную функциональность
-	  сайта, но не как замену основного механизма проверки.
-	</para>
+        <para>
+          И вы ничего не можете с этим поделать, остаётся только
+          <emphasis>всегда</emphasis> проверять данные, переданные
+          пользователями, на стороне сервера (т.е., в ваших
+          представлениях). Проверку с помощью JavaScript следует
+          рассматривать как дополнительную удобную функциональность
+          сайта, но не как замену основного механизма проверки.
+        </para>
       </note>
     </para>
 
@@ -841,7 +841,7 @@ def search(request):
       Как мы можем это сделать? Самым простым способом будет внедрение
       логики прямо в представление, вот так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 def search(request):
     error = False
     if 'q' in request.GET:
@@ -856,7 +856,7 @@ def search(request):
                 {'books': books, 'query': q})
     return render_to_response('search_form.html',
         {'error': error})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -867,7 +867,7 @@ def search(request):
       submit a search term.</quote> и нам потребуется изменить его
       так, чтобы оно учитывало оба случая:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Search</title>
@@ -882,7 +882,7 @@ def search(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -899,7 +899,7 @@ def search(request):
       <emphasis>список</emphasis> строк с сообщениями об ошибке. Вот
       так мы можем изменить код:
       <screen>
-	<![CDATA[
+        <![CDATA[
 def search(request):
     errors = []
     if 'q' in request.GET:
@@ -914,7 +914,7 @@ def search(request):
                 {'books': books, 'query': q})
     return render_to_response('search_form.html',
         {'errors': errors})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -924,7 +924,7 @@ def search(request):
       изменения в коде &mdash; в шаблон передаётся список
       <varname>error</varname>, а не булево значение:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Search</title>
@@ -943,7 +943,7 @@ def search(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -976,7 +976,7 @@ def search(request):
     <para>
       Начнём с шаблона, <filename>contact_form.html</filename>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Contact us</title>
@@ -1000,7 +1000,7 @@ def search(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1020,7 +1020,7 @@ def search(request):
       версией нашего представления <function>contact()</function>
       будет:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -1044,7 +1044,7 @@ def contact(request):
             return HttpResponseRedirect('/contact/thanks/')
     return render_to_response('contact_form.html',
         {'errors': errors})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1065,115 +1065,115 @@ def contact(request):
       Рассмотрим отличия:
 
       <itemizedlist>
-	<listitem>
-	  <para>
-	    Мы проверяем, что <token>request.method</token> равен
-	    <token>'POST'</token>. Это условие будет верным только в
-	    случае отправки формы, иначе считаем, что происходит
-	    простое отображение формы. (В последнем случае,
-	    <token>request.method</token> будет установлен в
-	    <token>'GET'</token>, так как для отображения формы
-	    браузеры используют <token>GET</token>, а не
-	    <token>POST</token>.) Такой подход обеспечивает отличный
-	    способ изоляции случая <quote>отображения формы</quote> от
-	    <quote>обработки формы</quote>.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Мы проверяем, что <token>request.method</token> равен
+            <token>'POST'</token>. Это условие будет верным только в
+            случае отправки формы, иначе считаем, что происходит
+            простое отображение формы. (В последнем случае,
+            <token>request.method</token> будет установлен в
+            <token>'GET'</token>, так как для отображения формы
+            браузеры используют <token>GET</token>, а не
+            <token>POST</token>.) Такой подход обеспечивает отличный
+            способ изоляции случая <quote>отображения формы</quote> от
+            <quote>обработки формы</quote>.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Вместо использования <token>request.GET</token> мы
-	    применяем <token>request.POST</token> для доступа к
-	    переданным данным. Это необходимо, так как
-	    <![CDATA[<form>]]> в
-	    <filename>contact_form.html</filename> использует
-	    <token>method="post"</token>. Если данное представление
-	    вызывается через <token>POST</token>, значит
-	    <token>request.GET</token> будет пустым.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Вместо использования <token>request.GET</token> мы
+            применяем <token>request.POST</token> для доступа к
+            переданным данным. Это необходимо, так как
+            <![CDATA[<form>]]> в
+            <filename>contact_form.html</filename> использует
+            <token>method="post"</token>. Если данное представление
+            вызывается через <token>POST</token>, значит
+            <token>request.GET</token> будет пустым.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    В этот раз у нас есть <emphasis>два</emphasis>
-	    обязательных поля, <token>subject</token> и
-	    <token>message</token>, нам следует проверять оба. Следует
-	    отметить, что для получения значения из
-	    <token>POST</token> мы используем метод
-	    <function>get()</function> и подставляем пустую строку в
-	    качестве значения по умолчанию. Это хороший, краткий
-	    способ обработки двух проблем: отсутствие ключа и
-	    отсутствие данных.
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            В этот раз у нас есть <emphasis>два</emphasis>
+            обязательных поля, <token>subject</token> и
+            <token>message</token>, нам следует проверять оба. Следует
+            отметить, что для получения значения из
+            <token>POST</token> мы используем метод
+            <function>get()</function> и подставляем пустую строку в
+            качестве значения по умолчанию. Это хороший, краткий
+            способ обработки двух проблем: отсутствие ключа и
+            отсутствие данных.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Несмотря на то, что поле <token>email</token> является
-	    необязательным, мы всё равно проверяем его, правда только
-	    при наличии в нём данных. Наша проверка достаточно простая
-	    &mdash; мы проверяем наличие в строке символа
-	    <token>@</token>. В реальной ситуации вам потребуется
-	    более устойчивая проверка (и Django предоставляет её, мы
-	    очень скоро её покажем).
-	  </para>
-	</listitem>
+        <listitem>
+          <para>
+            Несмотря на то, что поле <token>email</token> является
+            необязательным, мы всё равно проверяем его, правда только
+            при наличии в нём данных. Наша проверка достаточно простая
+            &mdash; мы проверяем наличие в строке символа
+            <token>@</token>. В реальной ситуации вам потребуется
+            более устойчивая проверка (и Django предоставляет её, мы
+            очень скоро её покажем).
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    Мы используем функцию <function>send_mail</function> из
-	    модуля <token>django.core.mail</token> для отправки
-	    сообщения по электронной почте. Эта функция принимает
-	    четыре обязательных аргумента: тема сообщения, тело
-	    сообщения, адрес <quote>от</quote> и список адресов
-	    получателей. Функция <function>send_mail</function>
-	    является удобной оболочкой над классом Django
-	    <classname>EmailMessage</classname>, который предоставляет
-	    дополнительные возможности, например, вложение файлов,
-	    multipart сообщения и полный контроль над заголовками
-	    сообщения.
-	  </para>
+        <listitem>
+          <para>
+            Мы используем функцию <function>send_mail</function> из
+            модуля <token>django.core.mail</token> для отправки
+            сообщения по электронной почте. Эта функция принимает
+            четыре обязательных аргумента: тема сообщения, тело
+            сообщения, адрес <quote>от</quote> и список адресов
+            получателей. Функция <function>send_mail</function>
+            является удобной оболочкой над классом Django
+            <classname>EmailMessage</classname>, который предоставляет
+            дополнительные возможности, например, вложение файлов,
+            multipart сообщения и полный контроль над заголовками
+            сообщения.
+          </para>
 
-	  <para>
-	    Следует отметить, что для отправки сообщения с помощью
-	    <function>send_mail</function> ваш сервер должен быть
-	    соответственно сконфигуриров и Django следует указать на
-	    сервер исходящей почты. Обратитесь к <ulink
-	    url="http://docs.djangoproject.com/en/dev/topics/email/"/>
-	    для подробностей.
-	  </para>
-	</listitem>
+          <para>
+            Следует отметить, что для отправки сообщения с помощью
+            <function>send_mail</function> ваш сервер должен быть
+            соответственно сконфигуриров и Django следует указать на
+            сервер исходящей почты. Обратитесь к <ulink
+            url="http://docs.djangoproject.com/en/dev/topics/email/"/>
+            для подробностей.
+          </para>
+        </listitem>
 
-	<listitem>
-	  <para>
-	    После отправки сообщения мы перенаправляем пользователя на
-	    страницу с сообщением об успешном выполнении операции,
-	    возвращая объект
-	    <classname>HttpResponseRedirect</classname>. Мы оставляем
-	    реализацию такой страницы вам в качестве домашнего задания
-	    (это просто представление/привязка URL/шаблон), но нам
-	    следует объяснить причину, почему мы инициировали
-	    перенаправление вместо, например, простого вызова
-	    <function>render_to_response()</function> прямо здесь.
-	  </para>
+        <listitem>
+          <para>
+            После отправки сообщения мы перенаправляем пользователя на
+            страницу с сообщением об успешном выполнении операции,
+            возвращая объект
+            <classname>HttpResponseRedirect</classname>. Мы оставляем
+            реализацию такой страницы вам в качестве домашнего задания
+            (это просто представление/привязка URL/шаблон), но нам
+            следует объяснить причину, почему мы инициировали
+            перенаправление вместо, например, простого вызова
+            <function>render_to_response()</function> прямо здесь.
+          </para>
 
-	  <para>
-	    Причина: если пользователь нажмёт на кнопку
-	    <guibutton>Обновить</guibutton> на странице, которая была
-	    загружена через метод <token>POST</token>, это приведёт к
-	    повторному выполнению запроса. В большинстве случаев это
-	    может привести к нежелаемому результату, например, к
-	    повторной передаче данных в базу данных или к повторной
-	    отправке сообщения по электронной почте. Если же
-	    пользователь был перенаправлен на другую страницу, тогда
-	    такого точно не произойдёт.
-	  </para>
+          <para>
+            Причина: если пользователь нажмёт на кнопку
+            <guibutton>Обновить</guibutton> на странице, которая была
+            загружена через метод <token>POST</token>, это приведёт к
+            повторному выполнению запроса. В большинстве случаев это
+            может привести к нежелаемому результату, например, к
+            повторной передаче данных в базу данных или к повторной
+            отправке сообщения по электронной почте. Если же
+            пользователь был перенаправлен на другую страницу, тогда
+            такого точно не произойдёт.
+          </para>
 
-	  <para>
-	    Вы всегда должны осуществлять перенаправление после
-	    успешной обработки <token>POST</token> запроса.
-	  </para>
-	</listitem>
+          <para>
+            Вы всегда должны осуществлять перенаправление после
+            успешной обработки <token>POST</token> запроса.
+          </para>
+        </listitem>
       </itemizedlist>
     </para>
 
@@ -1199,7 +1199,7 @@ def contact(request):
     <para>
       <token>views.py</token>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 def contact(request):
     errors = []
     if request.method == 'POST':
@@ -1223,14 +1223,14 @@ def contact(request):
         'message': request.POST.get('message', ''),
         'email': request.POST.get('email', ''),
     })
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       <token>contact_form.html</token>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Contact us</title>
@@ -1254,7 +1254,7 @@ def contact(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1283,28 +1283,28 @@ def contact(request):
 
     <para>
       <note>
-	<title>
-	  Библиотека <token>newforms</token>
-	</title>
+        <title>
+          Библиотека <token>newforms</token>
+        </title>
 
-	<para>
-	  Общаясь в Django сообществе, вы могли услышать о
-	  <token>django.newforms</token>. Так раньше называлась
-	  стандартная библиотека <token>django.forms</token> &mdash;
-	  эта библиотека рассматривается в данной главе.
-	</para>
+        <para>
+          Общаясь в Django сообществе, вы могли услышать о
+          <token>django.newforms</token>. Так раньше называлась
+          стандартная библиотека <token>django.forms</token> &mdash;
+          эта библиотека рассматривается в данной главе.
+        </para>
 
-	<para>
-	  Причина такого переименования историческая. Первый релиз
-	  Django поставлялся со сложной, запутанной библиотекой для
-	  работы с формами &mdash; <token>django.forms</token>. Она
-	  была полностью переписана и новая версия имела имя
-	  <token>django.newforms</token>, люди могли использовать как
-	  одну, так и другую библиотеки. После выхода Django 1.0
-	  старая библиотека была убрана, а
-	  <token>django.newforms</token> стала
-	  <token>django.forms</token>.
-	</para>
+        <para>
+          Причина такого переименования историческая. Первый релиз
+          Django поставлялся со сложной, запутанной библиотекой для
+          работы с формами &mdash; <token>django.forms</token>. Она
+          была полностью переписана и новая версия имела имя
+          <token>django.newforms</token>, люди могли использовать как
+          одну, так и другую библиотеки. После выхода Django 1.0
+          старая библиотека была убрана, а
+          <token>django.newforms</token> стала
+          <token>django.forms</token>.
+        </para>
       </note>
     </para>
 
@@ -1319,14 +1319,14 @@ def contact(request):
       файле <filename>forms.py</filename>. Создайте этот файл рядом с
       <filename>views.py</filename> и впишите следующее:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django import forms
 
 class ContactForm(forms.Form):
     subject = forms.CharField()
     email = forms.EmailField(required=False)
     message = forms.CharField()
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1347,14 +1347,14 @@ class ContactForm(forms.Form):
       посмотрим, что этот класс может делать. Во-первых, он может
       отображать себя в виде HTML:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> from contact.forms import ContactForm
 >>> f = ContactForm()
 >>> print f
 <tr><th><label for="id_subject">Subject:</label></th><td><input type="text" name="subject" id="id_subject" /></td></tr>
 <tr><th><label for="id_email">Email:</label></th><td><input type="text" name="email" id="id_email" /></td></tr>
 <tr><th><label for="id_message">Message:</label></th><td><input type="text" name="message" id="id_message" /></td></tr>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1368,7 +1368,7 @@ class ContactForm(forms.Form):
       По умолчанию форма выводится в виде содержимого таблицы, но есть
       несколько встроенных опций:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> print f.as_ul()
 <li><label for="id_subject">Subject:</label> <input type="text" name="subject" id="id_subject" /></li>
 <li><label for="id_email">Email:</label> <input type="text" name="email" id="id_email" /></li>
@@ -1377,7 +1377,7 @@ class ContactForm(forms.Form):
 <p><label for="id_subject">Subject:</label> <input type="text" name="subject" id="id_subject" /></p>
 <p><label for="id_email">Email:</label> <input type="text" name="email" id="id_email" /></p>
 <p><label for="id_message">Message:</label> <input type="text" name="message" id="id_message" /></p>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1393,12 +1393,12 @@ class ContactForm(forms.Form):
       <quote>отображения всей формы</quote>. Вы можете также
       отобразить HTML для конкретного поля формы:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> print f['subject']
 <input type="text" name="subject" id="id_subject" />
 >>> print f['message']
 <input type="text" name="message" id="id_message" />
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1408,21 +1408,21 @@ class ContactForm(forms.Form):
       <classname>Form</classname> и передайте ему словарь с данными,
       который соответствует именам полей формы:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f = ContactForm({'subject': 'Hello',
                      'email': 'adrian@example.com',
 		     'message': 'Nice site!'})
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Теперь можно проверить каждому ли полю назначено значение:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f.is_bound
 True
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1432,10 +1432,10 @@ True
       форме. Мы передали верные данные для каждого поля, таким образом
       форма должна быть правильной:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f.is_valid()
 True
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1444,11 +1444,11 @@ True
       по-прежнему останется верной, так как мы указали атрибут
       <token>required=False</token> для этого поля:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f = ContactForm({'subject': 'Hello', 'message': 'Nice site!'})
 >>> f.is_valid()
 True
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1456,20 +1456,21 @@ True
       Но если мы не укажем <token>subject</token> или
       <token>message</token>, тогда форма перестанет быть верной:
       <screen>
-	<![CDATA[>>> f = ContactForm({'subject': 'Hello'})
+        <![CDATA[
+>>> f = ContactForm({'subject': 'Hello'})
 >>> f.is_valid()
 False
 >>> f = ContactForm({'subject': 'Hello', 'message': ''})
 >>> f.is_valid()
 False
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Вы можете получить сообщения об ошибке для каждого поля:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f = ContactForm({'subject': 'Hello', 'message': ''})
 >>> f['message'].errors
 [u'This field is required.']
@@ -1477,7 +1478,7 @@ False
 []
 >>> f['email'].errors
 []
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1486,11 +1487,11 @@ False
       <token>errors</token>, который хранит словарь со списком
       сообщений для каждого поля:
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f = ContactForm({'subject': 'Hello', 'message': ''})
 >>> f.errors
 {'message': [u'This field is required.']}
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1503,13 +1504,13 @@ False
       обрабатывать, конвертируя значения в соответствующие типы языка
       Python.
       <screen>
-	<![CDATA[
+        <![CDATA[
 >>> f = ContactForm({‘subject’: ‘Hello’, ‘email’: ‘adrian@example.com’, ‘message’: ‘Nice site!’})
 >>> f.is_valid()
 True
 >>> f.cleaned_data
 {‘message’: u’Nice site!’, ‘email’: u’adrian@example.com’, ‘subject’: u’Hello’}
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1539,7 +1540,7 @@ True
     <para>
       Файл <filename>views.py</filename>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django.core.mail import send_mail
 from django.shortcuts import render_to_response
 from mysite.contact.forms import ContactForm
@@ -1559,14 +1560,14 @@ def contact(request):
     else:
         form = ContactForm()
     return render_to_response('contact_form.html', {'form': form})
-	]]>
+        ]]>
       </screen>
     </para>
 
     <para>
       Файл <filename>contact_form.html</filename>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Contact us</title>
@@ -1588,7 +1589,7 @@ def contact(request):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1623,14 +1624,14 @@ def contact(request):
       <token><![CDATA[<input type="text">]]></token>. Мы можем
       исправить это с помощью атрибута поля <token>widget</token>:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django import forms
 
 class ContactForm(forms.Form):
     subject = forms.CharField()
     email = forms.EmailField(required=False)
     message = forms.CharField(widget=forms.Textarea)
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1661,14 +1662,14 @@ class ContactForm(forms.Form):
       значение атрибуту <token>max_length</token> классу
       <classname>CharField</classname> поля:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django import forms
 
 class ContactForm(forms.Form):
     subject = forms.CharField(max_length=100)
     email = forms.EmailField(required=False)
     message = forms.CharField(widget=forms.Textarea)
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1692,7 +1693,7 @@ class ContactForm(forms.Form):
       этого следует воспользоваться аргументом <token>initial</token>
       при создании экземпляра формы:
       <screen>
-	<![CDATA[
+        <![CDATA[
 def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -1710,7 +1711,7 @@ def contact(request):
             initial={'subject': 'I love your site!'}
         )
     return render_to_response('contact_form.html', {'form': form})
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1763,7 +1764,7 @@ def contact(request):
       <token>message</token>, добавим метод
       <function>clean_message()</function> в наш класс:
       <screen>
-	<![CDATA[
+        <![CDATA[
 from django import forms
 
 class ContactForm(forms.Form):
@@ -1777,7 +1778,7 @@ class ContactForm(forms.Form):
         if num_words < 4:
             raise forms.ValidationError("Not enough words!")
         return message
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1842,12 +1843,12 @@ class ContactForm(forms.Form):
       для конкретного поля. Воспользуйтесь атрибутом
       <token>label</token>, так:
       <screen>
-	<![CDATA[
+        <![CDATA[
 class ContactForm(forms.Form):
     subject = forms.CharField(max_length=100)
     email = forms.EmailField(required=False, label='Your e-mail address')
     message = forms.CharField(widget=forms.Textarea)
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1872,7 +1873,7 @@ class ContactForm(forms.Form):
       выделением, автосгенерированные списки используют <![CDATA[<ul
       class="errorlist">]]>, это можно использовать:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <style type="text/css">
     ul.errorlist {
         margin: 0;
@@ -1887,7 +1888,7 @@ class ContactForm(forms.Form):
         padding: 4px 5px;
     }
 </style>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1908,7 +1909,7 @@ class ContactForm(forms.Form):
       создать собственный шаблон для нашей формы с помощью следующего
       кода:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <html>
 <head>
     <title>Contact us</title>
@@ -1942,7 +1943,7 @@ class ContactForm(forms.Form):
     </form>
 </body>
 </html>
-	]]>
+        ]]>
       </screen>
     </para>
 
@@ -1954,7 +1955,7 @@ class ContactForm(forms.Form):
       <token>form.message.errors</token> в качестве булевого значения
       или в качестве итератора. Например:
       <screen>
-	<![CDATA[
+        <![CDATA[
 <div class="field{% if form.message.errors %} errors{% endif %}">
     {% if form.message.errors %}
         <ul>
@@ -1966,7 +1967,7 @@ class ContactForm(forms.Form):
     <label for="id_message">Message:</label>
     {{ form.message }}
 </div>
-	]]>
+        ]]>
       </screen>
     </para>
 
