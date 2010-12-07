@@ -754,7 +754,7 @@ CREATE TABLE "books_author" (
         <classname>IntegerField</classname>,
         <classname>DecimalField</classname>,
         <classname>FloatField</classname>), вы должны использовать и
-        <token>blank=True</token> <emphasis>и</emphasis>
+        <token>blank=True</token>, <emphasis>и</emphasis>
         <token>null=True</token>.
       </para>
 
@@ -1361,7 +1361,7 @@ class BookAdmin(admin.ModelAdmin):
     filter_horizontal = ('authors',)
           ]]>
         </screen>
-        (Обратите внимание, что мы удалил параметр
+        (Обратите внимание, что мы удалили параметр
         <token>fields</token>.)
       </para>
 
@@ -1672,7 +1672,7 @@ class BookAdmin(admin.ModelAdmin):
             внешних источников (например, от пользователей или
             поисковых роботов), интерфейс администратора предоставляет
             простой способ изучения и редактирования этих данных. Вы
-            можете рассматривать его как не самый мощный, но
+            можете рассматривать его как не самую мощную, но
             достаточно удобную версию утилиты командной строки для
             работы с базой данных.
           </para>

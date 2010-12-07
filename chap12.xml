@@ -856,7 +856,7 @@ request.session['foo']['bar'] = 'baz'
 		значение этого параметра установлено в
 		<token>True</token>, cookie будет помечено как
 		<quote>защищённое</quote> и браузеры будут передавать
-		его по только HTTPS.</entry>
+		его только по HTTPS.</entry>
 	      </row>
 	    </tbody>
 	  </tgroup>

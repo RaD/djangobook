@@ -828,7 +828,7 @@ def object_list(request, model):
 		отметить, что код ничего не знает о типе объекта
 		<varname>model</varname>, единственное требование
 		&mdash; <varname>model</varname> должна иметь атрибут
-		<token>objects</token>, который как раз есть у метода
+		<token>objects</token>, у которого как раз есть метод
 		<token>all()</token>.
 	      </para>
 	    </listitem>

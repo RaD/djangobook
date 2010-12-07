@@ -43,7 +43,7 @@
   </para>
 
   <section id="&BASEID;.review">
-    
+
     <title id="&BASEID;.review.title">
       Обзор языка шаблонов
     </title>
@@ -98,7 +98,7 @@
 	    Переменные указываются внутри <token>{{</token> и
 	    <token>}}</token>:
 	    <screen>
-	      <![CDATA[ 
+	      <![CDATA[
 Меня зовут {{ first_name }} {{ last_name }}.
 	      ]]>
 	    </screen>
@@ -133,7 +133,7 @@
   </section>
 
   <section id="&BASEID;.processors">
-    
+
     <title id="&BASEID;.processors.title">
       Процессоры RequestContext и Context
     </title>
@@ -310,7 +310,7 @@ def view_4(request):
 	    &mdash; наш процессор, который мы определили ранее.
 	  </para>
 	</listitem>
-      
+
 	<listitem>
 	  <para>
 	    Теперь каждое представление не нуждается больше во
@@ -453,11 +453,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     </para>
 
     <section id="&BASEID;.processors.auth">
-    
+
       <title id="&BASEID;.processors.auth.title">
 	Процессор django.core.context_processors.auth
       </title>
-      
+
       <para>
 	Если параметр <varname>TEMPLATE_CONTEXT_PROCESSORS</varname>
 	содержит этот процессор, то каждый объект
@@ -505,11 +505,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     </section>
 
     <section id="&BASEID;.processors.debug">
-    
+
       <title id="&BASEID;.processors.debug.title">
 	django.core.context_processors.debug
       </title>
-      
+
       <para>
 	Этот процессор помещает отладочную информацию в слой
 	шаблона. Если параметр
@@ -565,11 +565,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     </section>
 
     <section id="&BASEID;.processors.i18n">
-    
+
       <title id="&BASEID;.processors.i18n.title">
 	django.core.context_processors.i18n
       </title>
-      
+
       <para>
 	Если этот процессор включен, то каждый экземпляр класса
 	<classname>RequestContext</classname> будет содержать
@@ -603,11 +603,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     </section>
 
     <section id="&BASEID;.processors.request">
-    
+
       <title id="&BASEID;.processors.request.title">
 	django.core.context_processors.request
       </title>
-      
+
       <para>
 	Если этот процессор включен, то каждый экземпляр класса
 	<classname>RequestContext</classname> будет содержать
@@ -617,15 +617,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	процессор не включен по умолчанию, вам потребуется
 	активировать его самостоятельно.
       </para>
- 
+
     </section>
 
     <section id="&BASEID;.processors.howto">
-    
+
       <title id="&BASEID;.processors.howto.title">
 	Как написать свой процессор?
       </title>
-      
+
       <para>
 	Вот несколько советов:
 	<itemizedlist>
@@ -669,13 +669,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     </section>
 
   </section>
-  
+
   <section id="&BASEID;.template-loading">
-    
+
     <title id="&BASEID;.template-loading.title">
       Загрузка шаблонов
     </title>
-    
+
     <para>
       Обычно, ваши шаблоны будут храниться в файлах на файловой
       системе, но вы можете использовать специальные
@@ -804,13 +804,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     </para>
 
   </section>
-	    
+
   <section id="&BASEID;.extending-system">
-    
+
     <title id="&BASEID;.extending-system.title">
       Расширение шаблонной системы
     </title>
-    
+
     <para>
       Теперь, когда вы знаете немного больше о внутренностях шаблонной
       системы, давайте рассмотрим как можно расширить её возможности с
@@ -830,7 +830,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
       <title id="&BASEID;.extending-system.create-template-library.title">
 	Создание шаблонной библиотеки
       </title>
-    
+
       <para>
 	При разработке своих тегов или фильтров, первое, что надо
 	сделать &mdash; создать <emphasis>шаблонную
@@ -850,7 +850,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 	      можете создать другое приложение, полностью
 	      ориентированное на хранение библиотеки.
 	    </para>
-	    
+
 	    <para>
 	      Независимо от вашего выбора, следует удостовериться, что
 	      вы добавили приложение в параметр
@@ -951,21 +951,21 @@ register = template.Library()
 	  </para>
 	</note>
       </para>
-      
+
       <para>
 	После создания переменной <varname>register</varname>, вы
 	будете использовать её при создании шаблонных фильтров и
 	тегов.
       </para>
-	
+
     </section>
 
     <section id="&BASEID;.extending-system.writing-template-filters">
-    
+
       <title id="&BASEID;.extending-system.writing-template-filters.title">
 	Разработка своих шаблонных фильтров
       </title>
-    
+
       <para>
 	Фильтры это обычные функции языка Python, которые могут
 	принимать от одного до двух аргументов:
@@ -975,7 +975,7 @@ register = template.Library()
 	      Значение переменной (вход);
 	    </para>
 	  </listitem>
-	  
+
 	  <listitem>
 	    <para>
 	      Значение аргумента, который может иметь значение по
@@ -984,7 +984,7 @@ register = template.Library()
 	  </listitem>
 	</itemizedlist>
       </para>
-      
+
       <para>
 	Например, в фильтре <token>{{ var|foo:"bar" }}</token>,
 	фильтру <token>foo</token> будет передано содержимое
@@ -999,7 +999,7 @@ register = template.Library()
 	оригинальное значение, либо пустую строку, что привлечёт к
 	себе внимание.
       </para>
-      
+
       <para>
 	Пример определения фильтра:
 	<screen>
@@ -1010,7 +1010,7 @@ def cut(value, arg):
 	  ]]>
 	</screen>
       </para>
-      
+
       <para>
 	А это пример того, как можно использовать данный фильтр:
 	<screen>
@@ -1053,7 +1053,7 @@ register.filter('lower', lower)
 	      Имя фильтра в виде строки;
 	    </para>
 	  </listitem>
-	  
+
 	  <listitem>
 	    <para>
 	      Саму функцию фильтра.
@@ -1061,7 +1061,7 @@ register.filter('lower', lower)
 	  </listitem>
 	</itemizedlist>
       </para>
-      
+
       <para>
 	Если вы используете Python версии 2.4 и выше, то вы можете
 	воспользоваться для этого декоратором
@@ -1104,11 +1104,11 @@ def cut(value, arg):
     </section>
 
     <section id="&BASEID;.extending-system.writing-template-tags">
-    
+
       <title id="&BASEID;.extending-system.writing-template-tags.title">
 	Разработка своих шаблонных тегов
       </title>
-    
+
       <para>
 	Теги более сложны в реализации, чем фильтры, потому что теги
 	могут делать практически всё.
@@ -1148,11 +1148,11 @@ def cut(value, arg):
       </para>
 
       <section id="&BASEID;.extending-system.writing-template-tags.compilation-function">
-	
+
 	<title id="&BASEID;.extending-system.writing-template-tags.compilation-function.title">
 	  Определение функции компиляции
 	</title>
-	
+
 	<para>
 	  Для каждого встречающегося тега шаблонный парсер вызывает
 	  функцию, передавая ей содержимое тега и ссылку на себя. Эта
@@ -1279,11 +1279,11 @@ def do_current_time(parser, token):
       </section>
 
       <section id="&BASEID;.extending-system.writing-template-tags.template-node">
-    
+
 	<title id="&BASEID;.extending-system.writing-template-tags.template-node.title">
 	  Определение шаблонного узла
 	</title>
-    
+
 	<para>
 	  На втором шаге следует определить подкласс
 	  <classname>Node</classname>, который должен иметь метод
@@ -1323,11 +1323,11 @@ class CurrentTimeNode(template.Node):
       </section>
 
       <section id="&BASEID;.extending-system.writing-template-tags.register-tag">
-    
+
 	<title id="&BASEID;.extending-system.writing-template-tags.register-tag.title">
 	  Регистрация тега
 	</title>
-    
+
 	<para>
 	  В конце, следует зарегистрировать тег в экземпляре класса
 	  <classname>Library</classname>. Регистрация собственных
@@ -1384,11 +1384,11 @@ def shout(parser, token):
       </section>
 
       <section id="&BASEID;.extending-system.writing-template-tags.context-variables">
-    
+
 	<title id="&BASEID;.extending-system.writing-template-tags.context-variables.title">
 	  Установка переменных в контексте
 	</title>
-    
+
 	<para>
 	  Пример из предыдущей секции просто возвращал значение. Часто
 	  бывает полезным устанавливать шаблонную переменную вместо
@@ -1508,11 +1508,11 @@ def do_current_time(parser, token):
       </section>
 
       <section id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag">
-    
+
 	<title id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag.title">
 	  Обработка до другого блочного тега
 	</title>
-    
+
 	<para>
 	  Шаблонные теги могут работать как блоки, содержащие другие
 	  теги (типа <token>{% if %}</token>, <token>{% for %}</token>
@@ -1572,11 +1572,11 @@ class CommentNode(template.Node):
       </section>
 
       <section id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag-save-content">
-    
+
 	<title id="&BASEID;.extending-system.writing-template-tags.parsing-until-tag-save-content.title">
 	  Обработка до другого блочного тега с сохранением содержимого
 	</title>
-    
+
 	<para>
 	  В предыдущем примере, метод
 	  <function>do_comment()</function> отбрасывал всё, что
@@ -1642,19 +1642,19 @@ class UpperNode(template.Node):
     </section>
 
     <section id="&BASEID;.extending-system.shortcuts-simpletag">
-    
+
       <title id="&BASEID;.extending-system.shortcuts-simpletag.title">
 	Сокращения для простых тегов
       </title>
-      
+
       <para>
-	Множество шаблонных тегов принимают только один аргумент,
-	строку или ссылку на шаблонную переменную, и возвращают строку
-	после выполнения обработки, руководствуясь переданным
-	аргументом и некоторой внешней информацией. Например, тег
+	Множество шаблонных тегов принимают только один аргумент, строку
+	или ссылку на шаблонную переменную, и возвращают строку после
+	выполнения обработки, руководствуясь переданным аргументом и
+	некоторой внешней информацией. Например, тег
 	<token>current_time</token>, который мы реализовали ранее,
-	подходит под это описание. Если ему передать строку формата, а
-	он возвратит время в виде строки.
+	подходит под это описание. Если ему передать строку формата, то он
+	возвратит время в виде строки.
       </para>
 
       <para>
@@ -1699,7 +1699,7 @@ def current_time(token):
 	      Эта функция одного аргумента.
 	    </para>
 	  </listitem>
-	  
+
 	  <listitem>
 	    <para>
 	      Проверку обязательного количества аргументов провела
@@ -1719,11 +1719,11 @@ def current_time(token):
     </section>
 
     <section id="&BASEID;.extending-system.inclusion-tags">
-    
+
       <title id="&BASEID;.extending-system.inclusion-tags.title">
 	Теги включения
       </title>
-      
+
       <para>
 	Другим общим типом тегов являются теги, которые отображают
 	данные с помощью обработки <emphasis>другого</emphasis>
@@ -1880,11 +1880,11 @@ Jump directly to <a href="{{ link }}">{{ title }}</a>.
   </section>
 
   <section id="&BASEID;.template-loader">
-    
+
     <title id="&BASEID;.template-loader.title">
       Реализация своих шаблонных загрузчиков
     </title>
-      
+
     <para>
       Встроенные в Django шаблонные загрузчики (описанные в секции
       <quote><xref linkend="&BASEID;.template-loading"
@@ -1995,11 +1995,11 @@ load_template_source.is_usable = True
   </section>
 
   <section id="&BASEID;.using-reference">
-    
+
     <title id="&BASEID;.using-reference.title">
       Использование встроенного шаблонного справочника
     </title>
-      
+
     <para>
       Интерфейс администратора Django включает в себя полный
       справочник по всем шаблонным тегам и фильтрам доступным для
@@ -2074,11 +2074,11 @@ load_template_source.is_usable = True
   </section>
 
   <section id="&BASEID;.standalone-mode">
-    
+
     <title id="&BASEID;.standalone-mode.title">
       Работа в автономном режиме
     </title>
-      
+
     <para>
       <note>
 	<para>
@@ -2125,13 +2125,13 @@ load_template_source.is_usable = True
       Django приложении), а затем вызываться скрипт. Но лучше сделать
       следующее (на примере шаблонной системы):
       <screen>
-	<![CDATA[ 
+	<![CDATA[
 import django
 django.conf.settings.configure(TEMPLATE_DIRS = ('/home/rad/devel/cpr_report',))
 	]]>
       </screen>
     </para>
-      
+
     <para>
       Через запятую, можно определить столько параметров конфигурации,
       сколько надо.  Среди параметров могут быть такие как

@@ -323,7 +323,7 @@ My name is Fred.
             Если вам это интересно, расскажем как всё это работает
             внутри. Django ищет переменную среды с именем
             <varname>DJANGO_SETTINGS_MODULE</varname>, которая должна
-            содержать путь до вашего файла
+            содержать путь к вашему файлу
             <filename>settings.py</filename>. Например,
             <varname>DJANGO_SETTINGS_MODULE</varname> может быть
             установлено в <token>mysite.settings</token>,
@@ -2038,7 +2038,7 @@ def current_datetime(request):
           <para>
             Он включает в себя много одинакового кода. Многое можно
             сделать вместо вызова <function>open()</function>,
-            <function>fp.read.()</function> и
+            <function>fp.read()</function> и
             <function>fp.close()</function> при каждой загрузке
             шаблона.
           </para>
