@@ -63,7 +63,7 @@
     и корпораций. Поэтому Django придерживается общего подхода для
     LAMP-подобных веб приложений, который часто называют
     <quote><emphasis>ничего общего</emphasis></quote>.
-    
+
     <note>
       <title>
 	Как расшифровывается LAMP?
@@ -145,7 +145,7 @@
       что препятствует их использованию небольшими компаниями и
       физическими лицами, всегда испытывающими нехватку денег.
     </para>
-    
+
     <para>
       Сообщество LAMP, однако, обращает внимание на то, что если
       разбить каждую часть веб приложения на отдельные компоненты, то
@@ -216,7 +216,7 @@
 
 	<para>
 	  Такие рассуждения могут выглядеть неплохо на бумаге (или на
-	  вашем экране), но как всё это работает на самом деле.
+	  вашем экране), но как всё это работает на самом деле?
 	</para>
 
 	<para>
@@ -312,7 +312,7 @@
       является наиболее стабильной и надёжной средой при развёртывании
       Django на рабочем сервере.
     </para>
-	
+
     <para>
       <token>mod_python</token> (<ulink
       url="http://www.djangoproject.com/r/mod_python/"/>) &mdash; это
@@ -601,7 +601,7 @@ NameVirtualHost *
     <section id="&BASEID;.using-apache-mod_python.static-content">
 
       <title id="&BASEID;.using-apache-mod_python.static-content.title">
-	Работа с Django и статическим контентом на одном сервере Apache 
+	Работа с Django и статическим контентом на одном сервере Apache
       </title>
 
       <para>
@@ -791,9 +791,9 @@ NameVirtualHost *
 	</listitem>
       </itemizedlist>
     </para>
-	
+
     <section id="&BASEID;.using-apache-mod_wsgi.apache-reqs">
-      
+
       <title id="&BASEID;.using-apache-mod_wsgi.apache-reqs.title">
 	Поддерживаемые версии Apache
       </title>
@@ -841,7 +841,7 @@ NameVirtualHost *
     </section>
 
     <section id="&BASEID;.using-apache-mod_wsgi.python-reqs">
-      
+
       <title id="&BASEID;.using-apache-mod_wsgi.python-reqs.title">
 	Поддерживаемые версии Python
       </title>
@@ -867,7 +867,7 @@ NameVirtualHost *
     </section>
 
     <section id="&BASEID;.using-apache-mod_wsgi.install">
-      
+
       <title id="&BASEID;.using-apache-mod_wsgi.install.title">
 	Установка модуля
       </title>
@@ -881,7 +881,7 @@ libapache2-mod-wsgi - Python WSGI adapter module for Apache
 
 # wajig install libapache2-mod-wsgi
 Чтение списков пакетов... Готово
-Построение дерева зависимостей       
+Построение дерева зависимостей
 Чтение информации о состоянии... Готово
 Предлагаемые пакеты:
   apache2-mpm-worker apache2-mpm-event
@@ -889,7 +889,7 @@ libapache2-mod-wsgi - Python WSGI adapter module for Apache
   libapache2-mod-wsgi
 Необходимо скачать 113kБ архивов.
 Получено:1 http://ru.archive.ubuntu.com intrepid/universe libapache2-mod-wsgi 2.3-1 [113kB]
-Получено 113kБ за 1s (111kБ/c)            
+Получено 113kБ за 1s (111kБ/c)
 ...
  * Reloading web server config apache2
 #
@@ -900,7 +900,7 @@ libapache2-mod-wsgi - Python WSGI adapter module for Apache
     </section>
 
     <section id="&BASEID;.using-apache-mod_wsgi.interface">
-      
+
       <title id="&BASEID;.using-apache-mod_wsgi.interface.title">
 	Интерфейс к модулю
       </title>
@@ -946,7 +946,7 @@ application = django.core.handlers.wsgi.WSGIHandler()
     </section>
 
     <section id="&BASEID;.using-apache-mod_wsgi.config">
-      
+
       <title id="&BASEID;.using-apache-mod_wsgi.config.title">
 	Конфигурация сервера
       </title>

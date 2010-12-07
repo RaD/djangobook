@@ -159,7 +159,7 @@
     </para>
 
     <section id="&BASEID;.specifying-in-code.standard-functions">
-    
+
       <title id="&BASEID;.specifying-in-code.standard-functions.title">
 	Стандартные функции для перевода
       </title>
@@ -276,7 +276,7 @@ def my_view(request, n):
     </section>
 
     <section id="&BASEID;.specifying-in-code.no-op">
-    
+
       <title id="&BASEID;.specifying-in-code.no-op.title">
 	Пометка строк для позднего перевода
       </title>
@@ -300,7 +300,7 @@ def my_view(request, n):
     </section>
 
     <section id="&BASEID;.specifying-in-code.lazy">
-    
+
       <title id="&BASEID;.specifying-in-code.lazy.title">
 	Отложенный перевод
       </title>
@@ -370,7 +370,7 @@ class MyThing(models.Model):
     </section>
 
     <section id="&BASEID;.specifying-in-code.pluralization">
-    
+
       <title id="&BASEID;.specifying-in-code.pluralization.title">
 	Образование множественного числа
       </title>
@@ -405,7 +405,7 @@ def hello_world(request, count):
   </section>
 
   <section id="&BASEID;.specifying-in-template">
-    
+
     <title id="&BASEID;.specifying-in-template.title">
       Определение переводимых строк в шаблоне
     </title>
@@ -569,7 +569,7 @@ def hello_world(request, count):
   </section>
 
   <section id="&BASEID;.language-file">
-    
+
     <title id="&BASEID;.language-file.title">
       Создание файлов с переводами
     </title>
@@ -581,7 +581,7 @@ def hello_world(request, count):
     </para>
 
     <section id="&BASEID;.language-file.message-file">
-    
+
       <title id="&BASEID;.language-file.message-file.title">
 	Создание файлов с сообщениями
       </title>
@@ -624,7 +624,7 @@ def hello_world(request, count):
 	      <token>$PYTHONPATH</token>).
 	    </para>
 	  </listitem>
-	  
+
 	  <listitem>
 	    <para>
 	      Корневой каталог вашего проекта.
@@ -655,7 +655,7 @@ def hello_world(request, count):
 	отсутствие префикса <token>conf</token>). Перед первым
 	применением скрипта следует создать каталог
 	<filename>locale</filename>.
-	
+
 	<note>
 	  <title>
 	    Нет утилиты <command>gettext</command>?
@@ -790,7 +790,7 @@ make-messages.py -a
     </section>
 
     <section id="&BASEID;.language-file.compiling">
-    
+
       <title id="&BASEID;.language-file.compiling.title">
 	Компилирования файлов сообщений
       </title>
@@ -823,11 +823,11 @@ bin/compile-messages.py
   </section>
 
   <section id="&BASEID;.language-preference">
-    
+
     <title id="&BASEID;.language-preference.title">
       Как Django получает языковые настройки
     </title>
-      
+
     <para>
       После того как вы подготовили перевод, или вы просто желаете
       использовать переводы, которые уже включены в Django, следует
@@ -1071,11 +1071,11 @@ def hello_world(request, count):
   </section>
 
   <section id="&BASEID;.set-language-redirect">
-    
+
     <title id="&BASEID;.set-language-redirect.title">
       Представление set_language
     </title>
-      
+
     <para>
       Для вашего удобства Django поставляется с представлением
       <token>django.views.i18n.set_language</token>, которое
@@ -1099,11 +1099,13 @@ def hello_world(request, count):
     </para>
 
     <para>
-      Это представление вызывается через метод GET с указанием
-      параметра <token>language</token> в строке запроса. Если
-      поддержка сессий активна, представление сохраняет информацию о
-      выбранном языке в сессии пользователя. В противном случае,
-      сохранение производится в cookie <token>django_language</token>.
+      Это представление вызывается через метод GET<footnote><para>В
+      Django 1.x изменили на <token>POST</token>.</para></footnote> с
+      указанием параметра <token>language</token> в строке
+      запроса. Если поддержка сессий активна, представление сохраняет
+      информацию о выбранном языке в сессии пользователя. В противном
+      случае, сохранение производится в cookie
+      <token>django_language</token>.
     </para>
 
     <para>
@@ -1136,7 +1138,7 @@ def hello_world(request, count):
       Ниже представлен пример HTML шаблона:
       <screen>
 	<![CDATA[
-<form action="/i18n/setlang/" method="get">
+<form action="/i18n/setlang/" method="post">
 <input name="next" type="hidden" value="/next/page/" />
 <select name="language">
 {% for lang in LANGUAGES %}
@@ -1152,11 +1154,11 @@ def hello_world(request, count):
   </section>
 
   <section id="&BASEID;.using">
-    
+
     <title id="&BASEID;.using.title">
       Использование переводов в ваших проектах
     </title>
-      
+
     <para>
       Django ищет переводы по следующему алгоритму:
       <itemizedlist>
@@ -1281,7 +1283,7 @@ def hello_world(request, count):
   </section>
 
   <section id="&BASEID;.javascript">
-    
+
     <title id="&BASEID;.javascript.title">
       Переводы и JavaScript
     </title>
@@ -1321,11 +1323,11 @@ def hello_world(request, count):
     </para>
 
     <section id="&BASEID;.javascript.catalog-view">
-    
+
       <title id="&BASEID;.javascript.catalog-view.title">
 	Представление javascript_catalog
       </title>
-      
+
       <para>
 	Основным решением для этих проблем является представление
 	<function>javascript_catalog()</function>, которое создаёт
@@ -1387,11 +1389,11 @@ urlpatterns = patterns('',
     </section>
 
     <section id="&BASEID;.javascript.catalog">
-    
+
       <title id="&BASEID;.javascript.catalog.title">
 	Использование каталога с переводами
       </title>
-      
+
       <para>
 	Для использования каталога просто подключите динамически
 	генерируемый скрипт:
@@ -1447,13 +1449,13 @@ s = interpolate(ngettext('this is %s object', 'this are %s objects', 11), [11]);
       </para>
 
     </section>
-	    
+
     <section id="&BASEID;.javascript.create-catalog">
-    
+
       <title id="&BASEID;.javascript.create-catalog.title">
 	Создание каталога
       </title>
-      
+
       <para>
 	Создание и обновление каталогов с переводами происходит
 	аналогично другим видам каталогов. Единственное отличие в том,
@@ -1476,11 +1478,11 @@ make-messages.py -d djangojs -l de
   </section>
 
   <section id="&BASEID;.gettext">
-    
+
     <title id="&BASEID;.gettext.title">
       Замечание для тех, кто уже работал с gettext
     </title>
-    
+
     <para>
       Если вы знакомы с <token>gettext</token>, вам следует помнить о
       особенностях использования этого пакета в Django:

@@ -260,7 +260,7 @@ from django.contrib.comments.models import FreeComment
 	    <![CDATA[
 urlpatterns = patterns('',
         [...]
-        (r'^comments/', include('django.contrib.comments.urls.comments')),
+        (r'^comments/', include('django.contrib.comments.urls')),
 }
 	    ]]>
 	  </screen>
