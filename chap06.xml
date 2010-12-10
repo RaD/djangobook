@@ -119,7 +119,7 @@
 	    <listitem>
 	      <para>
 	        Добавим <token>django.contrib.admin</token> в параметр
-	        <varname>qINSTALLED_APPS</varname>. (Порядок элементов в
+	        <varname>INSTALLED_APPS</varname>. (Порядок элементов в
 	        <varname>INSTALLED_APPS</varname> не имеет значения, но мы
 	        советуем содержать их в алфавитном порядке, для удобства
 	        чтения.)
@@ -1196,7 +1196,7 @@ class BookAdmin(admin.ModelAdmin):
       <para>
         Обратите внимание, опция <varname>date_hierarchy</varname> в
         качестве параметра принимает <emphasis>строку</emphasis>, а не
-        кортеж, потому что только одна дата поля может быть
+        кортеж, потому что только одно поле даты может быть
         использована для иерархии.
       </para>
 
