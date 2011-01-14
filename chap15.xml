@@ -119,7 +119,7 @@ class SetRemoteAddrFromForwardedFor(object):
         except KeyError:
             pass
         else:
-            # HTTP_X_FORWARDED_FOR может быть списком IP адресов, 
+            # HTTP_X_FORWARDED_FOR может быть списком IP адресов,
 	    # разделённых запятой. Берём только первый.
             real_ip = real_ip.split(",")[0]
             request.META['REMOTE_ADDR'] = real_ip
@@ -216,11 +216,11 @@ MIDDLEWARE_CLASSES = (
     </para>
 
     <section id="&BASEID;.methods.initializer">
-      
+
       <title id="&BASEID;.methods.initializer.title">
 	Конструктор
       </title>
-      
+
       <para>
 	Используйте <function>__init__(self)</function> для
 	регистрации класса компонента в системе.
@@ -257,11 +257,11 @@ MIDDLEWARE_CLASSES = (
     </section>
 
     <section id="&BASEID;.methods.process-request">
-      
+
       <title id="&BASEID;.methods.process-request.title">
 	Препроцессор запроса
       </title>
-      
+
       <para>
 	Этот метод вызывается при получении запроса &mdash; перед тем
 	как Django приступает к обработке URL для определения функции
@@ -298,11 +298,11 @@ MIDDLEWARE_CLASSES = (
     </section>
 
     <section id="&BASEID;.methods.process-view">
-      
+
       <title id="&BASEID;.methods.process-view.title">
 	Препроцессор представления
       </title>
-      
+
       <para>
 	Этот метод вызывается после препроцессора запроса и после того
 	как Django определил какое именно представление следует
@@ -339,7 +339,7 @@ MIDDLEWARE_CLASSES = (
 	    <tbody>
 	      <row>
 		<entry><token>request</token></entry>
-		<entry>Объект <classname>HttpResponse</classname></entry>
+		<entry>Объект <classname>HttpRequest</classname></entry>
 	      </row>
 
 	      <row>
@@ -357,7 +357,7 @@ MIDDLEWARE_CLASSES = (
 		<token>request</token> (который всегда является первым
 		аргументом представления).</entry>
 	      </row>
-	      
+
 	      <row>
 		<entry><token>kwargs</token></entry>
 		<entry>Словарь именованных аргументов, который будет
@@ -367,7 +367,7 @@ MIDDLEWARE_CLASSES = (
 	  </tgroup>
 	</table>
       </para>
-      
+
       <para>
 	Подобно методу <function>process_request()</function>, данный
 	метод должен возвращать либо <token>None</token>, либо объект
@@ -396,11 +396,11 @@ MIDDLEWARE_CLASSES = (
     </section>
 
     <section id="&BASEID;.methods.process-response">
-      
+
       <title id="&BASEID;.methods.process-response.title">
 	Постпроцессор отклика
       </title>
-      
+
       <para>
 	Этот метод вызывается после вызова функции представления и
 	генерации отклика. В этом месте, постпроцессор может
@@ -429,11 +429,11 @@ MIDDLEWARE_CLASSES = (
     </section>
 
     <section id="&BASEID;.methods.process-exception">
-      
+
       <title id="&BASEID;.methods.process-exception.title">
 	Постпроцессор исключения
       </title>
-      
+
       <para>
 	Этот метод вызывается в случае, если что-то идёт не так и
 	представление вызывает необработанное исключение. Вы можете
@@ -493,11 +493,11 @@ MIDDLEWARE_CLASSES = (
   </section>
 
   <section id="&BASEID;.builtin-middleware">
-      
+
     <title id="&BASEID;.builtin-middleware.title">
       Встроенные компоненты
     </title>
-    
+
     <para>
       Django поставляется с несколькими встроенными компонентами,
       которые помогают решать общие задачи, которые мы обсудим в
@@ -505,11 +505,11 @@ MIDDLEWARE_CLASSES = (
     </para>
 
     <section id="&BASEID;.builtin-middleware.authentication">
-      
+
       <title id="&BASEID;.builtin-middleware.authentication.title">
 	Компонент поддержки аутентификации
       </title>
-      
+
       <para>
 	Класс компонента
 	<token>django.contrib.auth.middleware.AuthenticationMiddleware</token>.
@@ -531,11 +531,11 @@ MIDDLEWARE_CLASSES = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.common">
-      
+
       <title id="&BASEID;.builtin-middleware.common.title">
 	Стандартный компонент
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.common.CommonMiddleware</token>.
@@ -639,11 +639,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.compression">
-      
+
       <title id="&BASEID;.builtin-middleware.compression.title">
 	Компонент компрессии
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.gzip.GZipMiddleware</token>.
@@ -658,7 +658,7 @@ DISALLOWED_USER_AGENTS = (
 	возрастание времени отклика из-за затрат на компрессию
 	страницы.
       </para>
-      
+
       <para>
 	Обычно мы предпочитаем иметь высокую скорость отклика, а не
 	экономию трафика, но если вы предпочитаете обратно, просто
@@ -668,11 +668,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.conditional-get">
-      
+
       <title id="&BASEID;.builtin-middleware.conditional-get.title">
 	Компонент условного GET
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.http.ConditionalGetMiddleware</token>.
@@ -702,11 +702,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.reverse-proxy">
-      
+
       <title id="&BASEID;.builtin-middleware.reverse-proxy.title">
 	Компонент поддержки обратного прокси
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.http.SetRemoteAddrFromForwardedFor</token>.
@@ -751,11 +751,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.session">
-      
+
       <title id="&BASEID;.builtin-middleware.session.title">
 	Компонент поддержки сессий
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.contrib.sessions.middleware.SessionMiddleware</token>.
@@ -770,11 +770,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.sitewide-cache">
-      
+
       <title id="&BASEID;.builtin-middleware.sitewide-cache.title">
 	Компонент для кэширования сайта
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.cache.CacheMiddleware</token>.
@@ -790,11 +790,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.transaction">
-      
+
       <title id="&BASEID;.builtin-middleware.transaction.title">
 	Компонент поддержки транзакций
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.transaction.TransactionMiddleware</token>.
@@ -828,11 +828,11 @@ DISALLOWED_USER_AGENTS = (
     </section>
 
     <section id="&BASEID;.builtin-middleware.x-view">
-      
+
       <title id="&BASEID;.builtin-middleware.x-view.title">
 	Компонент X-View
       </title>
-      
+
       <para>
 	Класс компонента:
 	<token>django.middleware.doc.XViewMiddleware</token>.

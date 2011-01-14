@@ -378,7 +378,7 @@ urlpatterns = patterns('',
 
     <para>
       (Следует отметить, что мы импортируем модуль
-      <token>views</token>напрямую, а не указывает <token>from
+      <token>views</token> напрямую, а не указывает <token>from
       mysite.views import search_form</token>, поскольку первый метод
       более краток. Мы рассмотрим этот механизм импортирования более
       подробно в главе <quote><xref linkend="djangobook.chap08"
@@ -861,7 +861,7 @@ def search(request):
     </para>
 
     <para>
-      Теперь, при попытки отослать запрос с длиной строки более 20
+      Теперь, при попытке отослать запрос с длиной строки более 20
       символов, вы получите сообщение об ошибке. Но это сообщение в
       <filename>search_form.html</filename> пока говорит <quote>Please
       submit a search term.</quote> и нам потребуется изменить его
@@ -1137,9 +1137,9 @@ def contact(request):
           <para>
             Следует отметить, что для отправки сообщения с помощью
             <function>send_mail</function> ваш сервер должен быть
-            соответственно сконфигуриров и Django следует указать на
-            сервер исходящей почты. Обратитесь к <ulink
-            url="http://docs.djangoproject.com/en/dev/topics/email/"/>
+            соответственно сконфигурирован и Django следует указать на
+            сервер исходящей почты. Обратитесь к
+            <ulink url="http://docs.djangoproject.com/en/dev/topics/email/"/>
             для подробностей.
           </para>
         </listitem>
@@ -1261,7 +1261,7 @@ def contact(request):
     <para>
       Этот подход очень трудоёмкий и привносит множество возможностей
       для ошибки. Мы надеемся, что вы начали искать возможность
-      воспользовать некой высокоуровневой библиотекой, которая будет
+      воспользоваться некой высокоуровневой библиотекой, которая будет
       выполнять такие формо-проверочные задачи.
     </para>
 
@@ -1332,7 +1332,7 @@ class ContactForm(forms.Form):
 
     <para>
       Синтаксис похож на синтаксис описания модели. Каждое поле формы
-      представлены потомками класса <classname>Field</classname>
+      представлено потомками класса <classname>Field</classname>
       &mdash; в нашем случае используются
       <classname>CharField</classname> и
       <classname>EmailField</classname> &mdash; в виде атрибутов
@@ -1543,7 +1543,7 @@ True
         <![CDATA[
 from django.core.mail import send_mail
 from django.shortcuts import render_to_response
-from mysite.contact.forms import ContactForm
+from mysite.books.forms import ContactForm
 
 def contact(request):
     if request.method == 'POST':
@@ -1753,7 +1753,7 @@ def contact(request):
     <para>
       Существует ряд методов реализации собственного механизма
       проверки в форме. Если наше правило будет использоваться в
-      других проектах, мы может создать собственный тип
+      других проектах, мы можем создать собственный тип
       поля. Большинство пользовательских проверок не используются
       повторно, хотя и могут быть внедрены в класс
       <classname>Form</classname>.

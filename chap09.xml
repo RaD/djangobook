@@ -355,7 +355,7 @@ urlpatterns = patterns('',
     </para>
 
     <section id="&BASEID;.extending.context">
-      
+
       <title id="&BASEID;.extending.context.title">
 	Создаём дружественные контексты для шаблонов
       </title>
@@ -395,7 +395,7 @@ urlpatterns = patterns('',
     </section>
 
     <section id="&BASEID;.extending.extra-context">
-      
+
       <title id="&BASEID;.extending.extra-context.title">
 	Добавление дополнительного контекста
       </title>
@@ -511,7 +511,7 @@ publisher_info = {
     </section>
 
     <section id="&BASEID;.extending.viewing-subsets">
-      
+
       <title id="&BASEID;.extending.viewing-subsets.title">
 	Просмотр поднабора объектов
       </title>
@@ -550,7 +550,7 @@ urlpatterns = patterns('',
 	Это достаточно простой пример, но отлично иллюстрирует
 	идею. Естественно, что вам обычно потребуется нечто большее,
 	чем просто сортировка объектов. Если вам нужно отобразить
-	список книг, отсортировав их по определённому издателю, вы
+	список книг, отфильтровав их по определённому издателю, вы
 	можете использовать такую же методику:
 	<screen>
 	  <![CDATA[
@@ -597,10 +597,10 @@ urlpatterns = patterns('',
 	</note>
       </para>
 
-    </section>	
+    </section>
 
     <section id="&BASEID;.extending.wrapper-filtering">
-      
+
       <title id="&BASEID;.extending.wrapper-filtering.title">
 	Сложная фильтрация с помощью функций-обработчиков
       </title>
@@ -678,7 +678,7 @@ def books_by_publisher(request, name):
     </section>
 
     <section id="&BASEID;.extending.extra-work">
-      
+
       <title id="&BASEID;.extending.extra-work.title">
 	Выполнение дополнительной работы
       </title>
@@ -782,5 +782,5 @@ def author_list_plaintext(request):
     </section>
 
   </section>
-      
+
 </chapter>

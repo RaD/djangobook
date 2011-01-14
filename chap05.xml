@@ -1491,7 +1491,8 @@ Installing index for books.Book model
 
         <listitem>
           <para>
-            Чтобы сохранить объект в базе данных, вызовите метод
+            Чтобы сохранить объект в базе данных, воспользуйтесь
+            методом
             <function>save()</function>. Django выполнит для этого SQL
             оператор <token>INSERT</token>.
           </para>
@@ -1515,8 +1516,8 @@ Installing index for books.Book model
     <para>
       Следует остановиться на одном моменте, если он не очевиден из
       примера. При создании объекта с помощью модели Django не
-      сохраняет ничего в базе данных до тех пор, пока вы не вызовите
-      метод <function>save()</function>:
+      сохраняет ничего в базе данных до тех пор, пока вы не
+      воспользуетесь методом <function>save()</function>:
       <screen>
         <![CDATA[
 p1 = Publisher(...)
@@ -1831,9 +1832,10 @@ WHERE id = 52;
       Да, следует отметить то, что <emphasis>все</emphasis> поля будут
       обновлены, а не только те, что были изменены. В зависимости от
       реализации вашего приложения, такое поведение может вызвать
-      <quote>гонки</quote> (race condition). См <quote>Updating
-      Multiple Objects in One Statement</quote> далее о том, как
-      выполнять подобные запрос:
+      <quote>гонки</quote> (race
+      condition). См <quote><xref linkend="&BASEID;.select.multiple-update"
+      endterm="&BASEID;.select.multiple-update.title"/></quote> далее
+      о том, как выполнять подобные запросы:
       <screen>
         <![CDATA[
 UPDATE books_publisher SET
@@ -2032,7 +2034,7 @@ AND state_province = 'CA';
         <token>contains</token>. Подобно Python это используется
         Django для выполнения <quote>магических</quote> действий. В
         данном случае <token>__contains</token> преобразовывается в
-        SQL оператоh <token>LIKE</token>:
+        SQL оператор <token>LIKE</token>:
         <screen>
           <![CDATA[
 SELECT id, name, address, city, state_province, country, website
