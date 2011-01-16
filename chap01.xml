@@ -291,7 +291,7 @@ urlpatterns = patterns('',
         <listitem>
           <para>
             Файл <filename>views.py</filename> содержит логику
-            отображения страницы, в функции
+            отображения страницы в функции
             <function>latest_books()</function>. Такая функция
             называется <emphasis>представлением</emphasis>.
           </para>
@@ -323,7 +323,7 @@ urlpatterns = patterns('',
 
     <para>
       Объединённые вместе, эти компоненты приложения следуют шаблону
-      <emphasis>Модель-Представление-Управление</emphasis>
+      <ulink url="http://ru.wikipedia.org/wiki/MVC/">Модель-Представление-Контроллёр</ulink>
       (<emphasis>Model-View-Controller</emphasis>, MVC). Примем, что
       MVC определяет способ разработки программного обеспечения при
       котором код для определения и доступа к данным (модель) отделён

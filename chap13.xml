@@ -115,7 +115,7 @@
       <title id="&BASEID;.setup.memcached.title">
 	Memcached
       </title>
-      
+
       <para>
 	Безусловно самый быстрый и самый эффективный тип кэша
 	доступный Django &mdash; Memcached &mdash; является средой
@@ -216,7 +216,7 @@ CACHE_BACKEND = 'memcached://172.19.26.240:11211;172.19.26.242:11212;172.19.26.2
       <title id="&BASEID;.setup.database.title">
 	Кэширование в базу данных
       </title>
-      
+
       <para>
 	Для использования таблицы базы данных в виде кэша следует
 	создать такую таблицу и указать Django, что надо использовать
@@ -259,7 +259,7 @@ CACHE_BACKEND = 'db://my_cache_table'
       <title id="&BASEID;.setup.filesystem.title">
 	Кэширование на файловую систему
       </title>
-      
+
       <para>
 	Для хранения кэшированных элементов на файловой системе
 	используйте тип <token>file://</token> в параметре
@@ -314,7 +314,7 @@ CACHE_BACKEND = 'file:///var/tmp/django_cache'
       <title id="&BASEID;.setup.local-memory.title">
 	Кэширование в оперативную память
       </title>
-      
+
       <para>
 	Если вам требуется использовать скоростные преимущества
 	кэширования в оперативную память, но у вас нет возможности
@@ -334,14 +334,14 @@ CACHE_BACKEND = 'locmem:///'
 	</screen>
       </para>
 
-    </section>	
+    </section>
 
     <section id="&BASEID;.setup.simple-caching">
 
       <title id="&BASEID;.setup.simple-caching.title">
 	Простое кэширование (для разработки)
       </title>
-      
+
       <para>
 	Простой, обслуживающий один процесс, кэш с расположением
 	данных в оперативной памяти можно организовать с помощью
@@ -364,7 +364,7 @@ CACHE_BACKEND = 'simple:///'
       <title id="&BASEID;.setup.dummy-caching.title">
 	Фиктивное кэширование (для разработки)
       </title>
-      
+
       <para>
 	Наконец, Django поставляется с <quote>фиктивным</quote> кэшем,
 	который не производит никакого кэширования.
@@ -394,7 +394,7 @@ CACHE_BACKEND = 'dummy:///'
       <title id="&BASEID;.setup.backend-args.title">
 	Аргументы CACHE_BACKEND
       </title>
-      
+
       <para>
 	Каждый тип кэша может принимать аргументы. Они указываются в
 	значении параметра <token>CACHE_BACKEND</token>. Перечислим
@@ -469,13 +469,13 @@ CACHE_BACKEND = "locmem:///?timeout=30&max_entries=400"
     </section>
 
   </section>
-      
+
   <section id="&BASEID;.cache-per-site">
-    
+
     <title id="&BASEID;.cache-per-site.title">
       Кэширование отдельного сайта
     </title>
-      
+
     <para>
       После того, как вы указали значение для
       <token>CACHE_BACKEND</token>, самым простым способом
@@ -593,11 +593,11 @@ MIDDLEWARE_CLASSES = (
   </section>
 
   <section id="&BASEID;.cache-per-view">
-    
+
     <title id="&BASEID;.cache-per-view.title">
       Кэширование отдельного представления
     </title>
-      
+
     <para>
       Более гранулированный способ использования механизма кэширования
       даёт управление на уровне отдельных представлений. Оно имеет
@@ -668,14 +668,14 @@ urlpatterns = ('',
       как будет произведено кэширование определённого URL, все
       последующие запросы к нему будут использовать кэш.
     </para>
-    
+
     <section id="&BASEID;.cache-per-view.in-url-conf">
-    
+
       <title id="&BASEID;.cache-per-view.in-url-conf.title">
 	Определение кэша для отдельного представления в файле со
 	схемой URL
       </title>
-      
+
       <para>
 	Примеры из предыдущей секции имели жёстко определённый факт
 	кэширования представления, потому что
@@ -729,11 +729,11 @@ urlpatterns = ('',
   </section>
 
   <section id="&BASEID;.cache-api-low-level">
-    
+
     <title id="&BASEID;.cache-api-low-level.title">
       API низкого уровня
     </title>
-    
+
     <para>
       Изредка кэширование всей страницы не даёт ожидаемой пользы и,
       если честно, является неудобным.
@@ -871,11 +871,11 @@ None
   </section>
 
   <section id="&BASEID;.upstream-caches">
-    
+
     <title id="&BASEID;.upstream-caches.title">
       Кэши верхнего уровня
     </title>
-    
+
     <para>
       До этого момента мы рассказывали о кэшировании
       <emphasis>ваших</emphasis> данных. Другим типом кэширования
@@ -928,7 +928,7 @@ None
       себе опасность. Содержимое страниц многих сайтов различается в
       зависимости от того, авторизован ли посетитель или нет, а также
       от многих других факторов. Механизмы кэширования могут слепо
-      сохранять страницы, основываясь на IRL, которые могут содержать
+      сохранять страницы, основываясь на URL, которые могут содержать
       неверную или секретную информацию от предыдущих посетителей
       запрашиваемых страниц.
     </para>
@@ -952,11 +952,11 @@ None
     </para>
 
     <section id="&BASEID;.upstream-caches.vary-headers">
-    
+
       <title id="&BASEID;.upstream-caches.vary-headers.title">
 	Использование заголовков Vary
       </title>
-      
+
       <para>
 	Заголовок <token>Vary</token> определяет какой из заголовков
 	запроса должен рассматриваться механизмом
@@ -1091,11 +1091,11 @@ def my_view(request):
     </section>
 
     <section id="&BASEID;.upstream-caches.other-cache-headers">
-    
+
       <title id="&BASEID;.upstream-caches.other-cache-headers.title">
 	Другие заголовки для механизма кэширования
       </title>
-      
+
       <para>
 	Другими проблемами при использовании кэширования являются
 	секретность данных и вопрос хранения данных в каскадных кэшах.
@@ -1254,14 +1254,14 @@ def my_view(request):
 
     </section>
 
-  </section>	
+  </section>
 
   <section id="&BASEID;.optimizing">
-    
+
     <title id="&BASEID;.optimizing.title">
       Оптимизация
     </title>
-      
+
     <para>
       Django поставляется с несколькими другими механизмами, которые
       могут помочь в оптимизации вашего приложения:
@@ -1286,13 +1286,13 @@ def my_view(request):
     </para>
 
   </section>
-      
+
   <section id="&BASEID;.order">
-    
+
     <title id="&BASEID;.order.title">
       Порядок в MIDDLEWARE_CLASSES
     </title>
-      
+
     <para>
       При использовании <token>CacheMiddleware</token> важно
       располагать его в правильном месте в параметре
