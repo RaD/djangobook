@@ -258,7 +258,7 @@ def unruly_passengers_csv(request):
 
 	<listitem>
 	  <para>
-	    Для каждой записи в вашем CVS файле требуется вызывать
+	    Для каждой записи в вашем CSV файле требуется вызывать
 	    функцию <function>writer.writerow</function>, передавая ей
 	    итерационный объект, подобный списку или кортежу.
 	  </para>
@@ -457,9 +457,9 @@ def hello_pdf(request):
 	  </listitem>
 	</itemizedlist>
       </para>
-      
+
     </section>
-	    
+
     <section id="&BASEID;.pdf.complex">
 
       <title id="&BASEID;.pdf.complex.title">
@@ -668,7 +668,7 @@ def hello_pdf(request):
       <title id="&BASEID;.rss.init.title">
 	Инициализация
       </title>
-      
+
       <para>
 	Чтобы активировать трансляции на вашем сайте, добавьте
 	следующее в файл привязок:
@@ -762,7 +762,7 @@ urlpatterns = patterns('',
       <title id="&BASEID;.rss.simple.title">
 	Простая трансляция
       </title>
-      
+
       <para>
 	Этот простой пример, взятый с <ulink
 	url="http://chicagocrime.org/"/>, описывает трансляцию,
@@ -816,7 +816,7 @@ class LatestEntries(Feed):
 	    <para>
 	      Вы <quote>бесплатно</quote> получаете некоторую
 	      функциональность, используя модели Django, но метод
-	      <function>items()</function> может вернут любой тип
+	      <function>items()</function> может вернуть любой тип
 	      объекта.
 	    </para>
 	  </listitem>
@@ -928,7 +928,7 @@ class LatestEntries(Feed):
       <title id="&BASEID;.rss.complex.title">
 	Более сложная трансляция
       </title>
-      
+
       <para>
 	Сайт <ulink url="http://chicagocrime.org"/> предоставляет
 	RSS-потоки по последним преступлениям для каждого полицейского
@@ -1071,7 +1071,7 @@ class BeatFeed(Feed):
 	      <token>title</token>, <token>link</token> и
 	      <token>description</token> Django следует
 	      нижеприведённому алгоритму:
-	      
+
 	      <orderedlist>
 		<listitem>
 		  <para>
@@ -1126,7 +1126,7 @@ class BeatFeed(Feed):
       <title id="&BASEID;.rss.type.title">
 	Указание типа трансляции
       </title>
-      
+
       <para>
 	По умолчанию среда трансляций генерирует RSS 2.0. Для
 	изменения этого поведения надо добавить атрибут
@@ -1165,7 +1165,7 @@ class MyFeed(Feed):
 		<entry>Формат</entry>
 	      </row>
 	    </thead>
-	    
+
 	    <tbody>
 	      <row>
 		<entry>
@@ -1173,7 +1173,7 @@ class MyFeed(Feed):
 		</entry>
 		<entry>RSS 2.01 (по умолчанию)</entry>
 	      </row>
-	      
+
 	      <row>
 		<entry>
 		  <token>django.utils.feedgenerator.RssUserland091Feed</token>
@@ -1199,7 +1199,7 @@ class MyFeed(Feed):
       <title id="&BASEID;.rss.enclosures.title">
 	Вложения
       </title>
-      
+
       <para>
 	Для того, чтобы указать вложения (т.е. медиа ресурсы
 	ассоциированные с элементами трансляции, такими как MP3
@@ -1242,7 +1242,7 @@ class MyFeedWithEnclosures(Feed):
       <title id="&BASEID;.rss.language.title">
 	Язык
       </title>
-      
+
       <para>
 	Трансляции создаваемые средой автоматически получают
 	соответствующий тег <![CDATA[<language>]]> (RSS 2.0) или
@@ -1258,7 +1258,7 @@ class MyFeedWithEnclosures(Feed):
       <title id="&BASEID;.rss.urls.title">
 	URL
       </title>
-      
+
       <para>
 	Атрибут/метод <token>link</token> может возвращать как
 	абсолютный URL (т.е. <token>/blog/</token>), так и полный URL
@@ -1283,7 +1283,7 @@ class MyFeedWithEnclosures(Feed):
       <title id="&BASEID;.rss.tandem.title">
 	Одновременная трансляция Atom и RSS
       </title>
-      
+
       <para>
 	Некоторые разработчики предпочитают предоставлять трансляции в
 	обоих видах: RSS и Atom. С помощью Django это несложно
@@ -1342,7 +1342,7 @@ urlpatterns = patterns('',
     <title id="&BASEID;.sitemap.title">
       Среда генерации карты сайта
     </title>
-      
+
     <para>
       <emphasis>Карта сайта</emphasis> представляет собой XML файл,
       который располагается на вашем веб сервере и сообщает поисковым
@@ -1393,7 +1393,7 @@ urlpatterns = patterns('',
       <title id="&BASEID;.sitemap.install.title">
 	Установка
       </title>
-      
+
       <para>
 	Для того, чтобы установить карту сайта в ваше приложение,
 	следуйте нижеприведённой инструкции:
@@ -1445,7 +1445,7 @@ urlpatterns = patterns('',
       <title id="&BASEID;.sitemap.init.title">
 	Активация
       </title>
-      
+
       <para>
 	Для активации генератора карты сайта добавьте следующую строку
 	в файл привязок URL:
@@ -1493,7 +1493,7 @@ urlpatterns = patterns('',
       <title id="&BASEID;.sitemap.classes.title">
 	Классы
       </title>
-      
+
       <para>
 	Класс <classname>Sitemap</classname> &mdash; это обычный
 	Python класс, который представляет <quote>раздел</quote>
@@ -1651,13 +1651,13 @@ class BlogSitemap(Sitemap):
       </para>
 
     </section>
-		    
+
     <section id="&BASEID;.sitemap.shortcuts">
 
       <title id="&BASEID;.sitemap.shortcuts.title">
 	Полезное
       </title>
-      
+
       <para>
 	Среда генерации карты сайта поставляется с рядом удобных
 	классов пригодных для решения общих задач. Они будут описаны
@@ -1669,7 +1669,7 @@ class BlogSitemap(Sitemap):
 	<title id="&BASEID;.sitemap.shortcuts.flatpage.title">
 	  FlatPageSitemap
 	</title>
-      
+
 	<para>
 	  Класс <token>django.contrib.sitemaps.FlatPageSitemap</token>
 	  просматривает все плоские, страницы определённые для
@@ -1690,7 +1690,7 @@ class BlogSitemap(Sitemap):
 	<title id="&BASEID;.sitemap.shortcuts.generic.title">
 	  GenericSitemap
 	</title>
-      
+
 	<para>
 	  Класс <classname>GenericSitemap</classname> работает с любым
 	  базовым представлением (см. главу <quote><xref
@@ -1758,7 +1758,7 @@ urlpatterns = patterns('',
       <title id="&BASEID;.sitemap.index.title">
 	Создание индекса для карты сайта
       </title>
-      
+
       <para>
 	Среда генерации карты сайта также имеет возможность создавать
 	индекс для карты сайта, который ссылается на отдельные файлы с
@@ -1815,7 +1815,7 @@ urlpatterns = patterns('',
       <title id="&BASEID;.sitemap.google.title">
 	Уведомление Google
       </title>
-      
+
       <para>
 	Вы можете организовать уведомление Google об изменениях в
 	карте сайта, чтобы они знали, что надо произвести повторную
