@@ -1224,6 +1224,325 @@ def page(request, num="1"):
             
         </section>
         
+        <section id="&BASEID;.urlconf-tricks.higher-level-abstractions">
+
+            <title id="&BASEID;.urlconf-tricks.higher-level-abstractions">
+                Высокий уровень абстракции в функциях представления
+            </title>
+            
+            <para>
+                Говоря о разветвлении логики в функциях представления основанных 
+                на методе запроса, давайте посмотрим каким красивым способом мы 
+                можем это сделать:
+                <screen>
+                    # urls.py
+
+                    from django.conf.urls.defaults import *
+                    from mysite import views
+
+                    urlpatterns = patterns('',
+                        # ...
+                        (r'^somepage/$', views.some_page),
+                        # ...
+                    )
+
+                    # views.py
+
+                    from django.http import Http404, HttpResponseRedirect
+                    from django.shortcuts import render_to_response
+
+                    def some_page(request):
+                        if request.method == 'POST':
+                            do_something_for_post()
+                            return HttpResponseRedirect('/someurl/')
+                        elif request.method == 'GET':
+                            do_something_for_get()
+                            return render_to_response('page.html')
+                        else:
+                            raise Http404()
+                </screen>
+            </para>
+            
+            <para>
+                В этом примере, обработка методов <token>POST</token> и <token>GET</token>
+                функцией <function>some_page()</function> совсем отличается. 
+                Все что у них общего это URL <token>/somepage/</token>. Поэтому 
+                не очень красиво обрабатывать их одной функцией. Было бы на много
+                лучше, если бы одна функция обрабатывала запрос <token>GET</token>,
+                а другая - <token>POST</token> - и вызывалась только одна, которая
+                необходима для данного типа запросов.
+            </para>
+            
+            <para>
+                Мы можем реализовать это создав функцию, которая будет вызывать 
+                другие функции, руководствуясь определённой логикой. Этот пример
+                покажет как этот подход поможет упростить нашу функцию 
+                <function>some_page()</function>.
+                <screen>
+                    # views.py
+
+                    from django.http import Http404, HttpResponseRedirect
+                    from django.shortcuts import render_to_response
+
+                    def method_splitter(request, GET=None, POST=None):
+                        if request.method == 'GET' and GET is not None:
+                            return GET(request)
+                        elif request.method == 'POST' and POST is not None:
+                            return POST(request)
+                        raise Http404
+
+                    def some_page_get(request):
+                        assert request.method == 'GET'
+                        do_something_for_get()
+                        return render_to_response('page.html')
+
+                    def some_page_post(request):
+                        assert request.method == 'POST'
+                        do_something_for_post()
+                        return HttpResponseRedirect('/someurl/')
+
+                    # urls.py
+
+                    from django.conf.urls.defaults import *
+                    from mysite import views
+
+                    urlpatterns = patterns('',
+                        # ...
+                        (r'^somepage/$', views.method_splitter, {'GET': views.some_page_get, 'POST': views.some_page_post}),
+                        # ...
+                    )                
+                </screen>
+            </para>
+            
+            <para>
+                Давайте рассмотрим что она делает:
+                <itemizedlist>
+                
+                    <listitem>
+                        <para>
+                            Мы создали новую функцию представления 
+                            <function>method_splitter()</function>, которая
+                            вызывает другие функции в соответствии с 
+                            <token>request.method</token>. Она принимает два
+                            именованных аргумента <varname>GET</varname> и 
+                            <varname>POST</varname>, которые должны быть
+                            <emphasis>функциями представления</emphasis>.
+                            Если <token>request.method</token> равен 
+                            <token>'GET'</token> - вызывается функция 
+                            <function>GET</function>, если <token>'POST'</token> -
+                            <function>POST</function>. Если <token>request.method</token>
+                            равен чему-то другому(<token>HEAD</token>, например),
+                            или <varname>GET</varname> или <varname>POST</varname>
+                            не указаны, тогда вызывается исключения <token>Http404</token>.
+                        </para>
+                    </listitem>
+                    
+                    <listitem>
+                        <para>
+                            В схеме URL <token>/somepage/</token> указывает на
+                            <function>method_splitter()</function> и передает
+                            ей дополнительные параметры - функции представления
+                            для <varname>GET</varname> и <token>POST</token>.
+                        </para>
+                    </listitem>
+                    
+                    <listitem>
+                        <para>
+                            Разделяем функцию представления <function>some_page()</function>
+                            на две функции - <function>some_page_get()</function> 
+                            и <function>some_page_post()</function>. Это на много
+                            лучше, чем использовать всю эту логику в одной
+                            функции.
+                        </para>
+                        
+                        <para>
+                            Заметьте что теперь эти функции не должны проверять
+                            <token>request.method</token>, потому что 
+                            <function>method_splitter()</function> делает это.
+                            (В тот момент, когда <function>some_page_post()</function>
+                            будет вызвана, мы можем быть уверенны, что 
+                            <token>request.method</token> равен <token>'POST'</token>.)
+                            Все же, что бы быть уверенными, ну и для документирования,
+                            мы добавили <token>assert</token>, который проверяет
+                            что в <token>request.method</token> то, что мы ожидаем.
+                        </para>
+                    </listitem>  
+                                                          
+                </itemizedlist>
+            </para>
+            
+            <para>
+                111222
+                Now we have ourselves a nice, generic view function that encapsulates 
+                the logic of delegating a view by <token>request.method</token>. 
+                Nothing about <function>method_splitter()</function> is tied to 
+                our specific application, of course, so we can reuse it in other projects.
+            </para>
+            
+            <para>
+                But, while we’re at it, there’s one way to improve on <function>method_splitter()</function>. 
+                As it’s written, it assumes that the <token>GET</token> and <token>POST</token> 
+                views take no arguments other than <token>request</token>. 
+                What if we wanted to use <function>method_splitter()</function> 
+                with views that, for example, capture text from URLs, or take 
+                optional keyword arguments themselves?            
+            </para>
+            
+            <para>
+                To do that, we can use a nice Python feature: variable arguments 
+                with asterisks. We’ll show the example first, then explain it:
+                <screen>
+                    def method_splitter(request, *args, **kwargs):
+                        get_view = kwargs.pop('GET', None)
+                        post_view = kwargs.pop('POST', None)
+                        if request.method == 'GET' and get_view is not None:
+                            return get_view(request, *args, **kwargs)
+                        elif request.method == 'POST' and post_view is not None:
+                            return post_view(request, *args, **kwargs)
+                        raise Http404
+                </screen>
+            </para>
+            
+            <para>
+                Here, we’ve refactored <function>method_splitter()</function> 
+                to remove the <token>GET</token> and <token>POST</token> keyword arguments, 
+                in favor of <token>*args</token> and <token>**kwargs</token> (note the asterisks). 
+                This is a Python feature that allows a function to accept a dynamic, 
+                arbitrary number of arguments whose names aren’t known until runtime. 
+                If you put a single asterisk in front of a parameter in a function definition, 
+                any <emphasis>positional</emphasis> arguments to that function 
+                will be rolled up into a single tuple. If you put two asterisks 
+                in front of a parameter in a function definition, any <emphasis>keyword</emphasis>
+                arguments to that function will be rolled up into a single dictionary.            
+            </para>
+            
+            <para>
+            For example, with this function:            
+                <screen>
+                    def foo(*args, **kwargs):
+                        print "Positional arguments are:"
+                        print args
+                        print "Keyword arguments are:"
+                        print kwargs
+                </screen>
+            </para>
+            
+            <para>
+                Here’s how it would work: 
+                <screen>
+                    >>> foo(1, 2, 3)
+                    Positional arguments are:
+                    (1, 2, 3)
+                    Keyword arguments are:
+                    {}
+                    >>> foo(1, 2, name='Adrian', framework='Django')
+                    Positional arguments are:
+                    (1, 2)
+                    Keyword arguments are:
+                    {'framework': 'Django', 'name': 'Adrian'}
+                </screen>           
+            </para>
+            
+            <para>
+                Bringing this back to <function>method_splitter()</function>, 
+                you can see we’re using <token>*args</token> and <token>**kwargs</token> 
+                to accept <emphasis>any</emphasis> arguments to the function and 
+                pass them along to the appropriate view. But before we do that, 
+                we make two calls to <token>kwargs.pop()</token> to get the 
+                <token>GET</token> and <token>POST</token> arguments, if they’re available. 
+                (We’re using <function>pop()</function> with a default value of 
+                <token>None</token> to avoid <token>KeyError</token> if one or 
+                the other isn’t defined.)            
+            </para>
+        </section>
+        
+        <section id="&BASEID;.urlconf-tricks.wrapping-view-functions">
+
+            <title id="&BASEID;.urlconf-tricks.wrapping-view-functions">
+                Wrapping View Functions
+            </title>
+            
+            <para>
+                Our final view trick takes advantage of an advanced Python technique. 
+                Say you find yourself repeating a bunch of code throughout various views, 
+                as in this example:            
+                <screen>
+                    def my_view1(request):
+                        if not request.user.is_authenticated():
+                            return HttpResponseRedirect('/accounts/login/')
+                        # ...
+                        return render_to_response('template1.html')
+
+                    def my_view2(request):
+                        if not request.user.is_authenticated():
+                            return HttpResponseRedirect('/accounts/login/')
+                        # ...
+                        return render_to_response('template2.html')
+
+                    def my_view3(request):
+                        if not request.user.is_authenticated():
+                            return HttpResponseRedirect('/accounts/login/')
+                        # ...
+                        return render_to_response('template3.html')
+                </screen>
+            </para>
+            
+            <para>
+                Here, each view starts by checking that <token>request.user</token> 
+                is authenticated — that is, the current user has successfully logged 
+                into the site — and redirects to <token>/accounts/login/</token> if not. 
+                (Note that we haven’t yet covered <token>request.user</token> — 
+                <quote><xref linkend="djangobook.chap14" endterm="djangobook.chap14.title"/></quote> 
+                does — but, as you might imagine, <token>request.user</token> 
+                represents the current user, either logged-in or anonymous.)            
+            </para>
+            
+            <para>
+                It would be nice if we could remove that bit of repetitive code 
+                from each of these views and just mark them as requiring authentication. 
+                We can do that by making a view wrapper. Take a moment to study this:
+                <screen>
+                    def requires_login(view):
+                        def new_view(request, *args, **kwargs):
+                            if not request.user.is_authenticated():
+                                return HttpResponseRedirect('/accounts/login/')
+                            return view(request, *args, **kwargs)
+                        return new_view
+                </screen>
+            </para>
+            
+            <para>
+                This function, <function>requires_login</function>, takes a view 
+                function (<token>view</token>) and returns a new view function 
+                (<token>new_view</token>). The new function, new_view is defined 
+                <emphasis>within</emphasis> <function>requires_login</function> 
+                and handles the logic of checking <token>request.user.is_authenticated()</token>
+                and delegating to the original view (<token>view</token>).            
+            </para>
+            
+            <para>
+                Now, we can remove the <token>if not request.user.is_authenticated()</token> 
+                checks from our views and simply wrap them with <function>requires_login</function> 
+                in our URLconf:
+                <screen>
+                    from django.conf.urls.defaults import *
+                    from mysite.views import requires_login, my_view1, my_view2, my_view3
+
+                    urlpatterns = patterns('',
+                        (r'^view1/$', requires_login(my_view1)),
+                        (r'^view2/$', requires_login(my_view2)),
+                        (r'^view3/$', requires_login(my_view3)),
+                    )
+                </screen>            
+            </para>
+            
+            <para>
+                This has the same effect as before, but with less code redundancy. 
+                Now we’ve created a nice, generic function — <function>requires_login</function> 
+                that we can wrap around any view in order to make it require login.            
+            </para>
+        </section>
+        
     </section>
     
     <section id="&BASEID;.urlconf-include">
