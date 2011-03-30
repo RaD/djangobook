@@ -6,28 +6,32 @@
 ]>
 
 <chapter lang="ru" id="&BASEID;">
-    
+
     <title id="&BASEID;.title">
         Усовершенствованные представления и схемы URL
     </title>
 
     <para>
-        Перевод &copy; Попов Руслан &lt;radz &bull; yandex &bull; ru&gt;
+        Перевод &copy; Попов Руслан &lt;ruslan.popov &bull; gmail &bull; com&gt;
     </para>
-    
+
+    <para>
+        Перевод &copy; Дмитрий Косточно &lt;alerion.um &bull; gmail &bull; com&gt;
+    </para>
+
     <para>
         В главе <quote><xref linkend="djangobook.chap03" endterm="djangobook.chap03.title"/></quote>
         мы рассказали об основах функций представлений Django и о схеме URL, в которой
         определено соответствие URL этим функциям. Эта глава остановится
         на этих вопросах более подробно.
     </para>
-    
+
     <section id="&BASEID;.urlconf-tricks">
-        
+
         <title id="&BASEID;.urlconf-tricks.title">
             Схема URL: полезные приёмы
         </title>
-        
+
         <para>
             В схеме URL нет ничего особенного, как всё остальное в Django,
             это просто код на языке Python. Вы можете использовать это
@@ -36,13 +40,13 @@
         </para>
 
         <section id="&BASEID;.urlconf-tricks.stream-func-import">
-            
+
             <title id="&BASEID;.urlconf-tricks.stream-func-import.title">
                 Упорядочивание функций импорта
             </title>
-            
+
             <para>
-                Рассмотрим нижеприведённый файл со схемой URL, созданой по примеру главы 
+                Рассмотрим нижеприведённый файл со схемой URL, созданой по примеру главы
                 <quote>
                     <xref
                      linkend="djangobook.chap03"
@@ -59,7 +63,7 @@
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Как объяснялось в главе
                 <quote>
@@ -71,7 +75,7 @@
                 указывается в виде функционального объекта. Это означает, что
                 необходимо импортировать функции представления вначале модуля.
             </para>
-            
+
             <para>
                 Но по мере усложнения Django приложения, его схема URL также
                 растёт, управление этими импортами может быть
@@ -95,7 +99,7 @@
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Django предоставляет другой способ указания функции
                 представления для определённого шаблона в схеме URL. Вы можете
@@ -112,13 +116,13 @@
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Следует отметить кавычки вокруг имён представления! Мы используем
-                <quote>'mysite.views.current_datetime'</qoute> - с кавычками - 
-                вместо <quote>mysite.views.current_datetime</quote>
+                <token>'mysite.views.current_datetime'</token> с кавычками
+                вместо <token>mysite.views.current_datetime</token>
             </para>
-            
+
             <para>
                 Используя этот метод, больше нет необходимости импортировать
                 функции представления. Django автоматически импортирует
@@ -126,7 +130,7 @@
                 понадобится, в соответствии с текстовым описанием её имени и
                 пути.
             </para>
-            
+
             <para>
                 Ещё сильнее код можно сократить, используя общий префикс для
                 пути к функциям представления. В нашем примере, каждая строка
@@ -151,18 +155,18 @@
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Следует заметить, что не надо ставить завершающую точку в
                 префикс и не надо ставить точку перед именами функций
                 представления. Всё это будет автоматически сделано Django.
             </para>
-            
+
             <para>
                 Так какой из этих двух подходов лучше? Это зависит от вашего
                 стиля написания кода и ваших нужд.
             </para>
-            
+
             <para>
                 Преимущества использования строк вместо объектов:
                 <itemizedlist>
@@ -172,7 +176,7 @@
                             представления.
                         </para>
                     </listitem>
-                    
+
                     <listitem>
                         <para>
                             Более читаемая и управляемая схема URL в случае, если
@@ -182,7 +186,7 @@
                     </listitem>
                 </itemizedlist>
             </para>
-            
+
             <para>
                 Преимущества использования объектов вместо строк:
                 <itemizedlist>
@@ -197,7 +201,7 @@
                             (что-то нет такого в оригинальной книге) в этой главе.
                         </para>
                     </listitem>
-                    
+
                     <listitem>
                         <para>
                             Стиль Python, сохраняются его традиции, такие как
@@ -206,20 +210,20 @@
                     </listitem>
                 </itemizedlist>
             </para>
-            
+
             <para>
                 Оба подхода правильные. Вы можете смешивать их в одном файле,
                 описывающем схему URL. Это ваш выбор.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.multiple-prefixes">
-            
+
             <title id="&BASEID;.urlconf-tricks.multiple-prefixes.title">
                 Использование множества префиксов для представлений
             </title>
-            
+
             <para>
                 На практике при использовании строчной методики вы можете
                 столкнуться с ситуацией, когда функции представления в схеме
@@ -236,7 +240,7 @@
                         (r'^time/plus/(\d{1,2})/$', 'mysite.views.hours_ahead'),
                         (r'^tag/(\w+)/$', 'weblog.views.tag'),
                     )
-                    
+
                     # Теперь
                     from django.conf.urls.defaults import *
 
@@ -251,23 +255,23 @@
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Всё, о чём заботится среда разработки, &mdash; это о
                 существовании переменной <varname>rlpatterns</varname>. Эта
                 переменная может быть создана динамически, как это показано в
-                примере. Следует отметить, что объекты, возвращаемые 
+                примере. Следует отметить, что объекты, возвращаемые
                 <function>patterns()</function>, могут быть объединены оператором "+".
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.debug-mode">
-            
+
             <title id="&BASEID;.urlconf-tricks.debug-mode.title">
                 Специальные URL в режиме отладки
             </title>
-            
+
             <para>
                 Говоря о динамическом построении <varname>urlpatterns</varname>
                 , вы можете пожелать
@@ -291,23 +295,23 @@
                         )
                 </screen>
             </para>
-            
+
             <para>
                 В этом примере URL <token>/debuginfo/</token>будет работать,
                 только если параметр <token>DEBUG</token> установлен в
                 <token>True</token>.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.named-groups">
-            
+
             <title id="&BASEID;.urlconf-tricks.named-groups.title">
                 Использование именованных групп
             </title>
-            
+
             <para>
-                Ранее во всех примерах мы использовали простые, 
+                Ранее во всех примерах мы использовали простые,
                 <emphasis>не именованные</emphasis> группы регулярных
                 выражений. Мы ограничивали части URL круглыми скобками,
                 которые требовалось обработать функцией представления, как
@@ -316,13 +320,13 @@
                 для получения кусков URL и последующей их передачи функции
                 представления как именованных аргументов.
             </para>
-            
+
             <para>
                 <note>
                     <title>
                         Именованные аргументы или позиционные аргументы
                     </title>
-                    
+
                     <para>
                         Функция в языке Python может быть вызвана с использованием
                         именованных аргументов или с помощью обязательных
@@ -332,7 +336,7 @@
                         случае вы просто передаёте значения, они будут назначены
                         аргументам по порядку их определения в функции.
                     </para>
-                    
+
                     <para>
                         Например, рассмотрим эту простую функцию:
                         <screen>
@@ -340,7 +344,7 @@
                                 print "Selling %s unit(s) of %s at %s" % (quantity, item, price)
                         </screen>
                     </para>
-                    
+
                     <para>
                         Для вызова функции с помощью обязательных аргументов надо
                         перечислить их в порядке, в котором они определены в
@@ -349,7 +353,7 @@
                             sell('Socks', '$2.50', 6)
                         </screen>
                     </para>
-                    
+
                     <para>
                         Для вызова функции с помощью именованных аргументов
                         следует указать имена и значения аргументов. Следующие
@@ -363,7 +367,7 @@
                             sell(quantity=6, price='$2.50', item='Socks')
                         </screen>
                     </para>
-                    
+
                     <para>
                         Наконец, вы можете смешивать эти два подхода, пока
                         обязательные аргументы находятся на своих
@@ -377,7 +381,7 @@
                     </para>
                 </note>
             </para>
-            
+
             <para>
                 В регулярных выражениях Python синтаксис для именованных групп
                 регулярных выражений будет таким:
@@ -385,7 +389,7 @@
                 <token>name</token> является именем группы, а <token>pattern</token>
                 &mdash; неким шаблоном.
             </para>
-            
+
             <para>
                 Ниже дан пример файла со схемой URL, в котором используются
                 не именованные группы:
@@ -399,7 +403,7 @@
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Теперь приведём тот же файл, который переписан с
                 использованием именованных групп:
@@ -415,13 +419,13 @@ urlpatterns = patterns('',
 	  ]]>
                 </screen>
             </para>
-            
+
             <para>
                 Этот пример аналогичен предыдущему за исключением одного
                 тонкого различия: полученные значения передаются в функции
                 представления в виде именованных аргументов.
             </para>
-            
+
             <para>
                 Например, при использовании не именованных групп запрос к
                 <token>/articles/2006/03/</token>
@@ -430,7 +434,7 @@ urlpatterns = patterns('',
                     month_archive(request, '2006', '03')
                 </screen>
             </para>
-            
+
             <para>
                 Однако при использовании именованных групп тот же самый запрос
                 будет преобразован к такому вызову функции:
@@ -438,7 +442,7 @@ urlpatterns = patterns('',
                     month_archive(request, year='2006', month='03')
                 </screen>
             </para>
-            
+
             <para>
                 На практике, использование именованных групп позволяет вашей
                 схеме URL быть более очевидной и менее подверженной внесению
@@ -452,7 +456,7 @@ urlpatterns = patterns('',
                 групп такое изменение порядка параметров в регулярном
                 выражении никак не скажется на работе функции представления.
             </para>
-            
+
             <para>
                 Конечно, выгода от использования именованных групп идёт от
                 краткости. Некоторые разработчики найдут синтаксис именованных
@@ -463,15 +467,15 @@ urlpatterns = patterns('',
                 приложении, просто заглянув в файл со схемой URL, который
                 использует именованные функции.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.algorithm">
-            
+
             <title id="&BASEID;.urlconf-tricks.algorithm.title">
                 Понимание алгоритма совпадения/группировки
             </title>
-            
+
             <para>
                 Недостаток использования именованных групп в схеме URL в том,
                 что один шаблон не может содержать не именованные и именованные
@@ -487,14 +491,14 @@ urlpatterns = patterns('',
                             не именованные аргументы игнорируются.
                         </para>
                     </listitem>
-                    
+
                     <listitem>
                         <para>
                             Иначе, передаются все не именованные аргументы в качестве
                             обязательных.
                         </para>
                     </listitem>
-                    
+
                     <listitem>
                         <para>
                             В обоих случаях передаётся дополнительная информация в
@@ -504,15 +508,15 @@ urlpatterns = patterns('',
                     </listitem>
                 </itemizedlist>
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.extra-option">
-            
+
             <title id="&BASEID;.urlconf-tricks.extra-option.title">
                 Передача дополнительных аргументов в функции представления
             </title>
-            
+
             <para>
                 Случается, что иногда приходится писать незначительно
                 различающиеся функции представления. Например, скажем у вас
@@ -543,7 +547,7 @@ urlpatterns = patterns('',
                         return render_to_response('template2.html', {'m_list': m_list})
                 </screen>
             </para>
-            
+
             <para>
                 Мы сами дублируем код и это не элегантно. Сначала вы можете
                 решить убрать избыточность просто используя одно и то же
@@ -575,21 +579,21 @@ urlpatterns = patterns('',
                         return render_to_response(template_name, {'m_list': m_list})
                 </screen>
             </para>
-            
+
             <para>
                 Проблема такого решения заключается в том, что URL переносятся
                 в код. Если вы решите переименовать <token>/foo/</token> в
                 <token>/fooey/</token>, вам потребуется не забыть внести
                 изменения в код функции представления.
             </para>
-            
+
             <para>
                 Элегантное решение требует включить необязательный параметр в
                 шаблон схемы URL. Каждый шаблон в схеме может включать в себя
                 третий элемент: словарь именованных аргументов для передачи
                 его в функцию представления.
             </para>
-            
+
             <para>
                 Учитывая это, мы можем переписать наш предыдущий пример так:
                 <screen>
@@ -613,12 +617,12 @@ urlpatterns = patterns('',
                         return render_to_response(template_name, {'m_list': m_list})
                 </screen>
             </para>
-            
+
             <para>
-                Как можно увидеть, шаблон в схеме URL имеет третий параметр 
+                Как можно увидеть, шаблон в схеме URL имеет третий параметр
                 <varname>template_name</varname>
             </para>
-            
+
             <para>
                 Такая методика является отличным способом передачи
                 дополнительной информации в функции представления с
@@ -630,18 +634,18 @@ urlpatterns = patterns('',
                      endterm="djangobook.chap11.title"/>
                 </quote>.
             </para>
-            
+
             <para>
                 Следующие секции содержат ряд идей о том как вы можете
                 использовать эту методику в своих проектах.
             </para>
-            
+
             <section id="&BASEID;.urlconf-tricks.extra-option.faking-capture">
-                
+
                 <title id="&BASEID;.urlconf-tricks.extra-option.faking-capture.title">
                     Faking Captured URLconf Values
                 </title>
-                
+
                 <para>
                     Допустим, у вас есть набор представлений, которые
                     соответствуют шаблону, наряду с другим URL, который не
@@ -651,7 +655,7 @@ urlpatterns = patterns('',
                     дополнительной опции для обработки этого дополнительного URL
                     той же функцией представления.
                 </para>
-                
+
                 <para>
                     Например, у вас может быть приложение, которое отображает
                     некие данные для определённого дня, вот с такими URL:
@@ -664,7 +668,7 @@ urlpatterns = patterns('',
                         /mydata/dec/31/
                     </screen>
                 </para>
-                
+
                 <para>
                     Довольно просто это обработать, используя синтаксис
                     именованных групп:
@@ -676,7 +680,7 @@ urlpatterns = patterns('',
 	    ]]>
                     </screen>
                 </para>
-                
+
                 <para>
                     А сигнатура функции представления станет такой:
                     <screen>
@@ -684,7 +688,7 @@ urlpatterns = patterns('',
                         # ....
                     </screen>
                 </para>
-                
+
                 <para>
                     Это прямолинейный подход, ничего подобного раньше вы не
                     видели. Эта уловка пригодится когда понадобится добавить
@@ -692,7 +696,7 @@ urlpatterns = patterns('',
                     <token>my_view</token>, но её URL не будет обрабатывать
                     <token>month</token> и/или <token>day</token>.
                 </para>
-                
+
                 <para>
                     Например, вы можете добавить другой URL,
                     <token>/mydata/birthday/</token>, который будет аналогичен
@@ -707,23 +711,23 @@ urlpatterns = patterns('',
 	    ]]>
                     </screen>
                 </para>
-                
+
                 <para>
                     Секрет в том, что не требуется вносить какие-либо изменения
                     в код функции представления. Функция должна
-                    <emphasis>обрабатывать</emphasis> параметры 
+                    <emphasis>обрабатывать</emphasis> параметры
                     <varname>month</varname> и <varname>day</varname>, не важно
                     получены ли они из URL или через дополнительные параметры.
                 </para>
-                
+
             </section>
-            
+
             <section id="&BASEID;.urlconf-tricks.extra-option.making-view-generic">
-                
+
                 <title id="&BASEID;.urlconf-tricks.extra-option.making-view-generic.title">
                     Переход к обобщённым представлениям
                 </title>
-                
+
                 <para>
                     Снижение количества дублирующего кода является хорошим тоном
                     разработки программного обеспечения. Например, эти функции,
@@ -731,12 +735,12 @@ urlpatterns = patterns('',
                     <screen>
                         def say_hello(person_name):
                             print 'Hello, %s' % person_name
-                        
+
                         def say_goodbye(person_name):
                             print 'Goodbye, %s' % person_name
                     </screen>
                 </para>
-                
+
                 <para>
                     мы можем упростить, выделив приветствие в параметр функции:
                     <screen>
@@ -744,13 +748,13 @@ urlpatterns = patterns('',
                             print '%s, %s' % (greeting, person_name)
                     </screen>
                 </para>
-                
+
                 <para>
                     Вы можете использовать эту философию применимо к
                     представлениям Django, используя дополнительные параметры
                     шаблонов схемы URL.
                 </para>
-                
+
                 <para>
                     Учитывая это, вы можете начать создание высокоуровневых
                     абстракций для ваших представлений. Вместо того, чтобы
@@ -762,61 +766,61 @@ urlpatterns = patterns('',
                     отображает список объектов, где тип объекта является
                     переменной</quote>.
                 </para>
-                
+
                 <para>
                     Для примера рассмотрим следующий код:
                     <screen>
                         # urls.py
-                        
+
                         from django.conf.urls.defaults import *
                         from mysite import views
-                        
+
                         urlpatterns = patterns('',
                             (r'^events/$', views.event_list),
                             (r'^blog/entries/$', views.entry_list),
                         )
-                        
+
                         # views.py
-                        
+
                         from django.shortcuts import render_to_response
                         from mysite.models import Event, BlogEntry
-                        
+
                         def event_list(request):
                             obj_list = Event.objects.all()
                             return render_to_response('mysite/event_list.html', {'event_list': obj_list})
-                        
+
                         def entry_list(request):
                             obj_list = BlogEntry.objects.all()
                             return render_to_response('mysite/blogentry_list.html', {'entry_list': obj_list})
                     </screen>
                 </para>
-                
+
                 <para>
                     Эти два представления делают то же самое: они отображают
                     список объектов. Таким образом, можно упростить тип объекта,
                     который они отображают:
                     <screen>
                         # urls.py
-                        
+
                         from django.conf.urls.defaults import *
                         from mysite import models, views
-                        
+
                         urlpatterns = patterns('',
                             (r'^events/$', views.object_list, {'model': models.Event}),
                             (r'^blog/entries/$', views.object_list, {'model': models.BlogEntry}),
                         )
-                        
+
                         # views.py
-                        
+
                         from django.shortcuts import render_to_response
-                        
+
                         def object_list(request, model):
                             obj_list = model.objects.all()
                             template_name = 'mysite/%s_list.html' % model.__name__.lower()
                             return render_to_response(template_name, {'object_list': obj_list})
                     </screen>
                 </para>
-                
+
                 <para>
                     Внеся небольшие изменения, мы неожиданно получили образцовое
                     представление, пригодное для многократного
@@ -834,7 +838,7 @@ urlpatterns = patterns('',
                                 Python любого типа, а не только строки.
                             </para>
                         </listitem>
-                        
+
                         <listitem>
                             <para>
                                 Строка <token>model.objects.all()</token> является
@@ -846,11 +850,11 @@ urlpatterns = patterns('',
                                 Следует отметить, что код ничего не знает о типе объекта
                                 <varname>model</varname>, единственное требование
                                 &mdash; <varname>model</varname>
-                                должна иметь атрибут <token>objects</token>, у 
+                                должна иметь атрибут <token>objects</token>, у
                                 которого как раз есть метод <token>all()</token>.
                             </para>
                         </listitem>
-                        
+
                         <listitem>
                             <para>
                                 Мы используем <token>model.__name__.lower()</token>
@@ -864,40 +868,40 @@ urlpatterns = patterns('',
                                 <quote>BlogEntry</quote>.
                             </para>
                         </listitem>
-                        
+
                         <listitem>
                             <para>
                                 Разница между примерами в том, что мы передаём
                                 обобщённую переменную <varname>object_list</varname>
                                 в шаблон. Мы могли легко изменить имя этой переменной на
                                 <varname>blogentry_list</varname> или
-                                <varname>event_list</varname>, но оставим это в 
+                                <varname>event_list</varname>, но оставим это в
                                 качестве домашнего задания.
                             </para>
                         </listitem>
                     </itemizedlist>
                 </para>
-                
+
                 <para>
                     Так как сайты, хранящие свои данные в базах данных,
                     используют одинаковые шаблоны, Django поставляется с набором
                     <quote>общие представления</quote>, который используется
                     вышеописанную методику для сохранения вашего времени. Мы
-                    рассмотрим встроенные общие представления Django в 
+                    рассмотрим встроенные общие представления Django в
                     главе <quote>
                         <xref linkend="djangobook.chap11"
                          endterm="djangobook.chap11.title"/>
                     </quote>.
                 </para>
-                
+
             </section>
-            
+
             <section id="&BASEID;.urlconf-tricks.extra-option.view-options">
 
                 <title id="&BASEID;.urlconf-tricks.extra-option.view-options.title">
                     Giving a View Configuration Options
                 </title>
-                
+
                 <para>
                     При распространении приложения для Django может так
                     случиться, что ваши пользователи пожелают внести некоторые
@@ -907,7 +911,7 @@ urlpatterns = patterns('',
                     такому изменению. Для этого опять надо использовать
                     дополнительные параметры шаблона схемы URL.
                 </para>
-                
+
                 <para>
                     Чаще всего изменению подвергаются имена шаблонов:
                     <screen>
@@ -916,16 +920,16 @@ urlpatterns = patterns('',
                             return render_to_response(template_name, {'var': var})
                     </screen>
                 </para>
-                
+
             </section>
-            
+
             <section id="&BASEID;.urlconf-tricks.extra-option.precedence">
-                
+
                 <title id="&BASEID;.urlconf-tricks.extra-option.precedence.title">
                     Understanding Precedence of Captured Values vs. Extra
                     Options
                 </title>
-                
+
                 <para>
                     При наличии конфликта параметров, дополнительные параметры
                     шаблона схемы URL получают преимущество над передаваемыми в
@@ -934,7 +938,7 @@ urlpatterns = patterns('',
                     параметр включает в себя переменную с таким же именем,
                     именно он и будет использован.
                 </para>
-                
+
                 <para>
                     Например:
                     <screen>
@@ -947,17 +951,17 @@ urlpatterns = patterns('',
 
                     </screen>
                 </para>
-                
+
                 <para>
                     В данном примере параметр <varname>id</varname> находится и
                     в регулярном выражении и в словаре дополнительных
                     параметров. Параметр из словаря получает преимущество. Это
                     означает, что любой запрос (т.е., <token>/mydata/2/</token>
                     или <token>/mydata/432432/</token>) будет интерпретирован
-                    как-будто бы параметр <token>id</token> установлен в 
+                    как-будто бы параметр <token>id</token> установлен в
                     <token>3</token>, независимо от значения в URL.
                 </para>
-                
+
                 <para>
                     Проницательные читатели отметят, что в данном случае захват
                     переменной <varname>id</varname> с помощью регулярного
@@ -967,24 +971,24 @@ urlpatterns = patterns('',
                     поведение, мы напоминаем об этом лишь для того, чтобы вы не
                     сделали ошибку.
                 </para>
-                
+
             </section>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.defargs">
-            
+
             <title id="&BASEID;.urlconf-tricks.defargs.title">
                 Использование стандартных аргументов для представления
             </title>
-            
+
             <para>
                 Другим удобным способом является указание стандартных значений
                 для аргументов представления. Эти значения используются в
                 случае, когда соответствующие параметры не определены при
                 вызове функций.
             </para>
-            
+
             <para>
                 Пример:
                 <screen>
@@ -1006,7 +1010,7 @@ def page(request, num="1"):
 	  ]]>
                 </screen>
             </para>
-            
+
             <para>
                 В данном примере оба шаблона URL указывают на одно и то же
                 представление, <token>views.page</token> , но первый шаблон не
@@ -1017,14 +1021,14 @@ def page(request, num="1"):
                 будет использовать значение для параметра <varname>num</varname>
                 полученное с помощью регулярного выражения.
             </para>
-            
+
             <para>
-                Заметьте, что в качестве значения по-умолчанию мы указали 
-                <emphasis>строку</emphasis> <token>"1"</token>, а не число 
+                Заметьте, что в качестве значения по-умолчанию мы указали
+                <emphasis>строку</emphasis> <token>"1"</token>, а не число
                 <token>1</token>. Это для согласованности т.к. любое полученное для
                 <varname>num</varname> значение будет строкой.
             </para>
-            
+
             <para>
                 Как объяснялось ранее, обычно используют данную методику
                 совместно с параметрами конфигурации. Этот пример немного
@@ -1041,22 +1045,22 @@ def page(request, num="1"):
                         return render_to_response(template_name, {'var': var})
                 </screen>
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.speccasingviews">
-            
+
             <title id="&BASEID;.urlconf-tricks.speccasingviews.title">
                 Представления для особых случаев
             </title>
-            
+
             <para>
                 Иногда так случается, что есть шаблон в вашей схеме URL,
                 который обрабатывает большой набор URL, но вам необходимо
                 реализовать для них особые случаи. Для этого надо просто
                 описать эти случаи первыми.
             </para>
-            
+
             <para>
                 Например, страницы <quote>добавить объект</quote> на сайте
                 администратора Django представлены в схеме URL такой строкой:
@@ -1068,7 +1072,7 @@ def page(request, num="1"):
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Эта строка совпадает с URL такими как <token>/myblog/entries/add/</token>
                 и <token>/auth/groups/add/</token>. Однако страница добавления
@@ -1085,7 +1089,7 @@ def page(request, num="1"):
                             # do normal code
                 </screen>
             </para>
-            
+
             <para>
                 Но такой подход не элегантен по причинам, которые мы обсуждали
                 чуть ранее: этот подход помещает логику обработки URL в
@@ -1101,22 +1105,22 @@ def page(request, num="1"):
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Теперь вызов <token>/auth/user/add/</token> будет обработан
                 представлением <token>user_add_stage</token>. Несмотря на то,
                 что этот URL совпадает со вторым шаблоном, он будет обработан
                 первым.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.captchatext">
 
             <title id="&BASEID;.urlconf-tricks.captchatext.title">
                 Обработка совпадающего текста
             </title>
-            
+
             <para>
                 Каждый аргумент, полученный из URL с помощью регулярного
                 выражения передаётся представлению в виде обычной
@@ -1127,14 +1131,14 @@ def page(request, num="1"):
 	  ]]>
                 </screen>
             </para>
-            
+
             <para>
                 Аргумент <varname>year</varname> в этой строке будет передан в
                 представление <token>views.year_archive()</token> в виде
                 строки, не в виде целого числа, несмотря на то, что выражение
                 <token>\d{4}</token> совпадает только со строкой чисел.
             </para>
-            
+
             <para>
                 Эту особенность следует помнить при разработке
                 приложения. Множество встроенных функций Python принимают
@@ -1151,28 +1155,28 @@ def page(request, num="1"):
                     datetime.date(1993, 7, 9)
                 </screen>
             </para>
-            
+
             <para>
                 С точки зрения схемы URL это ошибка выглядит так:
                 <screen>
                     # urls.py
-                    
+
                     from django.conf.urls.defaults import *
-                    
+
                     urlpatterns = patterns('',
                         (r'^articles/(\d{4})/(\d{2})/(\d{2})/$', views.day_archive),
                     )
-                    
+
                     # views.py
-                    
+
                     import datetime
-                    
+
                     def day_archive(request, year, month, day)
                         # The following statement raises a TypeError!
                         date = datetime.date(year, month, day)
                 </screen>
             </para>
-            
+
             <para>
                 А правильно можно написать так:
                 <screen>
@@ -1180,7 +1184,7 @@ def page(request, num="1"):
                         date = datetime.date(int(year), int(month), int(day))
                 </screen>
             </para>
-            
+
             <para>
                 Следует отметить, что сам метод <function>int()</function>
                 вызывает исключение <token>ValueError</token> при передаче ему
@@ -1188,15 +1192,15 @@ def page(request, num="1"):
                 ошибку в нашем случае, так как регулярное выражения в шаблоне URL
                 обеспечивает передачу только цифр.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.what-to-search">
-            
+
             <title id="&BASEID;.urlconf-tricks.what-to-search.title">
                 Определение того, с чем совпадёт шаблон URL
             </title>
-            
+
             <para>
                 При получении запроса Django пытается найти соответствующий
                 шаблон в схеме URL как для обычной строки Python (не как для
@@ -1205,14 +1209,14 @@ def page(request, num="1"):
                 внимание. Также не рассматривается начальный слэш, потому что
                 каждое URL имеет начальный слэш.
             </para>
-            
+
             <para>
                 Например, в запросе <token>http://www.example.com/myapp/</token>
                 Django будет искать шаблон URL для <token>myapp/</token>. В запросе
                 <token>http://www.example.com/myapp/?page=3</token> Django
                 будет искать шаблон для <token>myapp/</token>.
             </para>
-            
+
             <para>
                 Метод запроса (т.е. <token>GET</token>, <token>POST</token>,
                 <token>HEAD</token>) <emphasis>не</emphasis> принимается во
@@ -1221,18 +1225,18 @@ def page(request, num="1"):
                 запроса в зависимости от использованного метода лежит
                 полностью на функциях представления.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.higher-level-abstractions">
 
             <title id="&BASEID;.urlconf-tricks.higher-level-abstractions">
                 Высокий уровень абстракции в функциях представления
             </title>
-            
+
             <para>
-                Говоря о разветвлении логики в функциях представления основанных 
-                на методе запроса, давайте посмотрим каким красивым способом мы 
+                Говоря о разветвлении логики в функциях представления основанных
+                на методе запроса, давайте посмотрим каким красивым способом мы
                 можем это сделать:
                 <screen>
                     # urls.py
@@ -1262,21 +1266,21 @@ def page(request, num="1"):
                             raise Http404()
                 </screen>
             </para>
-            
+
             <para>
                 В этом примере, обработка методов <token>POST</token> и <token>GET</token>
-                функцией <function>some_page()</function> совсем отличается. 
-                Все что у них общего это URL <token>/somepage/</token>. Поэтому 
+                функцией <function>some_page()</function> совсем отличается.
+                Все что у них общего это URL <token>/somepage/</token>. Поэтому
                 не очень красиво обрабатывать их одной функцией. Было бы на много
                 лучше, если бы одна функция обрабатывала запрос <token>GET</token>,
                 а другая - <token>POST</token> - и вызывалась только одна, которая
                 необходима для данного типа запросов.
             </para>
-            
+
             <para>
-                Мы можем реализовать это создав функцию, которая будет вызывать 
+                Мы можем реализовать это создав функцию, которая будет вызывать
                 другие функции, руководствуясь определённой логикой. Этот пример
-                покажет как этот подход поможет упростить нашу функцию 
+                покажет как этот подход поможет упростить нашу функцию
                 <function>some_page()</function>.
                 <screen>
                     # views.py
@@ -1310,25 +1314,25 @@ def page(request, num="1"):
                         # ...
                         (r'^somepage/$', views.method_splitter, {'GET': views.some_page_get, 'POST': views.some_page_post}),
                         # ...
-                    )                
+                    )
                 </screen>
             </para>
-            
+
             <para>
                 Давайте рассмотрим что она делает:
                 <itemizedlist>
-                
+
                     <listitem>
                         <para>
-                            Мы создали новую функцию представления 
+                            Мы создали новую функцию представления
                             <function>method_splitter()</function>, которая
-                            вызывает другие функции в соответствии с 
+                            вызывает другие функции в соответствии с
                             <token>request.method</token>. Она принимает два
-                            именованных аргумента <varname>GET</varname> и 
+                            именованных аргумента <varname>GET</varname> и
                             <varname>POST</varname>, которые должны быть
                             <emphasis>функциями представления</emphasis>.
-                            Если <token>request.method</token> равен 
-                            <token>'GET'</token> - вызывается функция 
+                            Если <token>request.method</token> равен
+                            <token>'GET'</token> - вызывается функция
                             <function>GET</function>, если <token>'POST'</token> -
                             <function>POST</function>. Если <token>request.method</token>
                             равен чему-то другому(<token>HEAD</token>, например),
@@ -1336,7 +1340,7 @@ def page(request, num="1"):
                             не указаны, тогда вызывается исключения <token>Http404</token>.
                         </para>
                     </listitem>
-                    
+
                     <listitem>
                         <para>
                             В схеме URL <token>/somepage/</token> указывает на
@@ -1345,51 +1349,51 @@ def page(request, num="1"):
                             для <varname>GET</varname> и <token>POST</token>.
                         </para>
                     </listitem>
-                    
+
                     <listitem>
                         <para>
                             Разделяем функцию представления <function>some_page()</function>
-                            на две функции - <function>some_page_get()</function> 
+                            на две функции - <function>some_page_get()</function>
                             и <function>some_page_post()</function>. Это на много
                             лучше, чем использовать всю эту логику в одной
                             функции.
                         </para>
-                        
+
                         <para>
                             Заметьте что теперь эти функции не должны проверять
-                            <token>request.method</token>, потому что 
+                            <token>request.method</token>, потому что
                             <function>method_splitter()</function> делает это.
                             (В тот момент, когда <function>some_page_post()</function>
-                            будет вызвана, мы можем быть уверенны, что 
+                            будет вызвана, мы можем быть уверенны, что
                             <token>request.method</token> равен <token>'POST'</token>.)
                             Все же, что бы быть уверенными, ну и для документирования,
                             мы добавили <token>assert</token>, который проверяет
                             что в <token>request.method</token> то, что мы ожидаем.
                         </para>
-                    </listitem>  
-                                                          
+                    </listitem>
+
                 </itemizedlist>
             </para>
-            
+
             <para>
                 111222
-                Now we have ourselves a nice, generic view function that encapsulates 
-                the logic of delegating a view by <token>request.method</token>. 
-                Nothing about <function>method_splitter()</function> is tied to 
+                Now we have ourselves a nice, generic view function that encapsulates
+                the logic of delegating a view by <token>request.method</token>.
+                Nothing about <function>method_splitter()</function> is tied to
                 our specific application, of course, so we can reuse it in other projects.
             </para>
-            
+
             <para>
-                But, while we’re at it, there’s one way to improve on <function>method_splitter()</function>. 
-                As it’s written, it assumes that the <token>GET</token> and <token>POST</token> 
-                views take no arguments other than <token>request</token>. 
-                What if we wanted to use <function>method_splitter()</function> 
-                with views that, for example, capture text from URLs, or take 
-                optional keyword arguments themselves?            
+                But, while we’re at it, there’s one way to improve on <function>method_splitter()</function>.
+                As it’s written, it assumes that the <token>GET</token> and <token>POST</token>
+                views take no arguments other than <token>request</token>.
+                What if we wanted to use <function>method_splitter()</function>
+                with views that, for example, capture text from URLs, or take
+                optional keyword arguments themselves?
             </para>
-            
+
             <para>
-                To do that, we can use a nice Python feature: variable arguments 
+                To do that, we can use a nice Python feature: variable arguments
                 with asterisks. We’ll show the example first, then explain it:
                 <screen>
                     def method_splitter(request, *args, **kwargs):
@@ -1402,22 +1406,22 @@ def page(request, num="1"):
                         raise Http404
                 </screen>
             </para>
-            
+
             <para>
-                Here, we’ve refactored <function>method_splitter()</function> 
-                to remove the <token>GET</token> and <token>POST</token> keyword arguments, 
-                in favor of <token>*args</token> and <token>**kwargs</token> (note the asterisks). 
-                This is a Python feature that allows a function to accept a dynamic, 
-                arbitrary number of arguments whose names aren’t known until runtime. 
-                If you put a single asterisk in front of a parameter in a function definition, 
-                any <emphasis>positional</emphasis> arguments to that function 
-                will be rolled up into a single tuple. If you put two asterisks 
+                Here, we’ve refactored <function>method_splitter()</function>
+                to remove the <token>GET</token> and <token>POST</token> keyword arguments,
+                in favor of <token>*args</token> and <token>**kwargs</token> (note the asterisks).
+                This is a Python feature that allows a function to accept a dynamic,
+                arbitrary number of arguments whose names aren’t known until runtime.
+                If you put a single asterisk in front of a parameter in a function definition,
+                any <emphasis>positional</emphasis> arguments to that function
+                will be rolled up into a single tuple. If you put two asterisks
                 in front of a parameter in a function definition, any <emphasis>keyword</emphasis>
-                arguments to that function will be rolled up into a single dictionary.            
+                arguments to that function will be rolled up into a single dictionary.
             </para>
-            
+
             <para>
-            For example, with this function:            
+            For example, with this function:
                 <screen>
                     def foo(*args, **kwargs):
                         print "Positional arguments are:"
@@ -1426,9 +1430,9 @@ def page(request, num="1"):
                         print kwargs
                 </screen>
             </para>
-            
+
             <para>
-                Here’s how it would work: 
+                Here’s how it would work:
                 <screen>
                     >>> foo(1, 2, 3)
                     Positional arguments are:
@@ -1440,32 +1444,32 @@ def page(request, num="1"):
                     (1, 2)
                     Keyword arguments are:
                     {'framework': 'Django', 'name': 'Adrian'}
-                </screen>           
+                </screen>
             </para>
-            
+
             <para>
-                Bringing this back to <function>method_splitter()</function>, 
-                you can see we’re using <token>*args</token> and <token>**kwargs</token> 
-                to accept <emphasis>any</emphasis> arguments to the function and 
-                pass them along to the appropriate view. But before we do that, 
-                we make two calls to <token>kwargs.pop()</token> to get the 
-                <token>GET</token> and <token>POST</token> arguments, if they’re available. 
-                (We’re using <function>pop()</function> with a default value of 
-                <token>None</token> to avoid <token>KeyError</token> if one or 
-                the other isn’t defined.)            
+                Bringing this back to <function>method_splitter()</function>,
+                you can see we’re using <token>*args</token> and <token>**kwargs</token>
+                to accept <emphasis>any</emphasis> arguments to the function and
+                pass them along to the appropriate view. But before we do that,
+                we make two calls to <token>kwargs.pop()</token> to get the
+                <token>GET</token> and <token>POST</token> arguments, if they’re available.
+                (We’re using <function>pop()</function> with a default value of
+                <token>None</token> to avoid <token>KeyError</token> if one or
+                the other isn’t defined.)
             </para>
         </section>
-        
+
         <section id="&BASEID;.urlconf-tricks.wrapping-view-functions">
 
             <title id="&BASEID;.urlconf-tricks.wrapping-view-functions">
                 Wrapping View Functions
             </title>
-            
+
             <para>
-                Our final view trick takes advantage of an advanced Python technique. 
-                Say you find yourself repeating a bunch of code throughout various views, 
-                as in this example:            
+                Our final view trick takes advantage of an advanced Python technique.
+                Say you find yourself repeating a bunch of code throughout various views,
+                as in this example:
                 <screen>
                     def my_view1(request):
                         if not request.user.is_authenticated():
@@ -1486,20 +1490,20 @@ def page(request, num="1"):
                         return render_to_response('template3.html')
                 </screen>
             </para>
-            
+
             <para>
-                Here, each view starts by checking that <token>request.user</token> 
-                is authenticated — that is, the current user has successfully logged 
-                into the site — and redirects to <token>/accounts/login/</token> if not. 
-                (Note that we haven’t yet covered <token>request.user</token> — 
-                <quote><xref linkend="djangobook.chap14" endterm="djangobook.chap14.title"/></quote> 
-                does — but, as you might imagine, <token>request.user</token> 
-                represents the current user, either logged-in or anonymous.)            
+                Here, each view starts by checking that <token>request.user</token>
+                is authenticated — that is, the current user has successfully logged
+                into the site — and redirects to <token>/accounts/login/</token> if not.
+                (Note that we haven’t yet covered <token>request.user</token> —
+                <quote><xref linkend="djangobook.chap14" endterm="djangobook.chap14.title"/></quote>
+                does — but, as you might imagine, <token>request.user</token>
+                represents the current user, either logged-in or anonymous.)
             </para>
-            
+
             <para>
-                It would be nice if we could remove that bit of repetitive code 
-                from each of these views and just mark them as requiring authentication. 
+                It would be nice if we could remove that bit of repetitive code
+                from each of these views and just mark them as requiring authentication.
                 We can do that by making a view wrapper. Take a moment to study this:
                 <screen>
                     def requires_login(view):
@@ -1510,19 +1514,19 @@ def page(request, num="1"):
                         return new_view
                 </screen>
             </para>
-            
+
             <para>
-                This function, <function>requires_login</function>, takes a view 
-                function (<token>view</token>) and returns a new view function 
-                (<token>new_view</token>). The new function, new_view is defined 
-                <emphasis>within</emphasis> <function>requires_login</function> 
+                This function, <function>requires_login</function>, takes a view
+                function (<token>view</token>) and returns a new view function
+                (<token>new_view</token>). The new function, new_view is defined
+                <emphasis>within</emphasis> <function>requires_login</function>
                 and handles the logic of checking <token>request.user.is_authenticated()</token>
-                and delegating to the original view (<token>view</token>).            
+                and delegating to the original view (<token>view</token>).
             </para>
-            
+
             <para>
-                Now, we can remove the <token>if not request.user.is_authenticated()</token> 
-                checks from our views and simply wrap them with <function>requires_login</function> 
+                Now, we can remove the <token>if not request.user.is_authenticated()</token>
+                checks from our views and simply wrap them with <function>requires_login</function>
                 in our URLconf:
                 <screen>
                     from django.conf.urls.defaults import *
@@ -1533,37 +1537,37 @@ def page(request, num="1"):
                         (r'^view2/$', requires_login(my_view2)),
                         (r'^view3/$', requires_login(my_view3)),
                     )
-                </screen>            
+                </screen>
             </para>
-            
+
             <para>
-                This has the same effect as before, but with less code redundancy. 
-                Now we’ve created a nice, generic function — <function>requires_login</function> 
-                that we can wrap around any view in order to make it require login.            
+                This has the same effect as before, but with less code redundancy.
+                Now we’ve created a nice, generic function — <function>requires_login</function>
+                that we can wrap around any view in order to make it require login.
             </para>
         </section>
-        
+
     </section>
-    
+
     <section id="&BASEID;.urlconf-include">
-        
+
         <title id="&BASEID;.urlconf-include.title">
             Подключение других схем URL
         </title>
-        
+
         <para>
             Если вы планируете использовать ваш код в нескольких Django
             сайтах, вам следует переработать ваш файл со схемой URL таким
             образом, чтобы он позволял включать другие схемы.
         </para>
-        
+
         <para>
             В любом случае ваша схема может <quote>подключать</quote> другие
             схемы. По существу происходит <quote>внедрение</quote> набора URL
             после этой команды. Например:
             <screen>
                 from django.conf.urls.defaults import *
-                
+
                 urlpatterns = patterns('',
                     (r'^weblog/', include('mysite.blog.urls')),
                     (r'^photos/', include('mysite.photos.urls')),
@@ -1571,7 +1575,7 @@ def page(request, num="1"):
                 )
             </screen>
         </para>
-        
+
         <para>
             Здесь есть важный момент: регулярные выражения в этом примере,
             которые указывают на <function>include()</function> <emphasis>не имеют</emphasis>
@@ -1581,27 +1585,27 @@ def page(request, num="1"):
             часть от URL и отправляет оставшуюся часть в подключенные
             схемы для дальнейшей обработки.
         </para>
-        
+
         <para>
-            Продолжая работу над нашим примером 
+            Продолжая работу над нашим примером
             <footnote>
                 <para>
                     См. предыдущий пример. Данный код
-                    подключается командой 
+                    подключается командой
                     <token>include('mysite.blog.urls')</token>.
                 </para>
             </footnote>
             :
             <screen>
                 from django.conf.urls.defaults import *
-                
+
                 urlpatterns = patterns('',
                     (r'^(\d\d\d\d)/$', 'mysite.blog.views.year_detail'),
                     (r'^(\d\d\d\d)/(\d\d)/$', 'mysite.blog.views.month_detail'),
                 )
             </screen>
         </para>
-        
+
         <para>
             Используя эти две схемы URL, покажем как будут обработаны
             тестовые запросы:
@@ -1617,19 +1621,19 @@ def page(request, num="1"):
                         <token>mysite.blog.urls</token>.
                     </para>
                 </listitem>
-                
+
                 <listitem>
                     <para>
                         <token>/weblog//2007/</token>: В первом наборе привязок
                         совпадёт шаблон <token>r'^weblog/'</token>.Так как для
                         этого шаблона используется <function>include()</function>,
                         Django отрежет совпавший текст, в данном случае это будет
-                        <token>weblog/</token>. Оставшаяся часть URL 
+                        <token>weblog/</token>. Оставшаяся часть URL
                         (т.е.<token>/2007/</token>, с ведущим слэшом) не совпадёт
                         ни с одним шаблоном в <token>mysite.blog.urls</token>.
                     </para>
                 </listitem>
-                
+
                 <listitem>
                     <para>
                         <token>/about/</token>: Этот запрос будет обработан
@@ -1640,13 +1644,13 @@ def page(request, num="1"):
                 </listitem>
             </itemizedlist>
         </para>
-        
+
         <section id="&BASEID;.urlconf-include.how-work-captured">
-            
+
             <title id="&BASEID;.urlconf-include.how-work-captured.title">
                 Как совпавшие параметры работают совместно с include()
             </title>
-            
+
             <para>
                 Подключенный набор привязок получает любые параметры от
                 родительского набора, например:
@@ -1671,13 +1675,13 @@ urlpatterns = patterns('',
 	  ]]>
                 </screen>
             </para>
-            
+
             <para>
                 В этом примере, захваченная переменная <varname>username</varname>
                 передаётся в подключенный набор привязок и, следовательно, в
                 <emphasis>каждую</emphasis> функцию представления внутри этого набора.
             </para>
-            
+
             <para>
                 Следует отметить, что захваченные параметры будут
                 <emphasis>всегда</emphasis> передаваться
@@ -1688,15 +1692,15 @@ urlpatterns = patterns('',
                 представление в подключенном наборе привязок может принять
                 передаваемые параметры.
             </para>
-            
+
         </section>
-        
+
         <section id="&BASEID;.urlconf-include.how-work-extra">
-            
+
             <title id="&BASEID;.urlconf-include.how-work-extra.title">
                 Как работают дополнительные параметры совместно с include()
             </title>
-            
+
             <para>
                 Аналогично, вы можете передавать дополнительные параметры в
                 наборе привязок в подключаемые наборы, подобно тому, как такие
@@ -1704,27 +1708,27 @@ urlpatterns = patterns('',
                 словаря. Как только вы сделаете это, <emphasis>каждая</emphasis>
                 строка подключенного набора получит эти параметры.
             </para>
-            
+
             <para>
                 Например, следующие два набора привязок функционально
                 идентичны.
             </para>
-            
+
             <para>
                 Первый:
                 <screen>
                     # urls.py
-                    
+
                     from django.conf.urls.defaults import *
-                    
+
                     urlpatterns = patterns('',
                     (r'^blog/', include('inner'), {'blogid': 3}),
                     )
-                    
+
                     # inner.py
-                    
+
                     from django.conf.urls.defaults import *
-                    
+
                     urlpatterns = patterns('',
                     (r'^archive/$', 'mysite.views.archive'),
                     (r'^about/$', 'mysite.views.about'),
@@ -1732,22 +1736,22 @@ urlpatterns = patterns('',
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Второй:
                 <screen>
                     # urls.py
-                    
+
                     from django.conf.urls.defaults import *
-                    
+
                     urlpatterns = patterns('',
                     (r'^blog/', include('inner')),
                     )
-                    
+
                     # inner.py
-                    
+
                     from django.conf.urls.defaults import *
-                    
+
                     urlpatterns = patterns('',
                     (r'^archive/$', 'mysite.views.archive', {'blogid': 3}),
                     (r'^about/$', 'mysite.views.about', {'blogid': 3}),
@@ -1755,7 +1759,7 @@ urlpatterns = patterns('',
                     )
                 </screen>
             </para>
-            
+
             <para>
                 Подобно случаю с захваченными параметрами (которые мы
                 рассматривали ранее), дополнительные параметры будут
@@ -1767,9 +1771,9 @@ urlpatterns = patterns('',
                 представление в подключенном наборе привязок может принять
                 передаваемые параметры.
             </para>
-            
+
         </section>
-        
+
     </section>
-    
+
 </chapter>
