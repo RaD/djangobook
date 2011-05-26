@@ -21,10 +21,10 @@
 
   <para>
     В главе <quote><xref linkend="djangobook.chap03"
-    endterm="djangobook.chap03.title"/></quote> мы рассказали об
-    основах функций представлений Django и о схеме URL, в которой
-    определено соответствие URL этим функциям. Эта глава остановится
-    на этих вопросах более подробно.
+    endterm="djangobook.chap03.title"/></quote> мы рассказали о
+    функциях представлений Django и о схеме URL, в которой определено
+    соответствие URL этим функциям. Эта глава остановится на этих
+    вопросах более подробно.
   </para>
 
   <section id="&BASEID;.urlconf-tricks">
@@ -34,9 +34,9 @@
     </title>
 
     <para>
-      В схеме URL нет ничего особенного, как всё остальное в Django,
-      это просто код на языке Python. Вы можете использовать это
-      знание различными способами, как показано в разделах главы
+      В схеме URL нет ничего особенного, как и всё остальное в Django
+      &mdash; это просто код на языке Python. Вы можете использовать
+      это знание различными способами, как показано в разделах главы
       далее.
     </para>
 
@@ -65,22 +65,22 @@ urlpatterns = patterns('',
       </para>
 
       <para>
-        Как объяснялось в главе <quote> <xref
-        linkend="djangobook.chap03"
-        endterm="djangobook.chap03.title"/> </quote>, каждый шаблон
+        Как объяснялось в
+        главе <quote><xref linkend="djangobook.chap03"
+        endterm="djangobook.chap03.title"/></quote>, каждый шаблон
         схемы URL ассоциирован с функцией представления, которая
         указывается в виде функционального объекта. Это означает, что
         необходимо импортировать функции представления вначале модуля.
       </para>
 
       <para>
-        Но по мере усложнения Django приложения, его схема URL также
+        Но, по мере усложнения Django приложения, его схема URL также
         растёт, управление этими импортами может быть
         утомительным. (Для каждой новой функции представления вам
         потребуется не забыть об её импорте, это скажется на размере
         оператора импорта.) Есть возможность избежать этого, просто
-        импортируя сам модуль <token>views</token> . Нижеприведённый
-        пример эквивалентен предыдущему:
+        импортируя сам модуль <token>views</token> . Следующий пример
+        эквивалентен предыдущему:
         <screen>
           <![CDATA[
 from django.conf.urls.defaults import *
@@ -185,8 +185,10 @@ urlpatterns = patterns('mysite.views',
           <listitem>
             <para>
               Простая замена функций представления. Обратитесь к
-              разделу <quote>Wrapping View Functions</quote> FIXME
-              (что-то нет такого в оригинальной книге) в этой главе.
+              разделу <quote><xref
+              linkend="&BASEID;.urlconf-tricks.wrapping-view-functions"
+              endterm="&BASEID;.urlconf-tricks.wrapping-view-functions.title"/></quote>
+              в этой главе.
             </para>
           </listitem>
 
@@ -213,7 +215,7 @@ urlpatterns = patterns('mysite.views',
       </title>
 
       <para>
-        На практике при использовании строчной методики вы можете
+        На практике, при использовании строчной методики вы можете
         столкнуться с ситуацией, когда функции представления в схеме
         URL не будут иметь общего префикса. Однако, это не помешает
         вам воспользоваться преимуществами префикса. Просто добавьте
@@ -247,12 +249,12 @@ urlpatterns += patterns('weblog.views',
       </para>
 
       <para>
-        Всё, о чём заботится среда разработки, &mdash; это о
+        Всё, о чём заботится среда разработки &mdash; это о
         существовании переменной <varname>urlpatterns</varname>. Эта
         переменная может быть создана динамически, как это показано в
         примере. Следует отметить, что объекты, возвращаемые
         <function>patterns()</function>, могут быть объединены
-        оператором "+".
+        оператором <quote><token>+</token></quote>.
       </para>
 
     </section>
@@ -269,7 +271,7 @@ urlpatterns += patterns('weblog.views',
         использовать преимущества этой методики для изменения
         поведения вашей схемы URL при работе Django в режиме
         отладки. Чтобы осуществить это, просто проверяйте значение
-        параметра <token>DEBUG</token>во время работы приложения, вот
+        параметра <token>DEBUG</token> во время работы приложения, вот
         так:
         <screen>
           <![CDATA[
@@ -291,9 +293,9 @@ if settings.DEBUG:
       </para>
 
       <para>
-        В этом примере URL <token>/debuginfo/</token>будет работать,
-        только если параметр <token>DEBUG</token> установлен в
-        <token>True</token>.
+        В этом примере URL <token>/debuginfo/</token> будет работать
+        только в том случае, если параметр <token>DEBUG</token>
+        установлен в <token>True</token>.
       </para>
 
     </section>
@@ -306,7 +308,7 @@ if settings.DEBUG:
 
       <para>
         Ранее во всех примерах мы использовали простые,
-        <emphasis>не именованные</emphasis> группы регулярных
+        <emphasis>неименованные</emphasis> группы регулярных
         выражений. Мы ограничивали части URL круглыми скобками,
         которые требовалось обработать функцией представления, как
         аргументы. Существует возможность использования
@@ -394,7 +396,7 @@ sell('Socks', quantity=6, price='$2.50')
 
       <para>
         Ниже дан пример файла со схемой URL, в котором используются
-        не именованные группы:
+        неименованные группы:
         <screen>
           <![CDATA[
 from django.conf.urls.defaults import *
@@ -431,7 +433,7 @@ urlpatterns = patterns('',
       </para>
 
       <para>
-        Например, при использовании не именованных групп запрос к
+        Например, при использовании не именованныхгрупп запрос к
         <token>/articles/2006/03/</token>
         будет преобразован к такому вызову функции:
         <screen>
@@ -559,7 +561,7 @@ def bar_view(request):
       </para>
 
       <para>
-        Мы сами дублируем код и это не элегантно. Сначала вы можете
+        Мы сами дублируем код и это неэлегантно. Сначала вы можете
         решить убрать избыточность просто используя одно и то же
         представления для обоих URL, поставите скобки в URL для того,
         чтобы получить его и проверить, чтобы определить какой шаблон
@@ -866,7 +868,7 @@ def object_list(request, model):
             <listitem>
               <para>
                 Строка <token>model.objects.all()</token> является
-                примером<emphasis>утиного набора FIXME</emphasis>:
+                примером <emphasis>утиного набора FIXME</emphasis>:
                 <quote>
                   Если это ходит как утка и разговаривает как
                   утка, мы можем считать это уткой.
@@ -911,11 +913,9 @@ def object_list(request, model):
           используют одинаковые шаблоны, Django поставляется с набором
           <quote>общие представления</quote>, который используется
           вышеописанную методику для сохранения вашего времени. Мы
-          рассмотрим встроенные общие представления Django в
-          главе <quote>
-          <xref linkend="djangobook.chap11"
-                endterm="djangobook.chap11.title"/>
-          </quote>.
+          рассмотрим встроенные общие представления Django в главе
+          <quote><xref linkend="djangobook.chap11"
+          endterm="djangobook.chap11.title"/></quote>.
         </para>
 
       </section>
@@ -1042,10 +1042,11 @@ def page(request, num="1"):
         представление, <token>views.page</token> , но первый шаблон не
         получает параметров из URL. Если срабатывает первый шаблон, то
         будет выполнена функция <function>page()</function> будет
-        использовать стандартные значения аргументов(<token>num=1</token>
-        ). Если срабатывает второй шаблон, функция <function>page()</function>
-        будет использовать значение для параметра <varname>num</varname>
-        полученное с помощью регулярного выражения.
+        использовать стандартные значения
+        аргументов(<token>num=1</token>). Если срабатывает второй
+        шаблон, функция <function>page()</function> будет использовать
+        значение для параметра <varname>num</varname> полученное с
+        помощью регулярного выражения.
       </para>
 
       <para>
@@ -1104,8 +1105,9 @@ urlpatterns = patterns('',
       </para>
 
       <para>
-        Эта строка совпадает с URL такими как <token>/myblog/entries/add/</token>
-        и <token>/auth/groups/add/</token>. Однако страница добавления
+        Эта строка совпадает с URL такими как
+        <token>/myblog/entries/add/</token> и
+        <token>/auth/groups/add/</token>. Однако страница добавления
         пользователей (<token>/auth/user/add/</token>) является особым
         случаем &mdash; оно не отображает все поля формы, она
         отображает два поля для ввода пароля и так далее. Мы
@@ -1229,8 +1231,8 @@ def day_archive(request, year, month, day):
         Следует отметить, что сам метод <function>int()</function>
         вызывает исключение <token>ValueError</token> при передаче ему
         строки, в которой есть не только цифры. Но мы избегаем эту
-        ошибку в нашем случае, так как регулярное выражения в шаблоне URL
-        обеспечивает передачу только цифр.
+        ошибку в нашем случае, так как регулярное выражения в шаблоне
+        URL обеспечивает передачу только цифр.
       </para>
 
     </section>
@@ -1270,7 +1272,7 @@ def day_archive(request, year, month, day):
 
     <section id="&BASEID;.urlconf-tricks.higher-level-abstractions">
 
-      <title id="&BASEID;.urlconf-tricks.higher-level-abstractions">
+      <title id="&BASEID;.urlconf-tricks.higher-level-abstractions.title">
         Высокий уровень абстракции в функциях представления
       </title>
 
@@ -1310,20 +1312,21 @@ def some_page(request):
       </para>
 
       <para>
-        В этом примере, обработка методов <token>POST</token> и <token>GET</token>
-        функцией <function>some_page()</function> совсем отличается.
-        Все что у них общего это URL <token>/somepage/</token>. Поэтому
-        не очень красиво обрабатывать их одной функцией. Было бы на много
-        лучше, если бы одна функция обрабатывала запрос <token>GET</token>,
-        а другая - <token>POST</token> - и вызывалась только одна, которая
-        необходима для данного типа запросов.
+        В этом примере, обработка методов <token>POST</token> и
+        <token>GET</token> функцией <function>some_page()</function>
+        совсем отличается.  Все что у них общего это URL
+        <token>/somepage/</token>. Поэтому не очень красиво
+        обрабатывать их одной функцией. Было бы на много лучше, если
+        бы одна функция обрабатывала запрос <token>GET</token>, а
+        другая - <token>POST</token> - и вызывалась только одна,
+        которая необходима для данного типа запросов.
       </para>
 
       <para>
-        Мы можем реализовать это создав функцию, которая будет вызывать
-        другие функции, руководствуясь определённой логикой. Этот пример
-        покажет как этот подход поможет упростить нашу функцию
-        <function>some_page()</function>.
+        Мы можем реализовать это создав функцию, которая будет
+        вызывать другие функции, руководствуясь определённой
+        логикой. Этот пример покажет как этот подход поможет упростить
+        нашу функцию <function>some_page()</function>.
         <screen>
           <![CDATA[
 # views.py
@@ -1369,50 +1372,52 @@ urlpatterns = patterns('',
           <listitem>
             <para>
               Мы создали новую функцию представления
-              <function>method_splitter()</function>, которая
-              вызывает другие функции в соответствии с
+              <function>method_splitter()</function>, которая вызывает
+              другие функции в соответствии с
               <token>request.method</token>. Она принимает два
               именованных аргумента <varname>GET</varname> и
               <varname>POST</varname>, которые должны быть
-              <emphasis>функциями представления</emphasis>.
-              Если <token>request.method</token> равен
-              <token>'GET'</token> - вызывается функция
-              <function>GET</function>, если <token>'POST'</token> -
-              <function>POST</function>. Если <token>request.method</token>
-              равен чему-то другому(<token>HEAD</token>, например),
-              или <varname>GET</varname> или <varname>POST</varname>
-              не указаны, тогда вызывается исключения <token>Http404</token>.
+              <emphasis>функциями представления</emphasis>.  Если
+              <token>request.method</token> равен <token>'GET'</token>
+              - вызывается функция <function>GET</function>, если
+              <token>'POST'</token> - <function>POST</function>. Если
+              <token>request.method</token> равен чему-то
+              другому(<token>HEAD</token>, например), или
+              <varname>GET</varname> или <varname>POST</varname> не
+              указаны, тогда вызывается исключения
+              <token>Http404</token>.
             </para>
           </listitem>
 
           <listitem>
             <para>
               В схеме URL <token>/somepage/</token> указывает на
-              <function>method_splitter()</function> и передает
-              ей дополнительные параметры - функции представления
-              для <varname>GET</varname> и <token>POST</token>.
+              <function>method_splitter()</function> и передает ей
+              дополнительные параметры - функции представления для
+              <varname>GET</varname> и <token>POST</token>.
             </para>
           </listitem>
 
           <listitem>
             <para>
-              Разделяем функцию представления <function>some_page()</function>
-              на две функции - <function>some_page_get()</function>
-              и <function>some_page_post()</function>. Это на много
-              лучше, чем использовать всю эту логику в одной
-              функции.
+              Разделяем функцию представления
+              <function>some_page()</function> на две функции &mdash;
+              <function>some_page_get()</function> и
+              <function>some_page_post()</function>. Это на много
+              лучше, чем использовать всю эту логику в одной функции.
             </para>
 
             <para>
               Заметьте что теперь эти функции не должны проверять
               <token>request.method</token>, потому что
-              <function>method_splitter()</function> делает это.
-              (В тот момент, когда <function>some_page_post()</function>
+              <function>method_splitter()</function> делает это.  (В
+              тот момент, когда <function>some_page_post()</function>
               будет вызвана, мы можем быть уверенны, что
-              <token>request.method</token> равен <token>'POST'</token>.)
-              Все же, что бы быть уверенными, ну и для документирования,
-              мы добавили <token>assert</token>, который проверяет
-              что в <token>request.method</token> то, что мы ожидаем.
+              <token>request.method</token> равен
+              <token>'POST'</token>.)  Все же, что бы быть уверенными,
+              ну и для документирования, мы добавили
+              <token>assert</token>, который проверяет что в
+              <token>request.method</token> то, что мы ожидаем.
             </para>
           </listitem>
 
@@ -1420,24 +1425,30 @@ urlpatterns = patterns('',
       </para>
 
       <para>
-        Now we have ourselves a nice, generic view function that encapsulates
-        the logic of delegating a view by <token>request.method</token>.
-        Nothing about <function>method_splitter()</function> is tied to
-        our specific application, of course, so we can reuse it in other projects.
+        Теперь у нас есть прекрасная общая функция представления,
+        которая содержит логику делегирования представления по
+        <token>request.method</token>. Представление
+        <function>method_splitter()</function> никакне привязано к
+        нашему приложению и, следовательноЮ, мы можем использовать его
+        в других проектах.
       </para>
 
       <para>
-        But, while we’re at it, there’s one way to improve on <function>method_splitter()</function>.
-        As it’s written, it assumes that the <token>GET</token> and <token>POST</token>
-        views take no arguments other than <token>request</token>.
-        What if we wanted to use <function>method_splitter()</function>
-        with views that, for example, capture text from URLs, or take
-        optional keyword arguments themselves?
+        Но ещё есть способ улучшить
+        <function>method_splitter()</function>. Код представления
+        подразумевает, что представления для <token>GET</token> и
+        <token>POST</token> не принимают никаких аргументов кроме
+        <token>request</token>. Что произойдёт, если нам потребуется
+        использовать <function>method_splitter()</function> с
+        представлениями, которые получают, например, текст из URL или
+        принимают необязательные именованные аргументы?
       </para>
 
       <para>
-        To do that, we can use a nice Python feature: variable arguments
-        with asterisks. We’ll show the example first, then explain it:
+        Для решения этой задаче, мы можем воспользоваться интересной
+        особенностью языка Python: переменные аргументы со
+        звёздочками. Сначала рассмотрим пример, а потом разберёмся с
+        ним:
         <screen>
           <![CDATA[
 def method_splitter(request, *args, **kwargs):
@@ -1453,20 +1464,23 @@ def method_splitter(request, *args, **kwargs):
       </para>
 
       <para>
-        Here, we’ve refactored <function>method_splitter()</function>
-        to remove the <token>GET</token> and <token>POST</token> keyword arguments,
-        in favor of <token>*args</token> and <token>**kwargs</token> (note the asterisks).
-        This is a Python feature that allows a function to accept a dynamic,
-        arbitrary number of arguments whose names aren’t known until runtime.
-        If you put a single asterisk in front of a parameter in a function definition,
-        any <emphasis>positional</emphasis> arguments to that function
-        will be rolled up into a single tuple. If you put two asterisks
-        in front of a parameter in a function definition, any <emphasis>keyword</emphasis>
-        arguments to that function will be rolled up into a single dictionary.
+        Здесь мы переписали <function>method_splitter()</function>
+        так, чтобы избавиться от неименованных аргументов в
+        представлениях <token>GET</token> и <token>POST</token> в
+        пользу <token>*args</token> и <token>**kwargs</token>
+        (обратите внимание на звёздочки). Это особенность языка
+        Python, которая позволяет функции принимать разное количество
+        аргументов, имена которых не известны до момента исполнения
+        кода. Если поместить одну звёздочку перед параметром в
+        определении функции, то любые
+        <emphasis>неименованные</emphasis> аргументы будут развёрнуты
+        в единый кортеж. Если поместить две звёздочки &mdash; любые
+        <emphasis>именованные</emphasis> аргументы будут развёрнуты в
+        словарь.
       </para>
 
       <para>
-        For example, with this function:
+        Например, для этой функции:
         <screen>
           <![CDATA[
 def foo(*args, **kwargs):
@@ -1479,7 +1493,7 @@ def foo(*args, **kwargs):
       </para>
 
       <para>
-        Here’s how it would work:
+        Вот результаты:
         <screen>
           <![CDATA[
 >>> foo(1, 2, 3)
@@ -1497,28 +1511,29 @@ Keyword arguments are:
       </para>
 
       <para>
-        Bringing this back to <function>method_splitter()</function>,
-        you can see we’re using <token>*args</token> and <token>**kwargs</token>
-        to accept <emphasis>any</emphasis> arguments to the function and
-        pass them along to the appropriate view. But before we do that,
-        we make two calls to <token>kwargs.pop()</token> to get the
-        <token>GET</token> and <token>POST</token> arguments, if they’re available.
-        (We’re using <function>pop()</function> with a default value of
-        <token>None</token> to avoid <token>KeyError</token> if one or
-        the other isn’t defined.)
+        Возвращаясь к <function>method_splitter()</function>, вы
+        можете увидить, что мы используем <token>*args</token> и
+        <token>**kwargs</token> для приёма <emphasis>любых</emphasis>
+        аргументов в функцию и передачи их соответствующему
+        представлению. Но перед этим, мы выполняем
+        <token>kwargs.pop()</token> дл получения <token>GET</token> и
+        <token>POST</token> аргументов, если они есть. (Мы используем
+        <function>pop()</function> с значением по-умолчанию
+        <token>None</token>, чтобы избежать <token>KeyError</token>
+        при отсутствии аргументов.)
       </para>
     </section>
 
     <section id="&BASEID;.urlconf-tricks.wrapping-view-functions">
 
-      <title id="&BASEID;.urlconf-tricks.wrapping-view-functions">
-        Wrapping View Functions
+      <title id="&BASEID;.urlconf-tricks.wrapping-view-functions.title">
+        Оборачивание функций представления
       </title>
 
       <para>
-        Our final view trick takes advantage of an advanced Python technique.
-        Say you find yourself repeating a bunch of code throughout various views,
-        as in this example:
+        Наша последняя уловка также основана на особенностях языка
+        Python. Скажем, вы обнаружили, что постоянно повторяете кусок
+        кода в своих представлениях, например:
         <screen>
           <![CDATA[
 def my_view1(request):
@@ -1543,19 +1558,23 @@ def my_view3(request):
       </para>
 
       <para>
-        Here, each view starts by checking that <token>request.user</token>
-        is authenticated — that is, the current user has successfully logged
-        into the site — and redirects to <token>/accounts/login/</token> if not.
-        (Note that we haven’t yet covered <token>request.user</token> —
-        <quote><xref linkend="djangobook.chap14" endterm="djangobook.chap14.title"/></quote>
-        does — but, as you might imagine, <token>request.user</token>
-        represents the current user, either logged-in or anonymous.)
+        Здесь, каждое представление начинается с проверки
+        аутентификации <token>request.user</token> (залогинился ли
+        пользователь на сайте или нет) и последующего перенаправления
+        на <token>/accounts/login/</token>, если аутентификация не
+        пройдена. (Следует отметить, что мы ещё не касались
+        <token>request.user</token> &mdash; обратитесь к главе
+        <quote><xref linkend="djangobook.chap14"
+        endterm="djangobook.chap14.title"/></quote>, но как вы можете
+        представить, объект <token>request.user</token> представляет
+        текущего пользователя (анонимного или аутентифицировавшегося).
       </para>
 
       <para>
-        It would be nice if we could remove that bit of repetitive code
-        from each of these views and just mark them as requiring authentication.
-        We can do that by making a view wrapper. Take a moment to study this:
+        Будет неплохо убрать этот повторяющийся код из каждого
+        представления и просто пометить их как нуждающихся в
+        аутентифицировании пользователя. Мы можем реализовать это с
+        помощью обёртывания представления. Изучите следующий код:
         <screen>
           <![CDATA[
 def requires_login(view):
@@ -1569,18 +1588,21 @@ def requires_login(view):
       </para>
 
       <para>
-        This function, <function>requires_login</function>, takes a view
-        function (<token>view</token>) and returns a new view function
-        (<token>new_view</token>). The new function, new_view is defined
-        <emphasis>within</emphasis> <function>requires_login</function>
-        and handles the logic of checking <token>request.user.is_authenticated()</token>
-        and delegating to the original view (<token>view</token>).
+        Эта функция, <function>requires_login</function>, принимает
+        функцию представления (<token>view</token>) и возвращает новую
+        функцию представления (<token>new_view</token>). Новая функция
+        определена <emphasis>внутри</emphasis>
+        <function>requires_login</function> и обрабатывает логику
+        проверки <token>request.user.is_authenticated()</token>, а
+        затем передаёт управление функции представления
+        (<token>view</token>).
       </para>
 
       <para>
-        Now, we can remove the <token>if not request.user.is_authenticated()</token>
-        checks from our views and simply wrap them with <function>requires_login</function>
-        in our URLconf:
+        Теперь мы можем удалить проверку <token>if not
+        request.user.is_authenticated()</token> из наших функций
+        представления и просто обернуть их с помощью
+        <function>requires_login</function> в нашей схеме URL:
         <screen>
           <![CDATA[
 from django.conf.urls.defaults import *
@@ -1596,9 +1618,11 @@ urlpatterns = patterns('',
       </para>
 
       <para>
-        This has the same effect as before, but with less code redundancy.
-        Now we’ve created a nice, generic function — <function>requires_login</function>
-        that we can wrap around any view in order to make it require login.
+        Всё будет работать как и раньше, но код будет менее
+        избыточным. Сейчас мы создали общую функцию &mdash;
+        <function>requires_login</function>, с помощью которой мы
+        можем легко добавлять функционал проверки аутентификации
+        пользователя к любой функции представления.
       </para>
     </section>
 
