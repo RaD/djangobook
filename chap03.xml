@@ -41,7 +41,7 @@
       сервере. Следует отметить, что в этом случае, вы определяете два
       ключевых параметра страницы: её содержимое (строка
       <quote>Здравствуй, Мир</quote>) и её URL (<ulink
-      url="http://www.example.com/hello.html/"/>).
+      url="http://www.example.com/hello.html"/>).
     </para>
 
     <para>
