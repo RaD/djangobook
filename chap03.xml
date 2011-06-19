@@ -87,7 +87,7 @@ def hello(request):
       </para>
 
       <para>
-        Пройдёмся по коду, строчка за строчкой:
+        Пройдёмся по коду строка за строкой:
         <itemizedlist>
           <listitem>
             <para>
