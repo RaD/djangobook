@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 [
@@ -56,9 +56,9 @@ from django.conf.urls.defaults import *
 from mysite.views import hello, current_datetime, hours_ahead
 
 urlpatterns = patterns('',
-(r'^hello/$', hello),
-(r'^time/$', current_datetime),
-(r'^time/plus/(\d{1,2})/$', hours_ahead),
+    (r'^hello/$', hello),
+    (r'^time/$', current_datetime),
+    (r'^time/plus/(\d{1,2})/$', hours_ahead),
 )
           ]]>
         </screen>
@@ -87,9 +87,9 @@ from django.conf.urls.defaults import *
 from mysite import views
 
 urlpatterns = patterns('',
-(r'^hello/$', views.hello),
-(r'^time/$', views.current_datetime),
-(r'^time/plus/(d{1,2})/$', views.hours_ahead),
+    (r'^hello/$', views.hello),
+    (r'^time/$', views.current_datetime),
+    (r'^time/plus/(d{1,2})/$', views.hours_ahead),
 )
           ]]>
         </screen>
@@ -106,9 +106,9 @@ urlpatterns = patterns('',
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
-(r'^hello/$', 'mysite.views.hello'),
-(r'^time/$', 'mysite.views.current_datetime'),
-(r'^time/plus/(d{1,2})/$', 'mysite.views.hours_ahead'),
+    (r'^hello/$', 'mysite.views.hello'),
+    (r'^time/$', 'mysite.views.current_datetime'),
+    (r'^time/plus/(d{1,2})/$', 'mysite.views.hours_ahead'),
 )
           ]]>
         </screen>
@@ -140,9 +140,9 @@ urlpatterns = patterns('',
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('mysite.views',
-(r'^hello/$', 'hello'),
-(r'^time/$', 'current_datetime'),
-(r'^time/plus/(d{1,2})/$', 'hours_ahead'),
+    (r'^hello/$', 'hello'),
+    (r'^time/$', 'current_datetime'),
+    (r'^time/plus/(d{1,2})/$', 'hours_ahead'),
 )
           ]]>
         </screen>
