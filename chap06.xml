@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 [
@@ -953,7 +953,7 @@ class Author(models.Model):
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/7.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1050,7 +1050,7 @@ admin.site.register(Book)
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/8.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1088,7 +1088,7 @@ class AuthorAdmin(admin.ModelAdmin):
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/9.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1144,7 +1144,7 @@ admin.site.register(Book, BookAdmin)
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/10.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1186,7 +1186,7 @@ class BookAdmin(admin.ModelAdmin):
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/11.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1245,7 +1245,7 @@ class BookAdmin(admin.ModelAdmin):
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/12.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1380,7 +1380,7 @@ class BookAdmin(admin.ModelAdmin):
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/13.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
@@ -1446,7 +1446,7 @@ class BookAdmin(admin.ModelAdmin):
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="pics/waiting_for.png" format="PNG"/>
+                <imagedata fileref="pics/ch06/14.png" format="PNG"/>
               </imageobject>
             </mediaobject>
           </screenshot>
