@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 [
@@ -430,26 +430,31 @@ GRANT ALL ON mysite.* TO user@localhost;
 
     <para>
       Подобно параметру <varname>TEMPLATE_DIRS</varname> из предыдущей
-      главы, по умолчанию параметры соединения с базой данных
+      главы, по умолчанию параметры соединения с базами данных
       определяются в файле конфигурации проекта,
-      <filename>settings.py</filename>. Отредактируйте этот файл и
-      посмотрите на настройки базы данных:
+      <filename>settings.py</filename>, опцией <varname>DATABASES</varname>,
+      которая по-умолчанию равна <token>{}</token>. База <token>default</token>
+      должна быть определена обязательно. Так ж словарь может определять любое
+      количество других баз данных. Самый простой вариант, это использование одной
+      базы данных SQLite:
       <screen>
-DATABASE_ENGINE = ''
-DATABASE_NAME = ''
-DATABASE_USER = ''
-DATABASE_PASSWORD = ''
-DATABASE_HOST = ''
-DATABASE_PORT = ''
+            <![CDATA[
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase'
+    }
+}            
+            ]]>
       </screen>
     </para>
 
     <para>
-      Опишем каждый параметр:
+      Для других баз данных необходимо больше параметров. Рассмотрим каждый параметр.
       <itemizedlist>
         <listitem>
           <para>
-            Параметр <varname>DATABASE_ENGINE</varname> указывает тип
+            Параметр <varname>ENGINE</varname> указывает тип
             базы данных. Может быть одним из показанных в таблице
             <quote><xref linkend="&BASEID;.tbl1"
             endterm="&BASEID;.tbl1.title"/></quote>.
@@ -477,7 +482,7 @@ DATABASE_PORT = ''
 
                 <tbody>
                   <row>
-                    <entry><token>postgresql</token></entry>
+                    <entry><token>django.db.backends.postgresql</token></entry>
                     <entry>PostgreSQL</entry>
                     <entry>
                       <token>psycopg</token> версия 1.х, <ulink
@@ -486,7 +491,7 @@ DATABASE_PORT = ''
                   </row>
 
                   <row>
-                    <entry><token>postgresql_psycopg2</token></entry>
+                    <entry><token>django.db.backends.postgresql_psycopg2</token></entry>
                     <entry>PostgreSQL</entry>
                     <entry>
                       <token>psycopg</token> версия 2.х, <ulink
@@ -495,7 +500,7 @@ DATABASE_PORT = ''
                   </row>
 
                   <row>
-                    <entry><token>mysql</token></entry>
+                    <entry><token>django.db.backends.mysql</token></entry>
                     <entry>MySQL</entry>
                     <entry>
                       <token>MySQLdb</token>, <ulink
@@ -504,7 +509,7 @@ DATABASE_PORT = ''
                   </row>
 
                   <row>
-                    <entry><token>sqlite3</token></entry>
+                    <entry><token>django.db.backends.sqlite3</token></entry>
                     <entry>SQLite</entry>
                     <entry>
                       При использовании Python 2.5+ драйвер не нужен. В
@@ -514,7 +519,7 @@ DATABASE_PORT = ''
                   </row>
 
                   <row>
-                    <entry><token>oracle</token></entry>
+                    <entry><token>django.db.backends.oracle</token></entry>
                     <entry>Oracle</entry>
                     <entry>
                       <token>cx_Oracle</token>, <ulink
@@ -537,24 +542,15 @@ DATABASE_PORT = ''
             <token>python-postgresql</token> или
             <token>python-psycopg</token>.)
           </para>
-
-          <para>
-            Пример:
-            <screen>
-              <![CDATA[
-DATABASE_ENGINE = 'postgresql_psycopg2'
-              ]]>
-            </screen>
-          </para>
         </listitem>
 
         <listitem>
           <para>
-            Параметр <varname>DATABASE_NAME</varname> указывает Django
+            Параметр <varname>NAME</varname> указывает Django
             имя вашей базы данных. Например:
             <screen>
               <![CDATA[
-DATABASE_NAME = 'mydb'
+'NAME': 'mydb'
               ]]>
             </screen>
           </para>
@@ -564,7 +560,7 @@ DATABASE_NAME = 'mydb'
             базы данных на файловой системе. Например:
             <screen>
               <![CDATA[
-DATABASE_NAME = '/home/django/mydata.db'
+'NAME': '/home/django/mydata.db'
               ]]>
             </screen>
           </para>
@@ -578,7 +574,7 @@ DATABASE_NAME = '/home/django/mydata.db'
 
         <listitem>
           <para>
-            Параметр <varname>DATABASE_USER</varname> указывает Django
+            Параметр <varname>USER</varname> указывает Django
             какое имя надо использовать при соединении с базой
             данных. Если вы используете SQLite, оставьте этот параметр
             пустым.
@@ -587,7 +583,7 @@ DATABASE_NAME = '/home/django/mydata.db'
 
         <listitem>
           <para>
-            Параметр <varname>DATABASE_PASSWORD</varname> указывает
+            Параметр <varname>PASSWORD</varname> указывает
             Django какой пароль надо использовать при соединении с
             базой данных. Если вы используете SQLite, оставьте этот
             параметр пустым.
@@ -596,7 +592,7 @@ DATABASE_NAME = '/home/django/mydata.db'
 
         <listitem>
           <para>
-            Параметр <varname>DATABASE_HOST</varname> указывает Django
+            Параметр <varname>HOST</varname> указывает Django
             какое имя сервера надо использовать при соединении с базой
             данных. Если база данных находится на том же компьютере
             (т.е., <token>localhost</token>), оставьте параметр
@@ -622,7 +618,7 @@ DATABASE_HOST = '/var/run/mysql'
           </para>
 
           <para>
-            Параметр <varname>DATABASE_PORT</varname> указывает Django
+            Параметр <varname>PORT</varname> указывает Django
             какой порт надо использовать при соединении с базой
             данных. Если вы используете SQLite, оставьте этот параметр
             пустым. В противном случае, соответствующий драйвер базы
@@ -689,12 +685,12 @@ DATABASE_HOST = '/var/run/mysql'
             <row>
               <entry>
                 Вы не определили значение параметра
-                <varname>DATABASE_ENGINE</varname>. (You haven't set
-                the DATABASE_ENGINE setting yet.)
+                <varname>ENGINE</varname>. (You haven't set
+                the ENGINE setting yet.)
               </entry>
               <entry>
                 Установите значение параметра
-                <varname>DATABASE_ENGINE</varname>. Не оставляйте его
+                <varname>ENGINE</varname>. Не оставляйте его
                 пустым.
               </entry>
             </row>
@@ -731,7 +727,7 @@ DATABASE_HOST = '/var/run/mysql'
               </entry>
               <entry>
                 Установите параметр
-                <varname>DATABASE_ENGINE</varname>, указав
+                <varname>ENGINE</varname>, указав
                 используемую базу данных, как было описано
                 ранее. Возможно вы опечатались?
               </entry>
@@ -743,7 +739,7 @@ DATABASE_HOST = '/var/run/mysql'
                 not exist.)
               </entry>
 	      <entry>
-            Измените параметр <varname>DATABASE_NAME</varname>, чтобы
+            Измените параметр <varname>NAME</varname>, чтобы
             он указывал на существующую базу данных, или выполните
             соответствующую команду <command>CREATE DATABASE</command>
             для создания базы данных.
@@ -755,7 +751,7 @@ DATABASE_HOST = '/var/run/mysql'
                 Роль _____ не существует. (role _____ does not exist.)
               </entry>
               <entry>
-                Измените параметр <varname>DATABASE_USER</varname>,
+                Измените параметр <varname>USER</varname>,
                 чтобы он указывал на существующего пользователя или
                 создайте соответствующего пользователя в базе данных.
               </entry>
@@ -768,8 +764,8 @@ DATABASE_HOST = '/var/run/mysql'
               </entry>
               <entry>
                 Удостоверьтесь, что параметры
-                <varname>DATABASE_HOST</varname> и
-                <varname>DATABASE_PORT</varname> установлены
+                <varname>HOST</varname> и
+                <varname>PORT</varname> установлены
                 правильно, а также, что сервер баз данных работает.
               </entry>
             </row>
@@ -1434,7 +1430,7 @@ Installing index for books.Book model
       запустить клиент (т.е., <command>psql</command> для PostgreSQL)
       или вы можете применить команду <command>python manage.py
       dbshell</command>, которая запускает клиент, используя параметр
-      <varname>DATABASE_ENGINE</varname>. Последний вариант более
+      <varname>DATABASE['ENGINE']</varname>. Последний вариант более
       удобен.
     </para>
 
