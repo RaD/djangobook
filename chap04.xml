@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 [
@@ -1206,12 +1206,17 @@ KeyError: 'foo'
         </para>
 
         <para>
-          Теги <token>{% if %}</token> не позволяют объединять
-          <token>and</token> и <token>or</token> в одном теге, потому
-          что порядок логики будет двусмысленным. Пример с ошибкой:
+          Использование <token>and</token> и <token>or</token>
+          но <token>and</token> имеет больший приоритет. Например:
           <screen>
             <![CDATA[
 {% if athlete_list and coach_list or cheerleader_list %}
+            ]]>
+          </screen>
+          будет интерпретировано как:
+          <screen>
+            <![CDATA[
+if (athlete_list and coach_list) or cheerleader_list
             ]]>
           </screen>
         </para>
@@ -1236,13 +1241,60 @@ KeyError: 'foo'
 
         <para>
           Допускается множественное использование одного и того же
-          логического оператора, но вы не можете объединять различные
-          операторы. Вот правильное использование:
+          логического оператора:
           <screen>
             <![CDATA[
 {% if athlete_list or coach_list or parent_list or teacher_list %}
             ]]>
           </screen>
+        </para>
+
+        <para>
+          Так же возможно использовать операторы <token>==</token>, <token>!=</token>,
+          <token>&lt;</token>, <token>&gt;</token>, <token>&gte;</token>, <token>&lte;</token>
+          и <token>in</token>:
+            <screen>
+            <![CDATA[
+{% if somevar == "x" %}
+  This appears if variable somevar equals the string "x"
+{% endif %}
+
+{% if somevar != "x" %}
+  This appears if variable somevar does not equal the string "x",
+  or if somevar is not found in the context
+{% endif %}
+
+{% if somevar < 100 %}
+  This appears if variable somevar is less than 100.
+{% endif %}
+
+{% if somevar > 0 %}
+  This appears if variable somevar is greater than 0.
+{% endif %}
+
+{% if somevar <= 100 %}
+  This appears if variable somevar is less than 100 or equal to 100.
+{% endif %}
+
+{% if somevar >= 1 %}
+  This appears if variable somevar is greater than 1 or equal to 1.
+{% endif %}
+
+{% if "bc" in "abcdef" %}
+  This appears since "bc" is a substring of "abcdef"
+{% endif %}
+
+{% if "hello" in greetings %}
+  If greetings is a list or set, one element of which is the string
+  "hello", this will appear.
+{% endif %}
+
+{% if user in users %}
+  If users is a QuerySet, this will appear if user is an
+  instance that belongs to the QuerySet.
+{% endif %}
+            ]]>
+            </screen>
         </para>
 
         <para>
@@ -1545,111 +1597,6 @@ Favorite places:
               блока <token>{% for %}</token>.
             </para>
           </note>
-        </para>
-
-      </section>
-
-      <section id="&BASEID;.tags-and-filters.tags.ifequal-ifnotequal">
-
-        <title id="&BASEID;.tags-and-filters.tags.ifequal-ifnotequal.title">
-          ifequal/ifnotequal
-        </title>
-
-        <para>
-          Шаблонная система Django умышленно создана в виде
-          неполноценного языка программирования и, следовательно, не
-          позволит вам выполнить операторы языка Python. (Более
-          подробно данный аспект рассмотрен в разделе <quote><xref
-          linkend="&BASEID;.limitations"
-          endterm="&BASEID;.limitations.title"/></quote> данной
-          главы.) Тем не менее, сравнение двух значений и отображение
-          некой информации в случае равенства является достаточно
-          общим требованием к шаблонам. И Django предоставляет тег
-          <token>{% ifequal %}</token> для решения данной задачи.
-        </para>
-
-        <para>
-          Тег <token>{% ifequal %}</token> сравнивает два значения и
-          отображает всё, что находится между <token>{% ifequal
-          %}</token> и <token>{% endifequal %}</token>, если эти
-          значения равны.
-        </para>
-
-        <para>
-          Данный пример сравнивает шаблонные переменные
-          <varname>user</varname> и <varname>currentuser</varname>:
-          <screen>
-            <![CDATA[
-{% ifequal user currentuser %}
-    <h1>Welcome!</h1>
-{% endifequal %}
-            ]]>
-          </screen>
-        </para>
-
-        <para>
-          Аргументами могут служить строки (вбитые в шаблон),
-          ограниченные одинарными или двойными кавычками, вот пример:
-          <screen>
-            <![CDATA[
-{% ifequal section 'sitenews' %}
-    <h1>Site News</h1>
-{% endifequal %}
-
-{% ifequal section "community" %}
-    <h1>Community</h1>
-{% endifequal %}
-            ]]>
-          </screen>
-        </para>
-
-        <para>
-          Аналогично <token>{% if %}</token>, тег <token>{% ifequal
-          %}</token> поддерживает необязательный тег <token>{% else
-          %}</token>:
-          <screen>
-            <![CDATA[
-{% ifequal section 'sitenews' %}
-    <h1>Site News</h1>
-{% else %}
-    <h1>No News Here</h1>
-{% endifequal %}
-            ]]>
-          </screen>
-        </para>
-
-        <para>
-          В качестве аргументов тега разрешено использовать только
-          переменные, строки, целые и десятичные числа. Ниже показаны
-          примеры правильного использования:
-          <screen>
-            <![CDATA[
-{% ifequal variable 1 %}
-{% ifequal variable 1.23 %}
-{% ifequal variable 'foo' %}
-{% ifequal variable "foo" %}
-            ]]>
-          </screen>
-        </para>
-
-        <para>
-          Любые другие типы переменных, подобных словарям, спискам или
-          логическим значениям не могут быть использованы в <token>{%
-          ifequal %}</token>. Ниже показаны примеры неправильного
-          использования:
-          <screen>
-            <![CDATA[
-{% ifequal variable True %}
-{% ifequal variable [1, 2, 3] %}
-{% ifequal variable {'key': 'value'} %}
-            ]]>
-          </screen>
-        </para>
-
-        <para>
-          Если вам требуется проверить соответствие чего-либо
-          логическому значению, используйте тег <token>{% if
-          %}</token> вместо <token>{% ifequal %}</token>.
         </para>
 
       </section>
@@ -2398,74 +2345,6 @@ def current_datetime(request):
         быть словарь, используемый при создании контекста для этого
         шаблона. Если вы не предоставите второй аргумент, функция
         будет использовать пустой словарь.
-      </para>
-
-    </section>
-
-    <section id="&BASEID;.loading-templates.locals-trick">
-
-      <title id="&BASEID;.loading-templates.locals-trick.title">
-        Трюк с locals()
-      </title>
-
-      <para>
-        Рассмотрим последнюю инкарнацию функции
-        <function>current_datetime</function>:
-        <screen>
-def current_datetime(request):
-    now = datetime.datetime.now()
-    return render_to_response('current_datetime.html', {'current_date': now})
-        </screen>
-      </para>
-
-      <para>
-        Постоянно вы будете ловить себя на том, что вы вычисляете
-        значения, сохраняете их в переменных
-        (см. <varname>now</varname> в предыдущем примере) и
-        отправляете эти переменные в шаблон. Особо ленивые
-        разработчики должны отметить, что это немного излишне
-        назначать имена временным переменным <emphasis>и</emphasis>
-        шаблонным переменным. Это не только излишне, но и требует
-        много набора на клавиатуре.
-      </para>
-
-      <para>
-        Таким образом, если вы один из таких ленивых разработчиков и
-        вам нравится краткий код, вы можете воспользоваться встроенной
-        в Python функцией <function>locals()</function>. Она
-        возвращает словарь, хранящий все локальные переменные и их
-        соответствующие значения (речь идёт о всех переменных,
-        определённых в текущей области видимости). Следовательно,
-        предыдущую функцию представления можно переписать так:
-        <screen>
-def current_datetime(request):
-    current_date = datetime.datetime.now()
-    return render_to_response('current_datetime.html', locals())
-        </screen>
-      </para>
-
-      <para>
-        Здесь, вместо ручного ввода контекстного словаря, как это было
-        раньше, вы передали значение функции
-        <function>locals()</function>, которое содержало все
-        переменные определённые в этой точке выполнения функции. Как
-        результат, мы переименовали переменную <varname>now</varname>
-        в <varname>current_date</varname>, потому что это то имя,
-        которое шаблон ожидает. В этом примере
-        <function>locals()</function> не предлагает
-        <emphasis>значительного</emphasis> удобства, но эта методика
-        может сохранить вам время, если вы используете несколько
-        шаблонных переменных или если вы ленивы.
-      </para>
-
-      <para>
-        Следует обратить внимание при использовании
-        <function>locals()</function> на то, что она включает в
-        результат <emphasis>каждую</emphasis> локальную
-        переменную. Это может быть не совсем то, что вам нужно. В
-        предыдущем примере, <function>locals()</function> также
-        включает <token>request</token>. Важно ли это для вас, зависит
-        от вашего приложения и вашего уровня перфекционизма.
       </para>
 
     </section>
