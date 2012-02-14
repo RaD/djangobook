@@ -81,7 +81,7 @@
 from django.http import HttpResponse
 
 def hello(request):
-    return HttpResponse("Здравствуй, Мир")
+    return HttpResponse(u"Здравствуй, Мир")
           ]]>
 	    </screen>
       </para>
@@ -885,7 +885,7 @@ import datetime
 
 def current_datetime(request):
     now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
+    html = u"<html><body>It is now %s.</body></html>" % now
     return HttpResponse(html)
         ]]>
       </screen>
@@ -903,11 +903,11 @@ from django.http import HttpResponse
 import datetime
 
 def hello(request):
-    return HttpResponse("Hello world")
+    return HttpResponse(u"Hello world")
 
 def current_datetime(request):
     now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
+    html = u"<html><body>It is now %s.</body></html>" % now
     return HttpResponse(html)
         ]]>
       </screen>
@@ -1288,6 +1288,42 @@ urlpatterns = patterns('',
       </screen>
     </para>
 
+    <pre>
+      Вместо функций можно использовать путь к функции:
+      <screen>
+        <![CDATA[
+from django.conf.urls.defaults import *
+
+urlpatterns = patterns('',
+    (r'^hello/$', 'mysite.views.hello'),
+    (r'^time/$', 'mysite.views.current_datetime'),
+    (r'^time/plus/(\d{1,2})/$', 'mysite.views.hours_ahead'),
+)
+        ]]>
+      </screen>
+      Для каждой функции мы видим повторяющийся перфикс, который можно упростить:
+      <screen>
+        <![CDATA[
+from django.conf.urls.defaults import *
+
+urlpatterns = patterns('mysite.views',
+    (r'^hello/$', 'hello'),
+    (r'^time/$', 'current_datetime'),
+    (r'^time/plus/(\d{1,2})/$', 'hours_ahead'),
+)
+        ]]>
+      </screen>
+
+      <note>
+        <title>Больше о URL</title>
+
+        <para>
+          Больше о возможностях схем URL вы можете прочитать в документации Django:
+          <ulink url="http://www.djangoproject.com/r/7zip/"/>
+        </para>
+      </note>
+    </pre>
+
     <para>
       Теперь напишем представление <function>hours_ahead</function>.
 
@@ -1348,7 +1384,7 @@ def hours_ahead(request, offset):
     except ValueError:
         raise Http404()
     dt = datetime.datetime.now() + datetime.timedelta(hours=offset)
-    html = "<html><body>In %s hour(s), it will be %s.</body></html>" % (offset, dt)
+    html = u"<html><body>In %s hour(s), it will be %s.</body></html>" % (offset, dt)
     return HttpResponse(html)
         ]]>
       </screen>

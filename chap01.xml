@@ -946,12 +946,6 @@ class Person(models.Model):
 
                 <listitem>
                   <para>
-                    <token>class Admin</token>.
-                  </para>
-                </listitem>
-
-                <listitem>
-                  <para>
                     <token>def __unicode__()</token>.
                   </para>
                 </listitem>
